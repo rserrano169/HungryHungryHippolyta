@@ -197,16 +197,38 @@
       188, 258, 268, 383, 393, 438, 506, 520, 563
     ];
     var innerWallLeftPositions = [
-
+      135, 190, 385, 428, 433, 440, 485, 540, 553
     ];
     var innerWallRightPositions = [
-
+      141, 186, 391, 436, 443, 448, 491, 573
     ];
     var innerWallVerticalPositions = [
-
+      158, 183, 208, 233,   // wall 1
+      163,                  // wall 2
+      168, 193, 218, 243,   // wall 3
+      333, 358,             // wall 4
+      343, 368,             // wall 5
+      413,                  // wall 6
+      456, 481,             // wall 7
+      470, 495,             // wall 8
+      508, 533,             // wall 9
+      513, 538,             // wall 10
+      518, 543              // wall 11
     ];
     var innerWallHorizontalPositions = [
-
+      136, 137, 138, 139, 140,
+      184, 185,
+      191, 192,
+      386, 387, 388, 389, 390,
+      429, 430,
+      434, 435,
+      441, 442,
+      446, 447,
+      486, 487, 488, 489, 490,
+      534, 535,
+      541, 542,
+      554, 555, 556, 557,
+      569, 570, 571, 572
     ];
 
     innerWallTopPositions.forEach( function (pos) {
@@ -215,6 +237,22 @@
 
     innerWallBottomPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="inner-wall-bottom"></div>');
+    })
+
+    innerWallLeftPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-left"></div>');
+    })
+
+    innerWallRightPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-right"></div>');
+    })
+
+    innerWallVerticalPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-vertical"></div>');
+    })
+
+    innerWallHorizontalPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-horizontal"></div>');
     })
   };
 
