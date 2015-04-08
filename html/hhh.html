@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hungry Hungry Hippolyta</title>
+    <link rel="stylesheet" type="text/css" href="../css/hhh.css">
+  </head>
+
+  <body>
+    <h1>Hungry Hungry Hippolyta</h1>
+
+    <figure class="hhh-game"></figure>
+
+    <script src="../js/jquery-1.9.1.js"></script>
+    <script src="../js/keymaster.js"></script>
+    <script src="../js/hhh.js"></script>
+    <script src="../js/hhh-view.js"></script>
+
+    <script>
+      $(function () {
+        new HHH.View($(".hhh-game"));
+      });
+    </script>
+  </body>
+</html>
