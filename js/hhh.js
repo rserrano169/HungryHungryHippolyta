@@ -1,7 +1,7 @@
 (function () {
   if (typeof HHH === "undefined") {
     window.HHH = {};
-  };
+  }
 
 
 
@@ -16,8 +16,9 @@
 
 
 
-  var Board = HHH.Board = function (dim) {
-    this.dim = dim;
+  var Board = HHH.Board = function (dimension, templateNum) {
+    this.dim = dimension;
+    this.temp = templateNum;
   };
 
-});
+})();

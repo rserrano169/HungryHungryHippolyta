@@ -1,5 +1,5 @@
-html, head, title, head, figure, body, link, h1,
-ul, li {
+html, head, title, head, figure, body, link,
+div, h1, ul, li {
   margin: 0;
   padding: 0;
   border: 0;
@@ -37,11 +37,62 @@ figure {
 }
 
 ul {
+  list-style: none;
 }
 
 li {
+  display: block;
+  position: relative;
   float: left;
   width: 25px;
   height: 25px;
-  border: 1px solid blue;
+  /*border: 1px solid blue;*/
+}
+
+.outer-wall-NW {
+  display: block;
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  width: 15px;
+  height: 15px;
+  border-left: 2px solid blue;
+  border-top: 2px solid blue;
+  border-top-left-radius: 50%;
+}
+
+.outer-wall-NE {
+  display: block;
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  width: 15px;
+  height: 15px;
+  border-right: 2px solid blue;
+  border-top: 2px solid blue;
+  border-top-right-radius: 50%;
+}
+
+.outer-wall-SW {
+  display: block;
+  position: absolute;
+  bottom: 11px;
+  left: 11px;
+  width: 15px;
+  height: 15px;
+  border-left: 2px solid blue;
+  border-bottom: 2px solid blue;
+  border-bottom-left-radius: 50%;
+}
+
+.outer-wall-SE {
+  display: block;
+  position: absolute;
+  bottom: 11px;
+  right: 11px;
+  width: 15px;
+  height: 15px;
+  border-right: 2px solid blue;
+  border-bottom: 2px solid blue;
+  border-bottom-right-radius: 50%;
 }
