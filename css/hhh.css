@@ -49,7 +49,8 @@ li {
   /*border: 1px solid blue;*/
 }
 
-.outer-wall-NW {
+.outer-wall-NW,
+.inner-block-NW {
   display: block;
   position: absolute;
   top: 12px;
@@ -61,7 +62,8 @@ li {
   border-top-left-radius: 50%;
 }
 
-.outer-wall-NE {
+.outer-wall-NE,
+.inner-block-NE {
   display: block;
   position: absolute;
   top: 12px;
@@ -73,7 +75,8 @@ li {
   border-top-right-radius: 50%;
 }
 
-.outer-wall-SW {
+.outer-wall-SW,
+.inner-block-SW {
   display: block;
   position: absolute;
   bottom: 11px;
@@ -85,7 +88,8 @@ li {
   border-bottom-left-radius: 50%;
 }
 
-.outer-wall-SE {
+.outer-wall-SE,
+.inner-block-SE {
   display: block;
   position: absolute;
   bottom: 11px;
@@ -97,7 +101,8 @@ li {
   border-bottom-right-radius: 50%;
 }
 
-.outer-vertical-wall {
+.outer-wall-vertical,
+.inner-block-vertical {
   display: block;
   position: absolute;
   top: 12px;
@@ -106,7 +111,8 @@ li {
   border-top: 2px solid blue;
 }
 
-.outer-horizontal-wall {
+.outer-wall-horizontal,
+.inner-block-horizontal {
   display: block;
   position: absolute;
   left: 11px;

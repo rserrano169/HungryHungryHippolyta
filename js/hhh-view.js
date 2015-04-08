@@ -11,7 +11,8 @@
   };
 
   View.prototype.setupGrid = function (temp) {
-    var html = "";
+    var that = this,
+        html = "";
 
     for (var i = 0; i < this.board.dim; i++) {
       html += '<ul class="group">';
@@ -109,7 +110,6 @@
       ];
     };
 
-    that = this;
     outerWallNWPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="outer-wall-NW"></div>');
     })
@@ -128,40 +128,73 @@
 
     outerWallVerticalRanges.forEach( function (range) {
       for (var i = range[0]; i <= range[1]; i++) {
-        that.$li.eq(i - 1).html('<div class="outer-vertical-wall"></div>');
+        that.$li.eq(i - 1).html('<div class="outer-wall-vertical"></div>');
       }
     })
 
     outerWallHorizontalPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="outer-horizontal-wall"></div>');
+      that.$li.eq(pos - 1).html('<div class="outer-wall-horizontal"></div>');
     })
 
 
-    var innerBlockNWPositions = [
 
+
+    var innerBlockNWPositions = [
+      53, 58, 66, 70, 235, 239
     ];
     var innerBlockNEPositions = [
-
+      56, 60, 68, 73, 237, 241
     ];
     var innerBlockSWPositions = [
-
+      78, 83, 91, 95, 335, 339
     ];
     var innerBlockSEPositions = [
-
+      81, 85, 93, 98, 337, 341
     ];
     var innerBlockVerticalPositions = [
-
+      54, 55, 59, 67, 71, 72,
+      79, 80, 84, 92, 96, 97,
+      236, 240,
+      336, 340
     ];
     var innerBlockHorizontalPositions = [
-
+      260, 285, 310,
+      262, 287, 312,
+      264, 289, 314,
+      266, 291, 316
     ];
+
+    innerBlockNWPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-block-NW"></div>');
+    })
+
+    innerBlockNEPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-block-NE"></div>');
+    })
+
+    innerBlockSWPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-block-SW"></div>');
+    })
+
+    innerBlockSEPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-block-SE"></div>');
+    })
+
+    innerBlockVerticalPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-block-vertical"></div>');
+    })
+
+    innerBlockHorizontalPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-block-horizontal"></div>');
+    })
+
 
 
     var innerWallTopPositions = [
 
     ];
     var innerWallBottomPositions = [
-
+      
     ];
     var innerWallLeftPositions = [
 
