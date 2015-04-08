@@ -191,10 +191,10 @@
 
 
     var innerWallTopPositions = [
-
+      133, 143, 308, 318, 483, 493
     ];
     var innerWallBottomPositions = [
-      
+      188, 258, 268, 383, 393, 438, 506, 520, 563
     ];
     var innerWallLeftPositions = [
 
@@ -208,6 +208,14 @@
     var innerWallHorizontalPositions = [
 
     ];
+
+    innerWallTopPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-top"></div>');
+    })
+
+    innerWallBottomPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-bottom"></div>');
+    })
   };
 
 

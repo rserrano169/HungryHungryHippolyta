@@ -120,3 +120,31 @@ li {
   height: 25px;
   border-left: 2px solid blue;
 }
+
+.inner-wall-top {
+  display: block;
+  position: absolute;
+  top: 12px;
+  left: 8px;
+  width: 5px;
+  height: 11px;
+  border-top: 2px solid blue;
+  border-right: 2px solid blue;
+  border-left: 2px solid blue;
+  border-top-right-radius: 35%;
+  border-top-left-radius: 35%;
+}
+
+.inner-wall-bottom {
+  display: block;
+  position: absolute;
+  bottom: 12px;
+  left: 8px;
+  width: 5px;
+  height: 11px;
+  border-right: 2px solid blue;
+  border-bottom: 2px solid blue;
+  border-left: 2px solid blue;
+  border-bottom-right-radius: 35%;
+  border-bottom-left-radius: 35%;
+}
