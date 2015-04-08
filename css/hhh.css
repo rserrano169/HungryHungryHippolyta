@@ -1,3 +1,5 @@
+/* --- RESET --- */
+
 html, head, title, head, figure, body, link,
 div, h1, ul, li {
   margin: 0;
@@ -13,11 +15,15 @@ div, h1, ul, li {
   background: transparent;
 }
 
+/* --- CLEARFIX --- */
+
 .group:after {
   content: "";
   clear: both;
   display: block;
 }
+
+/* --- ELEMENTS --- */
 
 body {
   color: white;
@@ -48,6 +54,8 @@ li {
   height: 25px;
   /*border: 1px solid blue;*/
 }
+
+/* --- OUTER WALLS / INNER BLOCKS --- */
 
 .outer-wall-NW,
 .inner-block-NW {
@@ -120,6 +128,8 @@ li {
   height: 25px;
   border-left: 2px solid blue;
 }
+
+/* --- INNER WALLS --- */
 
 .inner-wall-top {
   display: block;
@@ -201,14 +211,6 @@ li {
   border-bottom: 2px solid blue;
 }
 
-.inner-wall-NW {
-  
-}
-
-.inner-wall-NW-overlay {
-
-}
-
 .inner-wall-tee-up-overlay {
   display: block;
   position: absolute;
@@ -233,6 +235,18 @@ li {
   background: black;
 }
 
+.inner-wall-tee-right-overlay {
+  display: block;
+  position: absolute;
+  top: 8px;
+  left: 15px;
+  width: 10px;
+  height: 5px;
+  border-top: 2px solid blue;
+  border-bottom: 2px solid blue;
+  background: black;
+}
+
 .inner-wall-tee-left-overlay {
   display: block;
   position: absolute;
@@ -245,14 +259,100 @@ li {
   background: black;
 }
 
-.inner-wall-tee-right-overlay {
+/* --- INNER WALL CORNERS --- */
+
+.inner-wall-NW {
   display: block;
   position: absolute;
   top: 8px;
-  left: 15px;
-  width: 10px;
-  height: 5px;
+  left: 8px;
+  width: 15px;
+  height: 15px;
   border-top: 2px solid blue;
+  border-left: 2px solid blue;
+  border-top-left-radius: 35%;
+}
+
+.inner-wall-NW-overlay {
+  display: block;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid blue;
+  border-left: 2px solid blue;
+  border-top-left-radius: 35%;
+}
+
+.inner-wall-NE {
+  display: block;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 15px;
+  height: 15px;
+  border-top: 2px solid blue;
+  border-right: 2px solid blue;
+  border-top-right-radius: 35%;
+}
+
+.inner-wall-NE-overlay {
+  display: block;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid blue;
+  border-right: 2px solid blue;
+  border-top-right-radius: 35%;
+}
+
+.inner-wall-SW {
+  display: block;
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 15px;
+  height: 15px;
   border-bottom: 2px solid blue;
-  background: black;
+  border-left: 2px solid blue;
+  border-bottom-left-radius: 35%;
+}
+
+.inner-wall-SW-overlay {
+  display: block;
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid blue;
+  border-left: 2px solid blue;
+  border-bottom-left-radius: 35%;
+}
+
+.inner-wall-SE {
+  display: block;
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 15px;
+  height: 15px;
+  border-right: 2px solid blue;
+  border-bottom: 2px solid blue;
+  border-bottom-right-radius: 35%;
+}
+
+.inner-wall-SE-overlay {
+  display: block;
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid blue;
+  border-bottom: 2px solid blue;
+  border-bottom-right-radius: 35%;
 }
