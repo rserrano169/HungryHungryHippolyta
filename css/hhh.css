@@ -109,8 +109,8 @@ li {
   border-bottom-right-radius: 50%;
 }
 
-.outer-wall-vertical,
-.inner-block-vertical {
+.outer-wall-horizontal,
+.inner-block-horizontal {
   display: block;
   position: absolute;
   top: 12px;
@@ -119,8 +119,8 @@ li {
   border-top: 2px solid blue;
 }
 
-.outer-wall-horizontal,
-.inner-block-horizontal {
+.outer-wall-vertical,
+.inner-block-vertical {
   display: block;
   position: absolute;
   left: 11px;
@@ -355,4 +355,17 @@ li {
   border-right: 2px solid blue;
   border-bottom: 2px solid blue;
   border-bottom-right-radius: 35%;
+}
+
+/* --- DOTS --- */
+
+.dot {
+  display: block;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 5px;
+  height: 5px;
+  background: peachpuff;
+  border-radius: 50%;
 }

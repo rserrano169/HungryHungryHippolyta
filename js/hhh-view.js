@@ -7,10 +7,10 @@
     this.$el = $el;
 
     this.board = new HHH.Board(25, 1);
-    this.setupGrid(this.board.temp);
+    this.setupBoard(this.board.temp);
   };
 
-  View.prototype.setupGrid = function (temp) {
+  View.prototype.setupBoard = function (temp) {
     var that = this,
         html = "";
 
@@ -36,7 +36,7 @@
         376,  // 16 * dim + 1 spaces from the left
         497,  // 20 * dim - 3
         501,  // 20 * dim + 1
-        584,  // 23 * dim + 9
+        585,  // 23 * dim + 10
         590   // 23 * dim + 15
       ];
       var outerWallNEPositions = [
@@ -48,7 +48,7 @@
         479,  // 19 * dim + 4
         525,  // 21 * dim
         586,  // 23 * dim + 11
-        592   // 23 * dim + 17
+        591   // 23 * dim + 16
       ];
       var outerWallSWPositions = [
         87,   // 3 * dim + 12
@@ -59,7 +59,7 @@
         522,  // 21 * dim - 3
         601,  // (dim - 1) * dim + 1 -> always bottom left corner
         611,  // 24 * dim + 11
-        617   // 24 * dim + 17
+        616   // 24 * dim + 16
       ];
       var outerWallSEPositions = [
         89,   // 3 * dim + 14
@@ -68,11 +68,11 @@
         381,  // 15 * dim + 6
         500,  // 20 * dim
         504,  // 20 * dim + 4
-        609,  // 24 * dim + 9
+        610,  // 24 * dim + 10
         615,  // 24 * dim + 15
         625   // dim * dim -> always bottom right corner
       ];
-      var outerWallVerticalRanges = [
+      var outerWallHorizontalRanges = [
         [2, 11],      // 1
         [15, 24],     // 2
         [88, 88],     // 3
@@ -88,13 +88,11 @@
         [498, 499],   // 13
         [502, 503],   // 14
         [523, 524],   // 15
-        [585, 585],   // 16
-        [591, 591],   // 17
-        [602, 608],   // 18
-        [612, 614],   // 19
-        [618, 624]    // 20
+        [602, 609],   // 16
+        [612, 614],   // 17
+        [617, 624]    // 18
       ];
-      var outerWallHorizontalPositions = [
+      var outerWallVerticalPositions = [
         26, 51, 76, 101,      // wall 1
         37, 62,               // wall 2
         39, 64,               // wall 3
@@ -126,14 +124,14 @@
       that.$li.eq(pos - 1).html('<div class="outer-wall-SE"></div>');
     })
 
-    outerWallVerticalRanges.forEach( function (range) {
+    outerWallHorizontalRanges.forEach( function (range) {
       for (var i = range[0]; i <= range[1]; i++) {
-        that.$li.eq(i - 1).html('<div class="outer-wall-vertical"></div>');
+        that.$li.eq(i - 1).html('<div class="outer-wall-horizontal"></div>');
       }
     })
 
-    outerWallHorizontalPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="outer-wall-horizontal"></div>');
+    outerWallVerticalPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="outer-wall-vertical"></div>');
     })
 
 
@@ -151,13 +149,13 @@
     var innerBlockSEPositions = [
       81, 85, 93, 98, 337, 341
     ];
-    var innerBlockVerticalPositions = [
+    var innerBlockHorizontalPositions = [
       54, 55, 59, 67, 71, 72,
       79, 80, 84, 92, 96, 97,
       236, 240,
       336, 340
     ];
-    var innerBlockHorizontalPositions = [
+    var innerBlockVerticalPositions = [
       260, 285, 310,
       262, 287, 312,
       264, 289, 314,
@@ -180,12 +178,12 @@
       that.$li.eq(pos - 1).html('<div class="inner-block-SE"></div>');
     })
 
-    innerBlockVerticalPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-block-vertical"></div>');
-    })
-
     innerBlockHorizontalPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="inner-block-horizontal"></div>');
+    })
+
+    innerBlockVerticalPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-block-vertical"></div>');
     })
 
 
@@ -322,6 +320,40 @@
     innerWallSEPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="inner-wall-SE"></div>');
       that.$li.eq(pos - 1).append('<div class="inner-wall-SE-overlay"></div>');
+    })
+
+
+
+    var dotPositionRanges = [
+      [27, 36], [40, 49],                                           // row 1
+      [52, 52], [57, 57], [61, 61], [65, 65], [69, 69], [74, 74],   // row 2
+      [77, 77], [82, 82], [86, 86], [90, 90], [94, 94], [99, 99],   // row 3
+      [102, 124],                                                   // row 4
+      [132, 132], [134, 134], [142, 142], [144, 144],               // row 5
+      [157, 157], [159, 162], [164, 167], [169, 169],               // row 6
+      [182, 182], [187, 187], [189, 189], [194, 194],               // row 7
+      [207, 207], [209, 217], [219, 219],                           // row 8
+      [232, 232], [234, 234], [238, 238], [242, 242], [244, 244],   // row 9
+      [257, 257], [259, 259], [263, 263], [267, 267], [269, 269],   // row 10
+      [276, 284], [288, 288], [292, 300],                           // row 11
+      [307, 307], [309, 309], [313, 313], [317, 317], [319, 319],   // row 12
+      [332, 332], [334, 334], [338, 338], [342, 342], [344, 344],   // row 13
+      [357, 357], [359, 367], [369, 369],                           // row 14
+      [382, 382], [384, 384], [392, 392], [394, 394],               // row 15
+      [402, 412], [414, 424],                                       // row 16
+      [427, 427], [432, 432], [437, 437], [439, 439], [444, 444], [449, 449],   // row 17
+      [452, 455], [457, 462], [464, 469], [471, 474],               // row 18
+      [480, 480], [482, 482], [484, 484], [492, 492], [494, 494], [496, 496],   // row 19
+      [505, 505], [507, 507], [509, 512], [514, 517], [519, 519], [521, 521],   // row 20
+      [527, 532], [537, 537], [539, 539], [544, 549],               // row 21
+      [552, 552], [559, 562], [564, 567], [574, 574],               // row 22
+      [577, 584], [587, 589], [592, 599]                            // row 23
+    ];
+
+    dotPositionRanges.forEach( function (range) {
+      for (var i = range[0]; i <= range[1]; i++) {
+        that.$li.eq(i - 1).html('<div class="dot"></div>');
+      }
     })
   };
 
