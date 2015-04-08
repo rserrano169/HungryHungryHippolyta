@@ -177,7 +177,9 @@ li {
   border-bottom-right-radius: 35%;
 }
 
-.inner-wall-vertical {
+.inner-wall-vertical,
+.inner-wall-tee-right,
+.inner-wall-tee-left {
   display: block;
   position: absolute;
   left: 8px;
@@ -187,7 +189,9 @@ li {
   border-right: 2px solid blue;
 }
 
-.inner-wall-horizontal {
+.inner-wall-horizontal,
+.inner-wall-tee-down,
+.inner-wall-tee-up {
   display: block;
   position: absolute;
   top: 8px;
@@ -195,4 +199,60 @@ li {
   height: 5px;
   border-top: 2px solid blue;
   border-bottom: 2px solid blue;
+}
+
+.inner-wall-NW {
+  
+}
+
+.inner-wall-NW-overlay {
+
+}
+
+.inner-wall-tee-up-overlay {
+  display: block;
+  position: absolute;
+  bottom: 8px;
+  left: 15px;
+  width: 10px;
+  height: 5px;
+  border-top: 2px solid blue;
+  border-bottom: 2px solid blue;
+  background: black;
+}
+
+.inner-wall-tee-down-overlay {
+  display: block;
+  position: absolute;
+  top: 15px;
+  left: 8px;
+  width: 5px;
+  height: 10px;
+  border-left: 2px solid blue;
+  border-right: 2px solid blue;
+  background: black;
+}
+
+.inner-wall-tee-left-overlay {
+  display: block;
+  position: absolute;
+  top: 8px;
+  right: 15px;
+  width: 10px;
+  height: 5px;
+  border-top: 2px solid blue;
+  border-bottom: 2px solid blue;
+  background: black;
+}
+
+.inner-wall-tee-right-overlay {
+  display: block;
+  position: absolute;
+  top: 8px;
+  left: 15px;
+  width: 10px;
+  height: 5px;
+  border-top: 2px solid blue;
+  border-bottom: 2px solid blue;
+  background: black;
 }

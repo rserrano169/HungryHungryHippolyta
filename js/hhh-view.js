@@ -200,35 +200,64 @@
       135, 190, 385, 428, 433, 440, 485, 540, 553
     ];
     var innerWallRightPositions = [
-      141, 186, 391, 436, 443, 448, 491, 573
+      141, 186, 391, 436, 443, 448, 491, 536, 573
+    ];
+    var innerWallNWPositions = [
+      445
+    ];
+    var innerWallNEPositions = [
+
+    ];
+    var innerWallSWPositions = [
+
+    ];
+    var innerWallSEPositions = [
+
     ];
     var innerWallVerticalPositions = [
-      158, 183, 208, 233,   // wall 1
-      163,                  // wall 2
-      168, 193, 218, 243,   // wall 3
-      333, 358,             // wall 4
-      343, 368,             // wall 5
-      413,                  // wall 6
-      456, 481,             // wall 7
-      470, 495,             // wall 8
-      508, 533,             // wall 9
-      513, 538,             // wall 10
-      518, 543              // wall 11
+      158,
+      163,                  // wall 1
+      168,                  // wall 2
+      208, 233,             // wall 3
+      218, 243,             // wall 4
+      333, 358,             // wall 5
+      343, 368,             // wall 6
+      413,                  // wall 7
+      456, 481,             // wall 8
+      470, 495,             // wall 9
+      508,                  // wall 10
+      513, 538,             // wall 11
+      518                   // wall 12
     ];
     var innerWallHorizontalPositions = [
-      136, 137, 138, 139, 140,
-      184, 185,
-      191, 192,
-      386, 387, 388, 389, 390,
-      429, 430,
-      434, 435,
-      441, 442,
-      446, 447,
-      486, 487, 488, 489, 490,
-      534, 535,
-      541, 542,
-      554, 555, 556, 557,
-      569, 570, 571, 572
+      136, 137,             // wall 1
+      139, 140,             // wall 2
+      184, 185,             // wall 3
+      191, 192,             // wall 4
+      386, 387,             // wall 5
+      389, 390,             // wall 6
+      429, 430,             // wall 7
+      434, 435,             // wall 8
+      441, 442,             // wall 9
+      446, 447,             // wall 10
+      486, 487,             // wall 11
+      489, 490,             // wall 12
+      534, 535,             // wall 13
+      541, 542,             // wall 14
+      554, 555, 556, 557,   // wall 15
+      569, 570, 571, 572    // wall 16
+    ];
+    var innerWallTeeUpPositions = [
+
+    ];
+    var innerWallTeeDownPositions = [
+      138, 388, 488
+    ];
+    var innerWallTeeLeftPositions = [
+      193, 543
+    ];
+    var innerWallTeeRightPositions = [
+      183, 533
     ];
 
     innerWallTopPositions.forEach( function (pos) {
@@ -253,6 +282,46 @@
 
     innerWallHorizontalPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="inner-wall-horizontal"></div>');
+    })
+
+    innerWallTeeUpPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-tee-up"></div>');
+      that.$li.eq(pos - 1).append('<div class="inner-wall-tee-up-overlay"></div>');
+    })
+
+    innerWallTeeDownPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-tee-down"></div>');
+      that.$li.eq(pos - 1).append('<div class="inner-wall-tee-down-overlay"></div>');
+    })
+
+    innerWallTeeLeftPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-tee-left"></div>');
+      that.$li.eq(pos - 1).append('<div class="inner-wall-tee-left-overlay"></div>');
+    })
+
+    innerWallTeeRightPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-tee-right"></div>');
+      that.$li.eq(pos - 1).append('<div class="inner-wall-tee-right-overlay"></div>');
+    })
+
+    innerWallNWPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-NW"></div>');
+      that.$li.eq(pos - 1).append('<div class="inner-wall-NW-overlay"></div>');
+    })
+
+    innerWallNEPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-NE"></div>');
+      that.$li.eq(pos - 1).append('<div class="inner-wall-NE-overlay"></div>');
+    })
+
+    innerWallSWPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-SW"></div>');
+      that.$li.eq(pos - 1).append('<div class="inner-wall-SW-overlay"></div>');
+    })
+
+    innerWallSWPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="inner-wall-SE"></div>');
+      that.$li.eq(pos - 1).append('<div class="inner-wall-SE-overlay"></div>');
     })
   };
 
