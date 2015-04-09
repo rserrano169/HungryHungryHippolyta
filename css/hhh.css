@@ -35,7 +35,6 @@ body {
 h1 {
   font-size: 24px;
   font-weight: bold;
-  margin: 20px;
 }
 
 figure {
@@ -53,6 +52,10 @@ li {
   width: 25px;
   height: 25px;
   /*border: 1px solid blue;*/
+}
+
+.game-title {
+  margin: 20px 0px 40px 0px;
 }
 
 /* --- OUTER WALLS / INNER BLOCKS --- */

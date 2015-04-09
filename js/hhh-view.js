@@ -8,37 +8,47 @@
     this.board = new HHH.Board(25, 1, 3);
     this.setupBoard(this.board.temp);
     this.intervalId = window.setInterval(
-      // console.log(View.STEP_MILLISECONDS),
       this.step.bind(this),
       View.STEP_MILLISECONDS
     );
-
     $(window).on("keydown", this.handleKeyEvent.bind(this));
   };
 
   View.KEYS = {
-    38: "N",
-    39: "E",
-    40: "S",
-    37: "W"
+    38: "UP",
+    39: "RIGHT",
+    40: "DOWN",
+    37: "LEFT",
+    80: "STAY"
   };
-  View.STEP_MILLISECONDS = 500;
+  View.STEP_MILLISECONDS = 1000;
 
   View.prototype.handleKeyEvent = function (event) {
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
-      this.board.hippolyta.dir = View.KEYS[event.keyCode];
+
+      var newDir = View.KEYS[event.keyCode];
+      // if (this.board.hippolyta.nextjQueryPos())
+
+      this.board.hippolyta.dir = newDir;
     };
+  };
+
+  View.prototype.step = function () {
+    var $nextTile = this.$li.eq(this.board.hippolyta.nextjQueryPos());
+    console.log(this.board.hippolyta.nextjQueryPos());
+    console.log($nextTile.children().hasClass("dot"));
+    console.log($nextTile.children());
+    if ($nextTile.children().hasClass("dot") || $nextTile.contents() === "") {
+      this.$li.eq(this.board.hippolyta.jQueryPos()).html('<div class=""></div>');
+      this.board.hippolyta.move(this.board.hippolyta.dir);
+    };
+
+    this.render();
   };
 
   View.prototype.render = function () {
     this.$li.eq(this.board.hippolyta.jQueryPos()).html('<div class="hippolyta"></div>');
-  };
-
-  View.prototype.step = function () {
-    this.$li.eq(this.board.hippolyta.jQueryPos()).html("");
-    this.board.hippolyta.move(this.board.hippolyta.dir);
-    this.render();
   };
 
   View.prototype.setupBoard = function () {
