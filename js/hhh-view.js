@@ -28,26 +28,42 @@
       event.preventDefault();
 
       var newDir = View.KEYS[event.keyCode];
-      // if (this.board.hippolyta.nextjQueryPos())
 
-      this.board.hippolyta.dir = newDir;
+      if (this.isNotaWall(newDir)) {
+        this.board.hippolyta.dir = newDir;
+      };
     };
+  };
+
+  View.prototype.isNotaWall = function (dir) {
+    if (typeof dir === 'undefined') {
+      dir = this.dir;
+    };
+    return (
+      this.$nextTile(dir).children().hasClass("dot") ||
+      this.$nextTile(dir).children().hasClass("")
+    );
+  };
+
+  View.prototype.$nextTile = function (dir) {
+    if (typeof dir === 'undefined') {
+      dir = this.dir;
+    };
+    return this.$li.eq(this.board.hippolyta.nextjQueryPos(dir));
   };
 
   View.prototype.step = function () {
-    var $nextTile = this.$li.eq(this.board.hippolyta.nextjQueryPos());
     console.log(this.board.hippolyta.nextjQueryPos());
-    console.log($nextTile.children().hasClass("dot"));
-    console.log($nextTile.children());
-    if ($nextTile.children().hasClass("dot") || $nextTile.contents() === "") {
-      this.$li.eq(this.board.hippolyta.jQueryPos()).html('<div class=""></div>');
-      this.board.hippolyta.move(this.board.hippolyta.dir);
+    console.log(this.$nextTile().children().hasClass("dot"));
+    console.log(this.$nextTile().children());
+    if (this.isNotaWall()) {
+      this.render();
     };
-
-    this.render();
   };
 
   View.prototype.render = function () {
+    this.$li.eq(this.board.hippolyta.jQueryPos()).html('<div class=""></div>');
+    this.board.hippolyta.move(this.board.hippolyta.dir);
     this.$li.eq(this.board.hippolyta.jQueryPos()).html('<div class="hippolyta"></div>');
   };
 

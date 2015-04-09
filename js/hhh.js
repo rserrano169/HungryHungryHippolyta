@@ -51,15 +51,21 @@
     return this.pos
   }
 
-  Hippolyta.prototype.nextPos = function () {
-    return this.pos.plus(Hippolyta.DIRECTIONS[this.dir]);
+  Hippolyta.prototype.nextPos = function (dir) {
+    if (typeof dir === 'undefined') {
+      dir = this.dir;
+    };
+    return this.pos.plus(Hippolyta.DIRECTIONS[dir]);
   };
 
   Hippolyta.prototype.jQueryPos = function () {
     return this.pos.i * this.board.dim + this.pos.j;
   };
 
-  Hippolyta.prototype.nextjQueryPos = function () {
-    return this.nextPos().i * this.board.dim + this.nextPos().j
+  Hippolyta.prototype.nextjQueryPos = function (dir) {
+    if (typeof dir === 'undefined') {
+      dir = this.dir;
+    };
+    return this.nextPos(dir).i * this.board.dim + this.nextPos(dir).j
   };
 })();
