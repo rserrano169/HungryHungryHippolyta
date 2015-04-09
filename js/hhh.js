@@ -46,9 +46,8 @@
     "STAY": new Coord(0, 0)
   };
 
-  Hippolyta.prototype.move = function (dir) {
-    this.pos = this.pos.plus(Hippolyta.DIRECTIONS[dir]);
-    return this.pos
+  Hippolyta.prototype.move = function () {
+    this.pos = this.pos.plus(Hippolyta.DIRECTIONS[this.dir]);
   }
 
   Hippolyta.prototype.nextPos = function (dir) {

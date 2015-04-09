@@ -53,9 +53,9 @@
   };
 
   View.prototype.step = function () {
-    console.log(this.board.hippolyta.nextjQueryPos());
-    console.log(this.$nextTile().children().hasClass("dot"));
-    console.log(this.$nextTile().children());
+    // console.log(this.board.hippolyta.nextjQueryPos());
+    // console.log(this.$nextTile().children().hasClass("dot"));
+    // console.log(this.$nextTile().children());
     if (this.isNotaWall()) {
       this.render();
     };
@@ -63,7 +63,7 @@
 
   View.prototype.render = function () {
     this.$li.eq(this.board.hippolyta.jQueryPos()).html('<div class=""></div>');
-    this.board.hippolyta.move(this.board.hippolyta.dir);
+    this.board.hippolyta.move();
     this.$li.eq(this.board.hippolyta.jQueryPos()).html('<div class="hippolyta"></div>');
   };
 
