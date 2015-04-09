@@ -369,3 +369,14 @@ li {
   background: peachpuff;
   border-radius: 50%;
 }
+
+/* --- HIPPOLYTA --- */
+
+.hippolyta {
+  display: block;
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background: purple;
+  border-radius: 50%;
+}
