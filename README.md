@@ -1,2 +1,3 @@
-# Hungry Hungry Hippolyta
-## (inspired by the game "Pacman", and the title of the game "Hungry Hungry Hippos")
+# Hungry Hungry Hippolyta!
+## Gameplay inspired by the true game "Pacman".
+## Title inspired by the true game "Hungry Hungry Hippos".
