@@ -19,6 +19,7 @@
     );
 
     $(window).on("keydown", this.handleKeyEvent.bind(this));
+    $(window).on("mousedown", this.handleClickEvent.bind(this));
   };
 
   View.KEYS = {
@@ -42,6 +43,11 @@
 
       this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
     };
+  };
+
+  View.prototype.handleClickEvent = function (event) {
+    console.log(event.pageX, event.pageY);
+    console.log(event.clientX, event.clientY);
   };
 
   View.prototype.tick = function () {
