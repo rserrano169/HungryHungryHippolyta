@@ -8,6 +8,9 @@
     this.board = new HHH.Board(25, 1);
     this.setupBoard(this.board.temp);
     this.board.hippolyta.nextDir = "STAY";
+    // this.score = 0;
+    // this.time.minutes = 5;
+    // this.time.seconds = 0;
     this.intervalId = window.setInterval(
       this.step.bind(this),
       View.STEP_MILLISECONDS
@@ -72,6 +75,11 @@
     if (this.isValidMove()) {
       this.render();
     };
+
+    if (this.$li.children().filter(".dot").length === 0) {
+      alert("You Win!");
+      window.location.reload();
+    }
   };
 
   View.prototype.render = function () {
