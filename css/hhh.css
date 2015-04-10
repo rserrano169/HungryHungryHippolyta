@@ -64,14 +64,16 @@ li {
 
 .top-bar {
   display: block;
-  width: 600px;
+  width: 580px;
   height: auto;
   margin: auto;
+  font-size: 18px;
 }
 
 .timer {
-  width: 60px;
+  width: auto;
   height: auto;
+  padding: 0px 0px 10px 0px;
 }
 
 /* --- OUTER WALLS / INNER BLOCKS --- */

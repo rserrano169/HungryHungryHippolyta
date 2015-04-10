@@ -44,7 +44,10 @@
 
   View.prototype.tick = function () {
     this.timeLimit -= 1
-    this.$el.children().filter(".timer").text(this.timeLimit);
+    this.$el.find(".timer").html(
+      '<b>Timer/Score: </b>' + this.timeLimit +
+      ' milliseconds'
+    );
   };
 
   View.prototype.isValidMove = function (dir) {
@@ -89,7 +92,7 @@
     };
 
     if (this.$li.children().filter(".dot").length === 0) {
-      alert("You Win!");
+      alert("You Win! Your score: " + this.timeLimit);
       window.location.reload();
     }
   };
@@ -124,7 +127,7 @@
     var that = this,
         html = '<section class="top-bar group">';
 
-    html += '<div class="timer">Timer: ' + this.timeLimit;
+    html += '<div class="timer"><b>Timer/Score: </b>' + this.timeLimit;
     html += ' milliseconds</div></section>';
 
     for (var i = 0; i < this.board.dim; i++) {
