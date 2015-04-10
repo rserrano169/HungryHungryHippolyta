@@ -46,8 +46,21 @@
   };
 
   View.prototype.handleClickEvent = function (event) {
-    console.log(event.pageX, event.pageY);
-    console.log(event.clientX, event.clientY);
+    console.log("1", event.pageX, event.pageY);
+    console.log("3", $(".hippolyta").offset().left + 15, $(".hippolyta").offset().top + 15);
+    console.log(Math.floor(($(".hippolyta").width() + 1) / 2));
+
+    var hippolytaCenterWindowCoord = new HHH.Coord(
+      $(".hippolyta").offset().left + Math.floor($(".hippolyta").width() / 2),
+      $(".hippolyta").offset().top + Math.floor($(".hippolyta").height() / 2)
+    );
+
+    var clickWindowCoord = new HHH.Coord(
+      event.pageX,
+      event.pageY
+    );
+
+    // if (hippolytaCenterWindowCoord.equals)
   };
 
   View.prototype.tick = function () {

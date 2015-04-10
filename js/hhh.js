@@ -18,6 +18,10 @@
     this.j = j;
   };
 
+  Coord.prototype.equals = function (coord2) {
+    return (this.i == coord2.i && this.j == coord2.j);
+  };
+
   Coord.prototype.plus = function (coord2, dim) {
     return new Coord(
       (this.i + coord2.i + dim) % dim,
