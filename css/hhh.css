@@ -459,6 +459,19 @@ li {
   border-radius: 150% 50% 50% 150% / 100% 100% 100% 100%;
 }
 
+/* ---  POWERUP --- */
+
+.powerup {
+  display: block;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 17px;
+  height: 17px;
+  background: peachpuff;
+  border-radius: 50%;
+}
+
 /* --- HIPPOLYTA --- */
 
 .hippolyta {

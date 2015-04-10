@@ -56,6 +56,7 @@
     };
     return (
       this.$nextTile(dir).children().hasClass("dot") ||
+      this.$nextTile(dir).children().hasClass("powerup") ||
       this.$nextTile(dir).children().hasClass("portal") ||
       this.$nextTile(dir).children().hasClass("") ||
       this.$nextTile(dir).children().hasClass("hippolyta")
@@ -317,7 +318,7 @@
       //* --- DOT POSITIONS --- *//
 
       var dotPositionRanges = [
-      [27, 36], [40, 49],                                           // row 1
+      [28, 36], [40, 48],                                           // row 1
       [52, 52], [57, 57], [61, 61], [65, 65], [69, 69], [74, 74],   // row 2
       [77, 77], [82, 82], [86, 86], [90, 90], [94, 94], [99, 99],   // row 3
       [102, 124],                                                   // row 4
@@ -339,12 +340,12 @@
       [505, 505], [507, 507], [509, 512], [514, 517], [519, 519], [521, 521],   // row 20
       [527, 532], [537, 537], [539, 539], [544, 549],               // row 21
       [552, 552], [559, 562], [564, 567], [574, 574],               // row 22
-      [577, 584], [587, 589], [592, 599]                            // row 23
+      [578, 584], [587, 589], [592, 598]                            // row 23
       ];
 
       //* --- POWERUP POSITIONS --- *//
 
-      var powerUpPositions = [];
+      var powerupPositions = [27, 49, 577, 599];
     };
 
     //* --- OUTER WALLS RENDER --- *//
@@ -463,6 +464,12 @@
         that.$li.eq(i - 1).append('<div class="dot"></div>');
       }
     })
+
+    //* --- POWERUPS RENDER --- *//
+
+    powerupPositions.forEach( function (pos) {
+      that.$li.eq(pos - 1).html('<div class="powerup"></div>');
+    });
 
     this.render();
   };
