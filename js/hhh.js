@@ -52,6 +52,16 @@
     if (typeof dir === 'undefined') {
       dir = this.dir;
     };
+
+    if (
+      this.board.temp === 1 &&
+      this.pos.i === 11 &&
+      (this.pos.j === 0 || this.pos.j === 24)
+      ) {
+        console.log(this.pos.horizontalOpposite(this.board.dim).plus(Hippolyta.DIRECTIONS[dir]));
+        return this.pos.horizontalOpposite(this.board.dim).plus(Hippolyta.DIRECTIONS[dir]);
+    };
+
     return this.pos.plus(Hippolyta.DIRECTIONS[dir]);
   };
 
