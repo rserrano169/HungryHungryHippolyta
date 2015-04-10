@@ -91,9 +91,11 @@
 
     if (this.$currentTile().children().hasClass("portal-left")) {
       this.$currentTile().html('<div class="portal portal-left"></div>');
+      this.$currentTile().append('<div class="portal portal-left-overlay"></div>');
       this.$currentTile().append('<div class="portal portal-left-pass-through"></div>');
     } else if (this.$currentTile().children().hasClass("portal-right")) {
       this.$currentTile().html('<div class="portal portal-right"></div>');
+      this.$currentTile().append('<div class="portal portal-right-overlay"></div>');
       this.$currentTile().append('<div class="portal portal-right-pass-through"></div>');
     } else {
       this.$currentTile().html('<div class="hippolyta"></div>');

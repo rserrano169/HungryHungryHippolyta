@@ -402,10 +402,10 @@ li {
 .portal-left-pass-through {
   display: block;
   position: absolute;
-  top: -5px;
-  left: 5px;
-  width: 16px;
-  height: 35px;
+  top: -2px;
+  left: 4px;
+  width: 17px;
+  height: 29px;
   background: purple;
   border-radius: 50% 150% 150% 50% / 100% 100% 100% 100%;
 }
@@ -435,10 +435,10 @@ li {
 .portal-right-pass-through {
   display: block;
   position: absolute;
-  top: -5px;
-  right: 5px;
-  width: 16px;
-  height: 35px;
+  top: -2px;
+  right: 4px;
+  width: 17px;
+  height: 29px;
   background: purple;
   border-radius: 150% 50% 50% 150% / 100% 100% 100% 100%;
 }
@@ -450,8 +450,8 @@ li {
   position: absolute;
   top: -2px;
   left: -2px;
-  width: 29px;
-  height: 29px;
+  width: 30px;
+  height: 30px;
   background: purple;
   border-radius: 50%;
 }
