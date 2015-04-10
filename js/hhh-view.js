@@ -10,6 +10,8 @@
     this.timeLimit = this.minutes * 60 * 1000 / View.TIMER_INTERVAL;
     this.isTimerStarted = false;
     this.setupBoard();
+    this.numOfDots = this.$li.children().filter(".dot").length;
+    this.numOfPowerups = this.$li.children().filter(".powerup").length;
     this.board.hippolyta.nextDir = "STAY";
     this.run = setInterval(
       this.step.bind(this),
@@ -48,6 +50,16 @@
       '<b>Timer/Score: </b>' + this.timeLimit +
       ' milliseconds'
     );
+
+    if (this.timeLimit <= 0) {
+      alert("You lose... :(");
+
+      window.location.reload();
+    };
+  };
+
+  View.prototype.powerup = function () {
+    // if (this.numOfPowerups )
   };
 
   View.prototype.isValidMove = function (dir) {
