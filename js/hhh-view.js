@@ -44,10 +44,12 @@
     );
   };
 
-  View.prototype.isPassingThroughPortal = function () {
-    return (
-      this.board.hippolyta.pos === this.board.portalLeftPosition - 1 ||
-      this.board.hippolyta.pos === this.board.portalRightPosition - 1
+  View.prototype.isPassingThroughPortal = function (templateNum) {
+    if (templateNum === 1) {
+      return (
+        this.board.hippolyta.pos === this.board.portalLeftPosition - 1 ||
+        this.board.hippolyta.pos === this.board.portalRightPosition - 1
+      };
     );
   };
 
@@ -63,10 +65,6 @@
   };
 
   View.prototype.step = function () {
-    // console.log(this.board.hippolyta.nextjQueryPos());
-    // console.log(this.board.hippolyta.jQueryPos());
-    // console.log(this.isValidMove());
-    // console.log(this.$nextTile().children());
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
       this.board.hippolyta.dir = this.board.hippolyta.nextDir;
     };
