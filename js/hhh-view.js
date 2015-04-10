@@ -65,6 +65,8 @@
   };
 
   View.prototype.step = function () {
+    console.log(this.$nextTile());
+
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
       this.board.hippolyta.dir = this.board.hippolyta.nextDir;
     };
@@ -75,8 +77,6 @@
   };
 
   View.prototype.render = function () {
-    console.log("rendered");
-
     if (this.$currentTile().children().hasClass("portal-left")) {
       this.$currentTile().html('<div class="portal portal-left"></div>');
       this.$currentTile().append('<div class="portal portal-left-overlay"></div>');

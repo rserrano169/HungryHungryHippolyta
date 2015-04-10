@@ -18,8 +18,11 @@
     this.j = j;
   };
 
-  Coord.prototype.plus = function (coord2) {
-    return new Coord(this.i + coord2.i, this.j + coord2.j);
+  Coord.prototype.plus = function (coord2, dim) {
+    return new Coord(
+      (this.i + coord2.i + dim) % dim,
+      (this.j + coord2.j + dim) % dim
+    );
   };
 
   Coord.prototype.horizontalOpposite = function (dim) {
@@ -59,10 +62,15 @@
       (this.pos.j === 0 || this.pos.j === 24)
       ) {
         console.log(this.pos.horizontalOpposite(this.board.dim).plus(Hippolyta.DIRECTIONS[dir]));
-        return this.pos.horizontalOpposite(this.board.dim).plus(Hippolyta.DIRECTIONS[dir]);
+        return(
+          this
+          .pos
+          .horizontalOpposite(this.board.dim)
+          .plus(Hippolyta.DIRECTIONS[dir], this.board.dim)
+        );
     };
 
-    return this.pos.plus(Hippolyta.DIRECTIONS[dir]);
+    return this.pos.plus(Hippolyta.DIRECTIONS[dir], this.board.dim);
   };
 
   Hippolyta.prototype.jQueryPos = function () {
