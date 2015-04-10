@@ -7,6 +7,7 @@
     this.$el = $el;
     this.board = new HHH.Board(25, 1, 3);
     this.setupBoard(this.board.temp);
+    this.board.hippolyta.nextDir = "STAY";
     this.intervalId = window.setInterval(
       this.step.bind(this),
       View.STEP_MILLISECONDS
@@ -27,15 +28,11 @@
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
 
-      var newDir = View.KEYS[event.keyCode];
-
-      if (this.isNotaWall(newDir)) {
-        this.board.hippolyta.dir = newDir;
-      };
+      this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
     };
   };
 
-  View.prototype.isNotaWall = function (dir) {
+  View.prototype.isValidMove = function (dir) {
     if (typeof dir === 'undefined') {
       dir = this.dir;
     };
@@ -53,10 +50,14 @@
   };
 
   View.prototype.step = function () {
-    console.log(this.board.hippolyta.nextjQueryPos());
-    console.log(this.$nextTile().children().hasClass("dot"));
-    console.log(this.$nextTile().children());
-    if (this.isNotaWall()) {
+    // console.log(this.board.hippolyta.nextjQueryPos());
+    // console.log(this.isValidMove());
+    // console.log(this.$nextTile().children());
+    if (this.isValidMove(this.board.hippolyta.nextDir)) {
+      this.board.hippolyta.dir = this.board.hippolyta.nextDir;
+    };
+
+    if (this.isValidMove()) {
       this.render();
     };
   };
@@ -277,6 +278,15 @@
       [552, 552], [559, 562], [564, 567], [574, 574],               // row 22
       [577, 584], [587, 589], [592, 599]                            // row 23
       ];
+
+      //* --- PORTAL POSITIONS --- *//
+
+      var portalLeftPosition = 276,
+          portalRightPosition = 300;
+
+      //* --- POWERUP POSITIONS --- *//
+
+      var powerUpPositions = [];
     };
 
     //* --- OUTER WALL FUNCTIONS --- *//
@@ -380,9 +390,13 @@
 
     dotPositionRanges.forEach( function (range) {
       for (var i = range[0]; i <= range[1]; i++) {
-        that.$li.eq(i - 1).html('<div class="dot"></div>');
+        that.$li.eq(i - 1).append('<div class="dot"></div>');
       }
     })
+
+    //* --- PORTAL FUNCTIONS --- *//
+
+    this.$li.eq(portalLeftPosition - 1).append('<div class="portal-left"></div>');
 
     this.render();
   };
