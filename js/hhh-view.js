@@ -8,13 +8,11 @@
     this.board = new HHH.Board(25, 1);
     this.setupBoard(this.board.temp);
     this.board.hippolyta.nextDir = "STAY";
-    // this.score = 0;
-    // this.time.minutes = 5;
-    // this.time.seconds = 0;
-    this.intervalId = window.setInterval(
+    this.run = setInterval(
       this.step.bind(this),
       View.STEP_MILLISECONDS
     );
+
     $(window).on("keydown", this.handleKeyEvent.bind(this));
   };
 
@@ -23,7 +21,7 @@
     39: "RIGHT",
     40: "DOWN",
     37: "LEFT",
-    80: "STAY"
+    80: "STAY"      // "P" button to pause game
   };
   View.STEP_MILLISECONDS = 200;
 
@@ -31,8 +29,14 @@
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
 
+      this.timer = setInterval(this.tick.bind(this), 100);
+
       this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
     };
+  };
+
+  View.prototype.tick = function () {
+    
   };
 
   View.prototype.isValidMove = function (dir) {
