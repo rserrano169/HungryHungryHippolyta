@@ -21,7 +21,7 @@
     37: "LEFT",
     80: "STAY"
   };
-  View.STEP_MILLISECONDS = 1000;
+  View.STEP_MILLISECONDS = 200;
 
   View.prototype.handleKeyEvent = function (event) {
     if (View.KEYS[event.keyCode]) {
@@ -53,9 +53,9 @@
   };
 
   View.prototype.step = function () {
-    // console.log(this.board.hippolyta.nextjQueryPos());
-    // console.log(this.$nextTile().children().hasClass("dot"));
-    // console.log(this.$nextTile().children());
+    console.log(this.board.hippolyta.nextjQueryPos());
+    console.log(this.$nextTile().children().hasClass("dot"));
+    console.log(this.$nextTile().children());
     if (this.isNotaWall()) {
       this.render();
     };
