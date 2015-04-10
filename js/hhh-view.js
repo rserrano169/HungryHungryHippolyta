@@ -54,6 +54,7 @@
     if (this.timeLimit <= 0) {
       alert("You lose... :(");
 
+      clearInterval(this.timer);
       window.location.reload();
     };
   };
@@ -106,6 +107,8 @@
 
     if (this.$li.children().filter(".dot").length === 0) {
       alert("You Win! Your score: " + this.timeLimit);
+
+      clearInterval(this.run);
       window.location.reload();
     }
   };
