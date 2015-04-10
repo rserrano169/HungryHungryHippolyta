@@ -49,8 +49,8 @@
       return (
         this.board.hippolyta.pos === this.board.portalLeftPosition - 1 ||
         this.board.hippolyta.pos === this.board.portalRightPosition - 1
-      };
-    );
+      );
+    };
   };
 
   View.prototype.$nextTile = function (dir) {
