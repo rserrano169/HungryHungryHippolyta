@@ -60,6 +60,20 @@ li {
   margin: 20px 0px 40px 0px;
 }
 
+/* --- TOP BAR --- */
+
+.top-bar {
+  display: block;
+  width: 600px;
+  height: auto;
+  margin: auto;
+}
+
+.timer {
+  width: 60px;
+  height: auto;
+}
+
 /* --- OUTER WALLS / INNER BLOCKS --- */
 
 .outer-wall-NW,

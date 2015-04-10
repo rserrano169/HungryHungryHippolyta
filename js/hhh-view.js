@@ -6,11 +6,11 @@
   var View = HHH.View = function ($el) {
     this.$el = $el;
     this.board = new HHH.Board(25, 1);
-    this.setupBoard(this.board.temp);
-    this.board.hippolyta.nextDir = "STAY";
     this.minutes = 5;
     this.timeLimit = this.minutes * 60 * 1000 / View.TIMER_INTERVAL;
     this.isTimerStarted = false;
+    this.setupBoard();
+    this.board.hippolyta.nextDir = "STAY";
     this.run = setInterval(
       this.step.bind(this),
       View.STEP_MILLISECONDS
@@ -37,13 +37,14 @@
         this.timer = setInterval(this.tick.bind(this), View.TIMER_INTERVAL);
         this.isTimerStarted = true;
       };
-      
+
       this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
     };
   };
 
   View.prototype.tick = function () {
-    console.log(this.timeLimit -= 1);
+    this.timeLimit -= 1
+    this.$el.children().filter(".timer").text(this.timeLimit);
   };
 
   View.prototype.isValidMove = function (dir) {
@@ -121,7 +122,10 @@
 
   View.prototype.setupBoard = function () {
     var that = this,
-        html = "";
+        html = '<section class="top-bar group">';
+
+    html += '<div class="timer">Timer: ' + this.timeLimit;
+    html += ' milliseconds</div></section>';
 
     for (var i = 0; i < this.board.dim; i++) {
       html += '<ul class="group">';
