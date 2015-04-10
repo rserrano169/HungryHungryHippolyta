@@ -5,7 +5,7 @@
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
-    this.board = new HHH.Board(25, 1, 3);
+    this.board = new HHH.Board(25, 1);
     this.setupBoard(this.board.temp);
     this.board.hippolyta.nextDir = "STAY";
     this.intervalId = window.setInterval(
@@ -34,23 +34,37 @@
 
   View.prototype.isValidMove = function (dir) {
     if (typeof dir === 'undefined') {
-      dir = this.dir;
+      dir = this.board.hippolyta.dir;
     };
     return (
       this.$nextTile(dir).children().hasClass("dot") ||
-      this.$nextTile(dir).children().hasClass("")
+      this.$nextTile(dir).children().hasClass("portal") ||
+      this.$nextTile(dir).children().hasClass("") ||
+      this.$nextTile(dir).children().hasClass("hippolyta")
+    );
+  };
+
+  View.prototype.isPassingThroughPortal = function () {
+    return (
+      this.board.hippolyta.pos === this.board.portalLeftPosition - 1 ||
+      this.board.hippolyta.pos === this.board.portalRightPosition - 1
     );
   };
 
   View.prototype.$nextTile = function (dir) {
     if (typeof dir === 'undefined') {
-      dir = this.dir;
+      dir = this.board.hippolyta.dir;
     };
     return this.$li.eq(this.board.hippolyta.nextjQueryPos(dir));
   };
 
+  View.prototype.$currentTile = function () {
+    return this.$li.eq(this.board.hippolyta.jQueryPos());
+  };
+
   View.prototype.step = function () {
     // console.log(this.board.hippolyta.nextjQueryPos());
+    // console.log(this.board.hippolyta.jQueryPos());
     // console.log(this.isValidMove());
     // console.log(this.$nextTile().children());
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
@@ -63,9 +77,27 @@
   };
 
   View.prototype.render = function () {
-    this.$li.eq(this.board.hippolyta.jQueryPos()).html('<div class=""></div>');
+    if (this.$currentTile().children().hasClass("portal-left")) {
+      this.$currentTile().html('<div class="portal portal-left"></div>');
+      this.$currentTile().append('<div class="portal portal-left-overlay"></div>');
+    } else if (this.$currentTile().children().hasClass("portal-right")) {
+      this.$currentTile().html('<div class="portal portal-right"></div>');
+      this.$currentTile().append('<div class="portal portal-right-overlay"></div>');
+    } else {
+      this.$currentTile().html('<div class=""></div>');
+    }
+
     this.board.hippolyta.move();
-    this.$li.eq(this.board.hippolyta.jQueryPos()).html('<div class="hippolyta"></div>');
+
+    if (this.$currentTile().children().hasClass("portal-left")) {
+      this.$currentTile().html('<div class="portal portal-left"></div>');
+      this.$currentTile().append('<div class="portal portal-left-pass-through"></div>');
+    } else if (this.$currentTile().children().hasClass("portal-right")) {
+      this.$currentTile().html('<div class="portal portal-right"></div>');
+      this.$currentTile().append('<div class="portal portal-right-pass-through"></div>');
+    } else {
+      this.$currentTile().html('<div class="hippolyta"></div>');
+    };
   };
 
   View.prototype.setupBoard = function () {
@@ -251,6 +283,11 @@
       266, 291, 316
       ];
 
+      //* --- PORTAL POSITIONS --- *//
+
+      this.board.portalLeftPosition = 276,
+      this.board.portalRightPosition = 300;
+
       //* --- DOT POSITIONS --- *//
 
       var dotPositionRanges = [
@@ -279,17 +316,12 @@
       [577, 584], [587, 589], [592, 599]                            // row 23
       ];
 
-      //* --- PORTAL POSITIONS --- *//
-
-      var portalLeftPosition = 276,
-          portalRightPosition = 300;
-
       //* --- POWERUP POSITIONS --- *//
 
       var powerUpPositions = [];
     };
 
-    //* --- OUTER WALL FUNCTIONS --- *//
+    //* --- OUTER WALLS RENDER --- *//
 
     outerWallNWPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="outer-wall-NW"></div>');
@@ -312,7 +344,7 @@
       that.$li.eq(pos - 1).html('<div class="outer-wall-vertical"></div>');
     })
 
-    //* --- INNER WALL FUNCTIONS --- *//
+    //* --- INNER WALLS RENDER --- *//
 
     innerWallTopPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="inner-wall-top"></div>');
@@ -365,7 +397,7 @@
       that.$li.eq(pos - 1).append('<div class="inner-wall-SE-overlay"></div>');
     })
 
-    //* --- INNER BLOCK FUNCTIONS --- *//
+    //* --- INNER BLOCKS RENDER --- *//
 
     innerBlockNWPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="inner-block-NW"></div>');
@@ -386,17 +418,25 @@
       that.$li.eq(pos - 1).html('<div class="inner-block-vertical"></div>');
     })
 
-    //* --- DOT FUNCTION --- *//
+    //* --- PORTALS RENDER --- *//
+
+    this.$li.eq(this.board.portalLeftPosition - 1)
+      .append('<div class="portal portal-left"></div>');
+    this.$li.eq(this.board.portalLeftPosition - 1)
+      .append('<div class="portal portal-left-overlay"></div>');
+
+    this.$li.eq(this.board.portalRightPosition - 1)
+      .append('<div class="portal portal-right"></div>');
+    this.$li.eq(this.board.portalRightPosition - 1)
+      .append('<div class="portal portal-right-overlay"></div>');
+
+    //* --- DOTS RENDER --- *//
 
     dotPositionRanges.forEach( function (range) {
       for (var i = range[0]; i <= range[1]; i++) {
         that.$li.eq(i - 1).append('<div class="dot"></div>');
       }
     })
-
-    //* --- PORTAL FUNCTIONS --- *//
-
-    this.$li.eq(portalLeftPosition - 1).append('<div class="portal-left"></div>');
 
     this.render();
   };

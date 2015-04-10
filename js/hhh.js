@@ -3,6 +3,14 @@
     window.HHH = {};
   }
 
+//* --- BOARD --- *//
+
+  var Board = HHH.Board = function (dimension, templateNum) {
+    this.dim = dimension;
+    this.temp = templateNum;
+    this.hippolyta = new HHH.Hippolyta(this);
+  };
+
 //* --- COORDINATE --- *//
 
   var Coord = HHH.Coord = function (i, j) {
@@ -18,24 +26,14 @@
     return new Coord(this.i + coord2.i, this.j + coord2.j);
   };
 
-//* --- BOARD --- *//
-
-  var Board = HHH.Board = function (dimension, templateNum, lives) {
-    this.dim = dimension;
-    this.temp = templateNum;
-    this.hippolyta = new HHH.Hippolyta(this, lives);
-  };
-
 //* --- HIPPOLYTA --- *//
 
-  var Hippolyta = HHH.Hippolyta = function (board, lives) {
+  var Hippolyta = HHH.Hippolyta = function (board) {
     this.board = board;
     if (this.board.temp === 1) {
       this.pos = new Coord(18, 12);
     };
-    this.isMoving = false;
     this.dir = "STAY";
-    this.lives = lives;
   };
 
   Hippolyta.DIRECTIONS = {
