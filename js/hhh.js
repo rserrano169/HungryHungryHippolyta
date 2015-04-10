@@ -48,7 +48,7 @@
   };
 
   Hippolyta.prototype.move = function () {
-    this.pos = this.pos.plus(Hippolyta.DIRECTIONS[this.dir]);
+    this.pos = this.pos.plus(Hippolyta.DIRECTIONS[this.dir], this.board.dim);
   }
 
   Hippolyta.prototype.nextPos = function (dir) {
@@ -61,16 +61,15 @@
       this.pos.i === 11 &&
       (this.pos.j === 0 || this.pos.j === 24)
       ) {
-        console.log(this.pos.horizontalOpposite(this.board.dim).plus(Hippolyta.DIRECTIONS[dir]));
         return(
           this
           .pos
           .horizontalOpposite(this.board.dim)
           .plus(Hippolyta.DIRECTIONS[dir], this.board.dim)
         );
+    } else {
+      return this.pos.plus(Hippolyta.DIRECTIONS[dir], this.board.dim);
     };
-
-    return this.pos.plus(Hippolyta.DIRECTIONS[dir], this.board.dim);
   };
 
   Hippolyta.prototype.jQueryPos = function () {
@@ -81,6 +80,7 @@
     if (typeof dir === 'undefined') {
       dir = this.dir;
     };
+
     return this.nextPos(dir).i * this.board.dim + this.nextPos(dir).j
   };
 })();

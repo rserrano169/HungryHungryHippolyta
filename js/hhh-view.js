@@ -65,8 +65,6 @@
   };
 
   View.prototype.step = function () {
-    console.log(this.$nextTile());
-
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
       this.board.hippolyta.dir = this.board.hippolyta.nextDir;
     };
