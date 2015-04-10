@@ -8,6 +8,9 @@
     this.board = new HHH.Board(25, 1);
     this.setupBoard(this.board.temp);
     this.board.hippolyta.nextDir = "STAY";
+    this.minutes = 5;
+    this.timeLimit = this.minutes * 60 * 1000 / View.TIMER_INTERVAL;
+    this.isTimerStarted = false;
     this.run = setInterval(
       this.step.bind(this),
       View.STEP_MILLISECONDS
@@ -24,19 +27,23 @@
     80: "STAY"      // "P" button to pause game
   };
   View.STEP_MILLISECONDS = 200;
+  View.TIMER_INTERVAL = 100
 
   View.prototype.handleKeyEvent = function (event) {
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
 
-      this.timer = setInterval(this.tick.bind(this), 100);
-
+      if(this.isTimerStarted === false) {
+        this.timer = setInterval(this.tick.bind(this), View.TIMER_INTERVAL);
+        this.isTimerStarted = true;
+      };
+      
       this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
     };
   };
 
   View.prototype.tick = function () {
-    
+    console.log(this.timeLimit -= 1);
   };
 
   View.prototype.isValidMove = function (dir) {
