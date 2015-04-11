@@ -65,8 +65,14 @@
 
     if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
       this.board.hippolyta.nextDir = "UP";
+    } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "RIGHT";
     } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
       this.board.hippolyta.nextDir = "DOWN";
+    } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "LEFT";
+    } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "STAY";
     };
   };
 

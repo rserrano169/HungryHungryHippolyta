@@ -34,11 +34,6 @@
   };
 
   Coord.prototype.isNorthOf = function (windowCoord1) {
-    var windowDim = $(window).height() >= $(window).width() ?
-      $(window).height() :
-      $(window).width()
-    ;
-
     for (var j = 1; windowCoord1.j - j >= 0; j++) {
       var xCoordNeg = windowCoord1.i - j,
           xCoordPos = windowCoord1.i + j,
@@ -91,12 +86,7 @@
   };
 
   Coord.prototype.isWestOf = function (windowCoord1) {
-    var windowDim = $(window).height() >= $(window).width() ?
-      $(window).height() :
-      $(window).width()
-    ;
-
-    for (var i = 1; windowCoord1.i - i <= windowDim; i++) {
+    for (var i = 1; windowCoord1.i - i >= 0; i++) {
       var yCoordNeg = windowCoord1.j - i,
           yCoordPos = windowCoord1.j + i,
           xCoord = windowCoord1.i - i;
