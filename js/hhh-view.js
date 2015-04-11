@@ -46,13 +46,9 @@
   };
 
   View.prototype.handleClickEvent = function (event) {
-    console.log("1", event.pageX, event.pageY);
-    console.log("3", $(".hippolyta").offset().left + 15, $(".hippolyta").offset().top + 15);
-    console.log(Math.floor(($(".hippolyta").width() + 1) / 2));
-
     var hippolytaCenterWindowCoord = new HHH.Coord(
-      $(".hippolyta").offset().left + Math.floor($(".hippolyta").width() / 2),
-      $(".hippolyta").offset().top + Math.floor($(".hippolyta").height() / 2)
+      Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
+      Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
     );
 
     var clickWindowCoord = new HHH.Coord(
@@ -60,7 +56,18 @@
       event.pageY
     );
 
-    // if (hippolytaCenterWindowCoord.equals)
+    // console.log("hippolyta", hippolytaCenterWindowCoord);
+    // console.log("window", clickWindowCoord);
+    console.log("S", clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord));
+    console.log("N", clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord));
+    console.log("E", clickWindowCoord.isEastOf(hippolytaCenterWindowCoord));
+    console.log("W", clickWindowCoord.isWestOf(hippolytaCenterWindowCoord));
+
+    if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "UP";
+    } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "DOWN";
+    };
   };
 
   View.prototype.tick = function () {

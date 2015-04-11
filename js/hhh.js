@@ -33,6 +33,82 @@
     return new Coord(this.i, dim - 1 - this.j);
   };
 
+  Coord.prototype.isNorthOf = function (windowCoord1) {
+    var windowDim = $(window).height() >= $(window).width() ?
+      $(window).height() :
+      $(window).width()
+    ;
+
+    for (var j = 1; windowCoord1.j - j >= 0; j++) {
+      var xCoordNeg = windowCoord1.i - j,
+          xCoordPos = windowCoord1.i + j,
+          yCoord = windowCoord1.j - j;
+
+      if (this.j == yCoord && (this.i <= xCoordPos && this.i >= xCoordNeg)) {
+        return true;
+      };
+    }
+
+    return false;
+  };
+
+  Coord.prototype.isEastOf = function (windowCoord1) {
+    var windowDim = $(window).height() >= $(window).width() ?
+      $(window).height() :
+      $(window).width()
+    ;
+
+    for (var i = 1; windowCoord1.i + i <= windowDim; i++) {
+      var yCoordNeg = windowCoord1.j - i,
+          yCoordPos = windowCoord1.j + i,
+          xCoord = windowCoord1.i + i;
+
+      if (this.i == xCoord && (this.j <= yCoordPos && this.j >= yCoordNeg)) {
+        return true;
+      };
+    }
+
+    return false;
+  };
+
+  Coord.prototype.isSouthOf = function (windowCoord1) {
+    var windowDim = $(window).height() >= $(window).width() ?
+      $(window).height() :
+      $(window).width()
+    ;
+
+    for (var j = 1; windowCoord1.j + j <= windowDim; j++) {
+      var xCoordNeg = windowCoord1.i - j,
+          xCoordPos = windowCoord1.i + j,
+          yCoord = windowCoord1.j + j;
+
+      if (this.j == yCoord && (this.i <= xCoordPos && this.i >= xCoordNeg)) {
+        return true;
+      };
+    }
+
+    return false;
+  };
+
+  Coord.prototype.isWestOf = function (windowCoord1) {
+    var windowDim = $(window).height() >= $(window).width() ?
+      $(window).height() :
+      $(window).width()
+    ;
+
+    for (var i = 1; windowCoord1.i - i <= windowDim; i++) {
+      var yCoordNeg = windowCoord1.j - i,
+          yCoordPos = windowCoord1.j + i,
+          xCoord = windowCoord1.i - i;
+
+      if (this.i == xCoord && (this.j <= yCoordPos && this.j >= yCoordNeg)) {
+        return true;
+      };
+    }
+
+    return false;
+  };
+
 //* --- HIPPOLYTA --- *//
 
   var Hippolyta = HHH.Hippolyta = function (board) {
