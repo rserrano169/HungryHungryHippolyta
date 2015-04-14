@@ -32,24 +32,27 @@
   View.STEP_MILLISECONDS = 200;
   View.TIMER_INTERVAL = 100
 
+  View.prototype.startTimer = function () {
+    if(this.isTimerStarted === false) {
+      this.timer = setInterval(this.tick.bind(this), View.TIMER_INTERVAL);
+      this.isTimerStarted = true;
+    };
+  };
+
   View.prototype.handleKeyEvent = function (event) {
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
 
-      if(this.isTimerStarted === false) {
-        this.timer = setInterval(this.tick.bind(this), View.TIMER_INTERVAL);
-        this.isTimerStarted = true;
-      };
+      this.startTimer();
 
       this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
     };
   };
 
   View.prototype.handleClickEvent = function (event) {
-    if(this.isTimerStarted === false) {
-      this.timer = setInterval(this.tick.bind(this), View.TIMER_INTERVAL);
-      this.isTimerStarted = true;
-    };    
+    event.preventDefault();
+
+    this.startTimer();
 
     var hippolytaCenterWindowCoord = new HHH.Coord(
       Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
