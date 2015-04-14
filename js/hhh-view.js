@@ -46,6 +46,11 @@
   };
 
   View.prototype.handleClickEvent = function (event) {
+    if(this.isTimerStarted === false) {
+      this.timer = setInterval(this.tick.bind(this), View.TIMER_INTERVAL);
+      this.isTimerStarted = true;
+    };    
+
     var hippolytaCenterWindowCoord = new HHH.Coord(
       Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
       Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
