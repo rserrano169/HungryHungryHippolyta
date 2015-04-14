@@ -56,13 +56,6 @@
       event.pageY
     );
 
-    // console.log("hippolyta", hippolytaCenterWindowCoord);
-    // console.log("window", clickWindowCoord);
-    console.log("S", clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord));
-    console.log("N", clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord));
-    console.log("E", clickWindowCoord.isEastOf(hippolytaCenterWindowCoord));
-    console.log("W", clickWindowCoord.isWestOf(hippolytaCenterWindowCoord));
-
     if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
       this.board.hippolyta.nextDir = "UP";
     } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
@@ -77,7 +70,7 @@
   };
 
   View.prototype.tick = function () {
-    this.timeLimit -= 1
+    this.timeLimit -= 1;
     this.$el.find(".timer").html(
       '<b>Timer/Score: </b>' + this.timeLimit +
       ' milliseconds'
@@ -85,7 +78,6 @@
 
     if (this.timeLimit <= 0) {
       alert("You lose... :(");
-
       clearInterval(this.timer);
       window.location.reload();
     };
