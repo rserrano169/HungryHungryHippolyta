@@ -29,7 +29,7 @@
     37: "LEFT",
     80: "STAY"      // "P" button to pause game
   };
-  View.STEP_MILLISECONDS = 200;
+  View.STEP_MILLISECONDS = 150;
   View.TIMER_INTERVAL = 100
 
   View.prototype.startTimer = function () {
@@ -50,6 +50,14 @@
   };
 
   View.prototype.handleClickEvent = function (event) {
+    if ($(event.target).is("li")) {
+      console.log("li", this.$li.index($(event.target)));
+      console.log("hippolyta", this.$li.index($(".hippolyta").parent()));
+    } else {
+      console.log("li", this.$li.index($(event.target).parent()));
+      console.log("hippolyta", this.$li.index($(".hippolyta").parent()));
+    };
+
     event.preventDefault();
 
     this.startTimer();
