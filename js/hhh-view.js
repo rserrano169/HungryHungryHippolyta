@@ -30,12 +30,21 @@
     80: "STAY"      // "P" button to pause game
   };
   View.STEP_MILLISECONDS = 150;
-  View.TIMER_INTERVAL = 100
+  View.TIMER_INTERVAL = 100;
 
   View.prototype.startTimer = function () {
     if(this.isTimerStarted === false) {
       this.timer = setInterval(this.tick.bind(this), View.TIMER_INTERVAL);
       this.isTimerStarted = true;
+    };
+  };
+
+  View.prototype.validDirections = function ($startTile) {
+    var validDir = [],
+        $nextTiles = [];
+
+    for (var key in View.KEYS) {
+      var dir = View.KEYS[key];
     };
   };
 
@@ -51,11 +60,15 @@
 
   View.prototype.handleClickEvent = function (event) {
     if ($(event.target).is("li")) {
-      console.log("li", this.$li.index($(event.target)));
-      console.log("hippolyta", this.$li.index($(".hippolyta").parent()));
+        var $targetTile = $(event.target);
+
+        console.log("li", this.$li.index($(event.target)));
+        console.log("hippolyta", this.$li.index($(".hippolyta").parent()));
     } else {
-      console.log("li", this.$li.index($(event.target).parent()));
-      console.log("hippolyta", this.$li.index($(".hippolyta").parent()));
+        var $targetTile = $(event.target).parent();
+
+        console.log("li", this.$li.index($(event.target).parent()));
+        console.log("hippolyta", this.$li.index($(".hippolyta").parent()));
     };
 
     event.preventDefault();
@@ -73,15 +86,15 @@
     );
 
     if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "UP";
+        this.board.hippolyta.nextDir = "UP";
     } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "RIGHT";
+        this.board.hippolyta.nextDir = "RIGHT";
     } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "DOWN";
+        this.board.hippolyta.nextDir = "DOWN";
     } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "LEFT";
+        this.board.hippolyta.nextDir = "LEFT";
     } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "STAY";
+        this.board.hippolyta.nextDir = "STAY";
     };
   };
 
@@ -103,16 +116,21 @@
     // if (this.numOfPowerups )
   };
 
-  View.prototype.isValidMove = function (dir) {
+  View.prototype.isValidMove = function (dir, $tile) {
     if (typeof dir === 'undefined') {
       dir = this.board.hippolyta.dir;
     };
+
+    if (typeof $tile === 'undefined') {
+      $tile = this.$nextTile(dir);
+    };
+
     return (
-      this.$nextTile(dir).children().hasClass("dot") ||
-      this.$nextTile(dir).children().hasClass("powerup") ||
-      this.$nextTile(dir).children().hasClass("portal") ||
-      this.$nextTile(dir).children().hasClass("") ||
-      this.$nextTile(dir).children().hasClass("hippolyta")
+      $tile.children().hasClass("dot") ||
+      $tile.children().hasClass("powerup") ||
+      $tile.children().hasClass("portal") ||
+      $tile.children().hasClass("") ||
+      $tile.children().hasClass("hippolyta")
     );
   };
 
@@ -155,27 +173,27 @@
 
   View.prototype.render = function () {
     if (this.$currentTile().children().hasClass("portal-left")) {
-      this.$currentTile().html('<div class="portal portal-left"></div>');
-      this.$currentTile().append('<div class="portal portal-left-overlay"></div>');
+        this.$currentTile().html('<div class="portal portal-left"></div>');
+        this.$currentTile().append('<div class="portal portal-left-overlay"></div>');
     } else if (this.$currentTile().children().hasClass("portal-right")) {
-      this.$currentTile().html('<div class="portal portal-right"></div>');
-      this.$currentTile().append('<div class="portal portal-right-overlay"></div>');
+        this.$currentTile().html('<div class="portal portal-right"></div>');
+        this.$currentTile().append('<div class="portal portal-right-overlay"></div>');
     } else {
-      this.$currentTile().html('<div class=""></div>');
-    }
+        this.$currentTile().html('<div class=""></div>');
+    };
 
     this.board.hippolyta.move();
 
     if (this.$currentTile().children().hasClass("portal-left")) {
-      this.$currentTile().html('<div class="portal portal-left"></div>');
-      this.$currentTile().append('<div class="portal portal-left-overlay"></div>');
-      this.$currentTile().append('<div class="portal portal-left-pass-through"></div>');
+        this.$currentTile().html('<div class="portal portal-left"></div>');
+        this.$currentTile().append('<div class="portal portal-left-overlay"></div>');
+        this.$currentTile().append('<div class="portal portal-left-pass-through"></div>');
     } else if (this.$currentTile().children().hasClass("portal-right")) {
-      this.$currentTile().html('<div class="portal portal-right"></div>');
-      this.$currentTile().append('<div class="portal portal-right-overlay"></div>');
-      this.$currentTile().append('<div class="portal portal-right-pass-through"></div>');
+        this.$currentTile().html('<div class="portal portal-right"></div>');
+        this.$currentTile().append('<div class="portal portal-right-overlay"></div>');
+        this.$currentTile().append('<div class="portal portal-right-pass-through"></div>');
     } else {
-      this.$currentTile().html('<div class="hippolyta"></div>');
+        this.$currentTile().html('<div class="hippolyta"></div>');
     };
   };
 

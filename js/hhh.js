@@ -138,7 +138,7 @@
           .plus(Hippolyta.DIRECTIONS[dir], this.board.dim)
         );
     } else {
-      return this.pos.plus(Hippolyta.DIRECTIONS[dir], this.board.dim);
+        return this.pos.plus(Hippolyta.DIRECTIONS[dir], this.board.dim);
     };
   };
 
