@@ -51,16 +51,16 @@
 
   View.prototype.handleClickEvent = function (event) {
     if ($(event.target).is("li")) {
-        var targetTilejQueryPos = this.$li.index($(event.target));
+        var targetTileBoard$liPos = this.$li.index($(event.target));
     } else {
-        var targetTilejQueryPos = this.$li.index($(event.target).parent());
+        var targetTileBoard$liPos = this.$li.index($(event.target).parent());
     };
 
 
 
     // var directions = [-25, 1, 25, -1],
     //     treeHash = {},
-    //     tilePosToCheck = [this.$li.eq(targetTilejQueryPos)],
+    //     tilePosToCheck = [this.$li.eq(targetTileBoard$liPos)],
     //     that = this;
     //
     //   directions.forEach( function (dir) {
@@ -148,11 +148,11 @@
     if (typeof dir === 'undefined') {
       dir = this.board.hippolyta.dir;
     };
-    return this.$li.eq(this.board.hippolyta.nextjQueryPos(dir));
+    return this.$li.eq(this.board.hippolyta.nextBoard$liPos(dir));
   };
 
   View.prototype.$currentTile = function () {
-    return this.$li.eq(this.board.hippolyta.jQueryPos());
+    return this.$li.eq(this.board.hippolyta.board$liPos());
   };
 
   View.prototype.step = function () {

@@ -33,7 +33,7 @@
     return new Coord(this.i, dim - 1 - this.j);
   };
 
-  Coord.prototype.boardPos = function (boardTempNum) {
+  Coord.prototype.board$liPos = function (boardTempNum) {
     if (boardTempNum === 1) {
       return this.i * 25 + this.j;
     };
@@ -127,7 +127,7 @@
     this.coord = this.coord.plus(Hippolyta.DIRECTIONS[this.dir], this.board.dim);
   }
 
-  Hippolyta.prototype.nextPos = function (dir) {
+  Hippolyta.prototype.nextCoord = function (dir) {
     if (typeof dir === 'undefined') {
       dir = this.dir;
     };
@@ -148,15 +148,15 @@
     };
   };
 
-  Hippolyta.prototype.jQueryPos = function () {
-    return this.coord.i * this.board.dim + this.coord.j;
+  Hippolyta.prototype.board$liPos = function () {
+    return this.coord.board$liPos(this.board.temp);
   };
 
-  Hippolyta.prototype.nextjQueryPos = function (dir) {
+  Hippolyta.prototype.nextBoard$liPos = function (dir) {
     if (typeof dir === 'undefined') {
       dir = this.dir;
     };
 
-    return this.nextPos(dir).i * this.board.dim + this.nextPos(dir).j
+    return this.nextCoord(dir).i * this.board.dim + this.nextCoord(dir).j
   };
 })();
