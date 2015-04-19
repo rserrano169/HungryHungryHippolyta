@@ -33,6 +33,12 @@
     return new Coord(this.i, dim - 1 - this.j);
   };
 
+  Coord.prototype.boardPos = function (boardTempNum) {
+    if (boardTempNum === 1) {
+      return this.i * 25 + this.j;
+    };
+  };
+
   Coord.prototype.isNorthOf = function (windowCoord1) {
     for (var j = 1; windowCoord1.j - j >= 0; j++) {
       var xCoordNeg = windowCoord1.i - j,
@@ -104,7 +110,7 @@
   var Hippolyta = HHH.Hippolyta = function (board) {
     this.board = board;
     if (this.board.temp === 1) {
-      this.pos = new Coord(18, 12);
+      this.coord = new Coord(18, 12);
     };
     this.dir = "STAY";
   };
@@ -118,7 +124,7 @@
   };
 
   Hippolyta.prototype.move = function () {
-    this.pos = this.pos.plus(Hippolyta.DIRECTIONS[this.dir], this.board.dim);
+    this.coord = this.coord.plus(Hippolyta.DIRECTIONS[this.dir], this.board.dim);
   }
 
   Hippolyta.prototype.nextPos = function (dir) {
@@ -128,22 +134,22 @@
 
     if (
       this.board.temp === 1 &&
-      this.pos.i === 11 &&
-      (this.pos.j === 0 || this.pos.j === 24)
+      this.coord.i === 11 &&
+      (this.coord.j === 0 || this.coord.j === 24)
       ) {
         return(
           this
-          .pos
+          .coord
           .horizontalOpposite(this.board.dim)
           .plus(Hippolyta.DIRECTIONS[dir], this.board.dim)
         );
     } else {
-        return this.pos.plus(Hippolyta.DIRECTIONS[dir], this.board.dim);
+        return this.coord.plus(Hippolyta.DIRECTIONS[dir], this.board.dim);
     };
   };
 
   Hippolyta.prototype.jQueryPos = function () {
-    return this.pos.i * this.board.dim + this.pos.j;
+    return this.coord.i * this.board.dim + this.coord.j;
   };
 
   Hippolyta.prototype.nextjQueryPos = function (dir) {

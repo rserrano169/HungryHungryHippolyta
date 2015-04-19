@@ -39,15 +39,6 @@
     };
   };
 
-  View.prototype.validDirections = function ($startTile) {
-    var validDir = [],
-        $nextTiles = [];
-
-    for (var key in View.KEYS) {
-      var dir = View.KEYS[key];
-    };
-  };
-
   View.prototype.handleKeyEvent = function (event) {
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
@@ -60,16 +51,26 @@
 
   View.prototype.handleClickEvent = function (event) {
     if ($(event.target).is("li")) {
-        var $targetTile = $(event.target);
-
-        console.log("li", this.$li.index($(event.target)));
-        console.log("hippolyta", this.$li.index($(".hippolyta").parent()));
+        var targetTilejQueryPos = this.$li.index($(event.target));
     } else {
-        var $targetTile = $(event.target).parent();
-
-        console.log("li", this.$li.index($(event.target).parent()));
-        console.log("hippolyta", this.$li.index($(".hippolyta").parent()));
+        var targetTilejQueryPos = this.$li.index($(event.target).parent());
     };
+
+
+
+    // var directions = [-25, 1, 25, -1],
+    //     treeHash = {},
+    //     tilePosToCheck = [this.$li.eq(targetTilejQueryPos)],
+    //     that = this;
+    //
+    //   directions.forEach( function (dir) {
+    //     var $tile = that.$li.eq(tilePosToCheck[0] + dir) ;
+    //     if (that.isValidMove('undefined', $tile)) {
+    //       tilePosToCheck += that.$li.index($tile);
+    //     };
+    //   })
+
+
 
     event.preventDefault();
 
@@ -137,8 +138,8 @@
   View.prototype.isPassingThroughPortal = function (templateNum) {
     if (templateNum === 1) {
       return (
-        this.board.hippolyta.pos === this.board.portalLeftPosition - 1 ||
-        this.board.hippolyta.pos === this.board.portalRightPosition - 1
+        this.board.hippolyta.coord === this.board.portalLeftPosition - 1 ||
+        this.board.hippolyta.coord === this.board.portalRightPosition - 1
       );
     };
   };
