@@ -50,53 +50,70 @@
   };
 
   View.prototype.handleClickEvent = function (event) {
-    if ($(event.target).is("li")) {
-        var targetTileBoard$liPos = this.$li.index($(event.target));
-    } else {
-        var targetTileBoard$liPos = this.$li.index($(event.target).parent());
-    };
-
-
-
-    // var directions = [-25, 1, 25, -1],
-    //     treeHash = {},
-    //     tilePosToCheck = [this.$li.eq(targetTileBoard$liPos)],
-    //     that = this;
-    //
-    //   directions.forEach( function (dir) {
-    //     var $tile = that.$li.eq(tilePosToCheck[0] + dir) ;
-    //     if (that.isValidMove('undefined', $tile)) {
-    //       tilePosToCheck += that.$li.index($tile);
-    //     };
-    //   })
-
-
-
     event.preventDefault();
 
-    this.startTimer();
-
-    var hippolytaCenterWindowCoord = new HHH.Coord(
-      Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
-      Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
-    );
-
-    var clickWindowCoord = new HHH.Coord(
-      event.pageX,
-      event.pageY
-    );
-
-    if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "UP";
-    } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "RIGHT";
-    } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "DOWN";
-    } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "LEFT";
-    } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "STAY";
+    if ($(event.target).is("li")) {
+        var $clickedTile = $(event.target);
+    } else {
+        var $clickedTile = $(event.target).parent();
     };
+
+
+
+    var directions = [-25, 1, 25, -1],
+        tilesToCheck = [$clickedTile],
+        tilesChecked = [],
+        $checking = tilesToCheck.shift(),
+        breakCount = 0;
+        that = this;
+
+    while ($checking.find(".hippolyta").length === 0) {
+      if (breakCount >= 5000){
+        break;
+      };
+
+      directions.forEach( function (dir) {
+        var nextBoard$liPos = that.$li.index($checking) + dir,
+            $adjTile = that.$li.eq(nextBoard$liPos);
+        if (
+          that.isValidMove('undefined', $adjTile) &&
+          (tilesChecked.indexOf($adjTile) === -1)
+        ) {
+          console.log("adjTile", breakCount, $adjTile);
+          tilesToCheck.push($adjTile);
+        };
+      })
+
+      tilesChecked.push($checking);
+      $checking = tilesToCheck.shift();
+      breakCount++;
+    };
+
+    console.log("checking", $checking);
+
+    // this.startTimer();
+    //
+    // var hippolytaCenterWindowCoord = new HHH.Coord(
+    //   Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
+    //   Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
+    // );
+    //
+    // var clickWindowCoord = new HHH.Coord(
+    //   event.pageX,
+    //   event.pageY
+    // );
+    //
+    // if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
+    //     this.board.hippolyta.nextDir = "UP";
+    // } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
+    //     this.board.hippolyta.nextDir = "RIGHT";
+    // } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
+    //     this.board.hippolyta.nextDir = "DOWN";
+    // } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
+    //     this.board.hippolyta.nextDir = "LEFT";
+    // } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
+    //     this.board.hippolyta.nextDir = "STAY";
+    // };
   };
 
   View.prototype.tick = function () {
