@@ -62,7 +62,7 @@
 
     var directions = [-25, 1, 25, -1],
         tilesToCheck = [$clickedTile],
-        tilesChecked = [],
+        checked$liPositions = [],
         $checking = tilesToCheck.shift(),
         breakCount = 0;
         that = this;
@@ -73,47 +73,47 @@
       };
 
       directions.forEach( function (dir) {
-        var nextBoard$liPos = that.$li.index($checking) + dir,
-            $adjTile = that.$li.eq(nextBoard$liPos);
+        var next$liPos = that.$li.index($checking) + dir;
+            $adjTile = that.$li.eq(next$liPos);
         if (
           that.isValidMove('undefined', $adjTile) &&
-          (tilesChecked.indexOf($adjTile) === -1)
+          (checked$liPositions.indexOf(next$liPos) === -1)
         ) {
-          console.log("adjTile", breakCount, $adjTile);
           tilesToCheck.push($adjTile);
         };
       })
 
-      tilesChecked.push($checking);
+      checked$liPositions.push(this.$li.index($checking));
       $checking = tilesToCheck.shift();
       breakCount++;
     };
 
-    console.log("checking", $checking);
+    console.log("checked", breakCount, $checking);
 
-    // this.startTimer();
-    //
-    // var hippolytaCenterWindowCoord = new HHH.Coord(
-    //   Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
-    //   Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
-    // );
-    //
-    // var clickWindowCoord = new HHH.Coord(
-    //   event.pageX,
-    //   event.pageY
-    // );
-    //
-    // if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
-    //     this.board.hippolyta.nextDir = "UP";
-    // } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
-    //     this.board.hippolyta.nextDir = "RIGHT";
-    // } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
-    //     this.board.hippolyta.nextDir = "DOWN";
-    // } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
-    //     this.board.hippolyta.nextDir = "LEFT";
-    // } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
-    //     this.board.hippolyta.nextDir = "STAY";
-    // };
+
+    this.startTimer();
+
+    var hippolytaCenterWindowCoord = new HHH.Coord(
+      Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
+      Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
+    );
+
+    var clickWindowCoord = new HHH.Coord(
+      event.pageX,
+      event.pageY
+    );
+
+    if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "UP";
+    } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "RIGHT";
+    } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "DOWN";
+    } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "LEFT";
+    } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "STAY";
+    };
   };
 
   View.prototype.tick = function () {
@@ -165,11 +165,11 @@
     if (typeof dir === 'undefined') {
       dir = this.board.hippolyta.dir;
     };
-    return this.$li.eq(this.board.hippolyta.nextBoard$liPos(dir));
+    return this.$li.eq(this.board.hippolyta.next$liPos(dir));
   };
 
   View.prototype.$currentTile = function () {
-    return this.$li.eq(this.board.hippolyta.board$liPos());
+    return this.$li.eq(this.board.hippolyta.$liPos());
   };
 
   View.prototype.step = function () {

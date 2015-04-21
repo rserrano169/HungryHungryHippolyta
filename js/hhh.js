@@ -33,7 +33,7 @@
     return new Coord(this.i, dim - 1 - this.j);
   };
 
-  Coord.prototype.board$liPos = function (boardTempNum) {
+  Coord.prototype.$liPos = function (boardTempNum) {
     if (boardTempNum === 1) {
       return this.i * 25 + this.j;
     };
@@ -148,11 +148,11 @@
     };
   };
 
-  Hippolyta.prototype.board$liPos = function () {
-    return this.coord.board$liPos(this.board.temp);
+  Hippolyta.prototype.$liPos = function () {
+    return this.coord.$liPos(this.board.temp);
   };
 
-  Hippolyta.prototype.nextBoard$liPos = function (dir) {
+  Hippolyta.prototype.next$liPos = function (dir) {
     if (typeof dir === 'undefined') {
       dir = this.dir;
     };
