@@ -18,6 +18,7 @@
       View.STEP_MILLISECONDS
     );
 
+    window.resizeTo(750, 775);
     $(window).on("keydown", this.handleKeyEvent.bind(this));
     $(window).on("mousedown", this.handleClickEvent.bind(this));
   };
