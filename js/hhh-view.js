@@ -43,8 +43,11 @@
   View.prototype.handleClickEvent = function (event) {
     event.preventDefault();
     this.startTimer();
-    this.BFSforHippolyta(event);
-    // this.setNextDirOnClick(event);
+    if (this.BFSforHippolyta(event).length > 0) {
+        this.BFSforHippolyta(event);
+    } else {
+        this.NESWOnClick(event);
+    }
   };
 
   View.prototype.startTimer = function () {
@@ -119,12 +122,11 @@
       posSequence.pop();
     };
 
-    // console.log(posSequence);
     this.BFScounter = 0;
-    this.BFSsequence = posSequence;
+    return this.BFSsequence = posSequence;
   };
 
-  View.prototype.setNextDirOnClick = function (event) {
+  View.prototype.NESWOnClick = function (event) {
     var clickWindowCoord = new HHH.Coord(
       event.pageX,
       event.pageY
@@ -181,19 +183,18 @@
   };
 
   View.prototype.step = function () {
-    console.log("BFS", this.BFSsequence[this.BFScounter]);
-
-    if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
-        this.board.hippolyta.nextDir = "UP";
-    } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
-        this.board.hippolyta.nextDir = "RIGHT";
-    } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
-        this.board.hippolyta.nextDir = "DOWN";
-    } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
-        this.board.hippolyta.nextDir = "LEFT";
+    if (this.BFSsequence) {
+      if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
+          this.board.hippolyta.nextDir = "UP";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
+          this.board.hippolyta.nextDir = "RIGHT";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
+          this.board.hippolyta.nextDir = "DOWN";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
+          this.board.hippolyta.nextDir = "LEFT";
+      };
     };
-    
-    console.log("next dir", this.board.hippolyta.nextDir);
+
     this.BFScounter++;
 
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
