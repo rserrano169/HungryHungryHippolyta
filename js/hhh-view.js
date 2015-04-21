@@ -46,8 +46,8 @@
     if (this.BFSforHippolyta(event).length > 0) {
         this.BFSforHippolyta(event);
     } else {
-        this.NESWOnClick(event);
-    }
+        this.setDirNESWonClick(event);
+    };
   };
 
   View.prototype.startTimer = function () {
@@ -126,7 +126,23 @@
     return this.BFSsequence = posSequence;
   };
 
-  View.prototype.NESWOnClick = function (event) {
+  View.prototype.setDirWithBFS = function () {
+    if (this.BFSsequence) {
+      if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
+        this.board.hippolyta.nextDir = "UP";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
+        this.board.hippolyta.nextDir = "RIGHT";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
+        this.board.hippolyta.nextDir = "DOWN";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
+        this.board.hippolyta.nextDir = "LEFT";
+      };
+    };
+
+    this.BFScounter++;
+  };
+
+  View.prototype.setDirNESWonClick = function (event) {
     var clickWindowCoord = new HHH.Coord(
       event.pageX,
       event.pageY
@@ -183,19 +199,7 @@
   };
 
   View.prototype.step = function () {
-    if (this.BFSsequence) {
-      if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
-          this.board.hippolyta.nextDir = "UP";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
-          this.board.hippolyta.nextDir = "RIGHT";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
-          this.board.hippolyta.nextDir = "DOWN";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
-          this.board.hippolyta.nextDir = "LEFT";
-      };
-    };
-
-    this.BFScounter++;
+    this.setDirWithBFS();
 
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
       this.board.hippolyta.dir = this.board.hippolyta.nextDir;
