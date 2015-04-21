@@ -11,7 +11,7 @@
     this.isTimerStarted = false;
     this.setupBoard();
     this.numOfDots = this.$li.children().filter(".dot").length;
-    this.numOfPowerups = this.$li.children().filter(".powerup").length;
+    this.numOfStartingPowerups = this.$li.children().filter(".powerup").length;
     this.board.hippolyta.nextDir = "STAY";
     this.run = setInterval(
       this.step.bind(this),
@@ -160,8 +160,17 @@
     };
   };
 
-  View.prototype.powerup = function () {
-    // if (this.numOfPowerups )
+  View.prototype.numOfPowerups = function () {
+    return this.$li.children().filter(".powerup").length;
+  };
+
+  View.prototype.isPoweredup = function () {
+    if (this.numOfStartingPowerups > this.numOfPowerups()) {
+      this.numOfStartingPowerups = this.numOfPowerups();
+      return true;
+    };
+
+    return false;
   };
 
   View.prototype.isValidMove = function (dir, $tile) {
@@ -194,6 +203,24 @@
   };
 
   View.prototype.step = function () {
+    if (this.isPoweredup()) {
+      View.STEP_MILLISECONDS -= 200;
+      clearInterval(this.run);
+      this.run = setInterval(
+        this.step.bind(this),
+        View.STEP_MILLISECONDS
+      );
+    };
+
+    if (View.STEP_MILLISECONDS < 150) {
+      View.STEP_MILLISECONDS += 2;
+      clearInterval(this.run);
+      this.run = setInterval(
+        this.step.bind(this),
+        View.STEP_MILLISECONDS
+      );
+    };
+
     this.setDirWithBFS();
 
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
