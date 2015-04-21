@@ -77,8 +77,8 @@
 
     var directions = [-25, 1, 25, -1],
         clicked$liPos = this.$li.index($clickedTile),
-        tilesToCheck = [$clickedTile],
         checked$liPositions = [],
+        tilesToCheck = [$clickedTile],
         $checking = tilesToCheck.shift(),
         breakCount = 0;
         childToParent = {},
@@ -109,12 +109,18 @@
 
     var checkingKey = this.$li.index($checking),
         posSequence = [];
-    while (posSequence.indexOf(clicked$liPos) === -1) {
+
+    while (posSequence.indexOf(clicked$liPos) === -1 && checkingKey > 0) {
       checkingKey = childToParent[checkingKey];
       posSequence.push(checkingKey);
     }
 
+    if (!this.isValidMove('undefined', $clickedTile)) {
+      posSequence.pop();
+    };
+    
     console.log(posSequence);
+    return posSequence;
   };
 
   View.prototype.setNextDirOnClick = function (event) {
