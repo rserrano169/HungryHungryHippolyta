@@ -32,6 +32,21 @@
   View.STEP_MILLISECONDS = 150;
   View.TIMER_INTERVAL = 100;
 
+  View.prototype.handleKeyEvent = function (event) {
+    if (View.KEYS[event.keyCode]) {
+      event.preventDefault();
+      this.startTimer();
+      this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
+    };
+  };
+
+  View.prototype.handleClickEvent = function (event) {
+    event.preventDefault();
+    this.startTimer();
+    this.BFSforHippolyta(event);
+    this.setNextDirOnClick(event);
+  };
+
   View.prototype.startTimer = function () {
     if(this.isTimerStarted === false) {
       this.timer = setInterval(this.tick.bind(this), View.TIMER_INTERVAL);
@@ -39,26 +54,26 @@
     };
   };
 
-  View.prototype.handleKeyEvent = function (event) {
-    if (View.KEYS[event.keyCode]) {
-      event.preventDefault();
+  View.prototype.tick = function () {
+    this.timeLimit -= 1;
+    this.$el.find(".timer").html(
+      '<b>Timer/Score: </b>' + this.timeLimit +
+      ' milliseconds'
+    );
 
-      this.startTimer();
-
-      this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
+    if (this.timeLimit <= 0) {
+      alert("You lose... :(");
+      clearInterval(this.timer);
+      window.location.reload();
     };
   };
 
-  View.prototype.handleClickEvent = function (event) {
-    event.preventDefault();
-
+  View.prototype.BFSforHippolyta = function (event) {
     if ($(event.target).is("li")) {
-        var $clickedTile = $(event.target);
+      var $clickedTile = $(event.target);
     } else {
-        var $clickedTile = $(event.target).parent();
+      var $clickedTile = $(event.target).parent();
     };
-
-
 
     var directions = [-25, 1, 25, -1],
         tilesToCheck = [$clickedTile],
@@ -74,7 +89,7 @@
 
       directions.forEach( function (dir) {
         var next$liPos = that.$li.index($checking) + dir;
-            $adjTile = that.$li.eq(next$liPos);
+        $adjTile = that.$li.eq(next$liPos);
         if (
           that.isValidMove('undefined', $adjTile) &&
           (checked$liPositions.indexOf(next$liPos) === -1)
@@ -89,44 +104,28 @@
     };
 
     console.log("checked", breakCount, $checking);
+  };
 
-
-    this.startTimer();
-
+  View.prototype.setNextDirOnClick = function (event) {
+    var clickWindowCoord = new HHH.Coord(
+      event.pageX,
+      event.pageY
+    );
     var hippolytaCenterWindowCoord = new HHH.Coord(
       Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
       Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
     );
 
-    var clickWindowCoord = new HHH.Coord(
-      event.pageX,
-      event.pageY
-    );
-
     if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "UP";
+      this.board.hippolyta.nextDir = "UP";
     } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "RIGHT";
+      this.board.hippolyta.nextDir = "RIGHT";
     } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "DOWN";
+      this.board.hippolyta.nextDir = "DOWN";
     } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "LEFT";
+      this.board.hippolyta.nextDir = "LEFT";
     } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "STAY";
-    };
-  };
-
-  View.prototype.tick = function () {
-    this.timeLimit -= 1;
-    this.$el.find(".timer").html(
-      '<b>Timer/Score: </b>' + this.timeLimit +
-      ' milliseconds'
-    );
-
-    if (this.timeLimit <= 0) {
-      alert("You lose... :(");
-      clearInterval(this.timer);
-      window.location.reload();
+      this.board.hippolyta.nextDir = "STAY";
     };
   };
 
@@ -152,14 +151,14 @@
     );
   };
 
-  View.prototype.isPassingThroughPortal = function (templateNum) {
-    if (templateNum === 1) {
-      return (
-        this.board.hippolyta.coord === this.board.portalLeftPosition - 1 ||
-        this.board.hippolyta.coord === this.board.portalRightPosition - 1
-      );
-    };
-  };
+  // View.prototype.isPassingThroughPortal = function (templateNum) {
+  //   if (templateNum === 1) {
+  //     return (
+  //       this.board.hippolyta.coord === this.board.portalLeftPosition - 1 ||
+  //       this.board.hippolyta.coord === this.board.portalRightPosition - 1
+  //     );
+  //   };
+  // };
 
   View.prototype.$nextTile = function (dir) {
     if (typeof dir === 'undefined') {
