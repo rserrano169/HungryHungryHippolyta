@@ -87,11 +87,7 @@
         childToParent = {},
         that = this;
 
-    while (
-      $checking &&
-      $checking.find(".hippolyta").length === 0 &&
-      breakCount < 1000
-    ) {
+    while ($checking && $checking.find(".hippolyta").length === 0) {
       directions.forEach( function (dir) {
         var checking$liPos = that.$li.index($checking),
             next$liPos = checking$liPos + dir;
@@ -107,7 +103,6 @@
 
       checked$liPositions.push(this.$li.index($checking));
       $checking = tilesToCheck.shift();
-      breakCount++;
     };
 
     var checkingKey = this.$li.index($checking),
