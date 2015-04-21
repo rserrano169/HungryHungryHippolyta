@@ -118,9 +118,10 @@
     if (!this.isValidMove('undefined', $clickedTile)) {
       posSequence.pop();
     };
-    
-    console.log(posSequence);
-    return posSequence;
+
+    // console.log(posSequence);
+    this.BFScounter = 0;
+    this.BFSsequence = posSequence;
   };
 
   View.prototype.setNextDirOnClick = function (event) {
@@ -168,15 +169,6 @@
     );
   };
 
-  // View.prototype.isPassingThroughPortal = function (templateNum) {
-  //   if (templateNum === 1) {
-  //     return (
-  //       this.board.hippolyta.coord === this.board.portalLeftPosition - 1 ||
-  //       this.board.hippolyta.coord === this.board.portalRightPosition - 1
-  //     );
-  //   };
-  // };
-
   View.prototype.$nextTile = function (dir) {
     if (typeof dir === 'undefined') {
       dir = this.board.hippolyta.dir;
@@ -189,6 +181,8 @@
   };
 
   View.prototype.step = function () {
+    console.log(this.BFSsequence);
+
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
       this.board.hippolyta.dir = this.board.hippolyta.nextDir;
     };
@@ -419,8 +413,8 @@
 
       //* --- PORTAL POSITIONS --- *//
 
-      this.board.portalLeftPosition = 276,
-      this.board.portalRightPosition = 300;
+      var portalLeftPosition = 276,
+          portalRightPosition = 300;
 
       //* --- DOT POSITIONS --- *//
 
@@ -554,14 +548,12 @@
 
     //* --- PORTALS RENDER --- *//
 
-    this.$li.eq(this.board.portalLeftPosition - 1)
-      .append('<div class="portal portal-left"></div>');
-    this.$li.eq(this.board.portalLeftPosition - 1)
+    this.$li.eq(portalLeftPosition - 1)
+      .append('<div class="portal portal-left"></div>')
       .append('<div class="portal portal-left-overlay"></div>');
 
-    this.$li.eq(this.board.portalRightPosition - 1)
-      .append('<div class="portal portal-right"></div>');
-    this.$li.eq(this.board.portalRightPosition - 1)
+    this.$li.eq(portalRightPosition - 1)
+      .append('<div class="portal portal-right"></div>')
       .append('<div class="portal portal-right-overlay"></div>');
 
     //* --- DOTS RENDER --- *//
