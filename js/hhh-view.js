@@ -212,7 +212,7 @@
       );
     };
 
-    if (View.STEP_MILLISECONDS < 150) {
+    if (View.STEP_MILLISECONDS < 200) {
       View.STEP_MILLISECONDS += 2;
       clearInterval(this.run);
       this.run = setInterval(
