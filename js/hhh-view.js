@@ -44,7 +44,7 @@
     event.preventDefault();
     this.startTimer();
     this.BFSforHippolyta(event);
-    this.setNextDirOnClick(event);
+    // this.setNextDirOnClick(event);
   };
 
   View.prototype.startTimer = function () {
@@ -181,7 +181,20 @@
   };
 
   View.prototype.step = function () {
-    console.log(this.BFSsequence);
+    console.log("BFS", this.BFSsequence[this.BFScounter]);
+
+    if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
+        this.board.hippolyta.nextDir = "UP";
+    } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
+        this.board.hippolyta.nextDir = "RIGHT";
+    } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
+        this.board.hippolyta.nextDir = "DOWN";
+    } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
+        this.board.hippolyta.nextDir = "LEFT";
+    };
+    
+    console.log("next dir", this.board.hippolyta.nextDir);
+    this.BFScounter++;
 
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
       this.board.hippolyta.dir = this.board.hippolyta.nextDir;
