@@ -76,24 +76,28 @@
     };
 
     var directions = [-25, 1, 25, -1],
+        clicked$liPos = this.$li.index($clickedTile),
         tilesToCheck = [$clickedTile],
         checked$liPositions = [],
         $checking = tilesToCheck.shift(),
         breakCount = 0;
+        childToParent = {},
         that = this;
 
-    while ($checking.find(".hippolyta").length === 0) {
-      if (breakCount >= 5000){
-        break;
-      };
-
+    while (
+      $checking &&
+      $checking.find(".hippolyta").length === 0 &&
+      breakCount < 1000
+    ) {
       directions.forEach( function (dir) {
-        var next$liPos = that.$li.index($checking) + dir;
-        $adjTile = that.$li.eq(next$liPos);
+        var checking$liPos = that.$li.index($checking),
+            next$liPos = checking$liPos + dir;
+            $adjTile = that.$li.eq(next$liPos);
         if (
           that.isValidMove('undefined', $adjTile) &&
           (checked$liPositions.indexOf(next$liPos) === -1)
         ) {
+          childToParent[next$liPos] = checking$liPos;
           tilesToCheck.push($adjTile);
         };
       })
@@ -103,7 +107,14 @@
       breakCount++;
     };
 
-    console.log("checked", breakCount, $checking);
+    var checkingKey = this.$li.index($checking),
+        posSequence = [];
+    while (posSequence.indexOf(clicked$liPos) === -1) {
+      checkingKey = childToParent[checkingKey];
+      posSequence.push(checkingKey);
+    }
+
+    console.log(posSequence);
   };
 
   View.prototype.setNextDirOnClick = function (event) {
