@@ -3,6 +3,17 @@
     window.HHH = {};
   }
 
+  if (
+    typeof localStorage.names === "undefined" ||
+    typeof localStorage.scores === "undefined"
+  ) {
+      localStorage.names = JSON.stringify(['ANG']);
+      localStorage.scores = JSON.stringify([2500]);
+  }
+
+  var names = JSON.parse(localStorage.names),
+      scores = JSON.parse(localStorage.scores);
+
   var View = HHH.View = function ($el) {
     this.$el = $el;
     this.board = new HHH.Board(25, 1);
@@ -230,12 +241,21 @@
       this.render();
     };
 
-    if (this.$li.children().filter(".dot").length === 0) {
+    if (this.isWon()) {
       alert("You Win! Your score: " + this.timeLimit);
+
+      names.push('UKN');
+      scores.push(this.timeLimit);
+      localStorage.names = JSON.stringify(names);
+      localStorage.scores = JSON.stringify(scores);
 
       clearInterval(this.run);
       window.location.reload();
     }
+  };
+
+  View.prototype.isWon = function () {
+    return this.$li.children().filter(".dot").length === 0;
   };
 
   View.prototype.render = function () {
