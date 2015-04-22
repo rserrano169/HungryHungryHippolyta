@@ -7,8 +7,8 @@
     typeof localStorage.names === "undefined" ||
     typeof localStorage.scores === "undefined"
   ) {
-      localStorage.names = JSON.stringify(['ANG']);
-      localStorage.scores = JSON.stringify([2500]);
+      localStorage.names = JSON.stringify(['GOOD', 'BAD', 'UGLY']);
+      localStorage.scores = JSON.stringify([2500, 1800, 1338]);
   }
 
   var names = JSON.parse(localStorage.names),
@@ -242,14 +242,29 @@
     };
 
     if (this.isWon()) {
-      alert("You Win! Your score: " + this.timeLimit);
+      clearInterval(this.run);
 
-      names.push('UKN');
+      names.push('YOUR SCORE');
       scores.push(this.timeLimit);
       localStorage.names = JSON.stringify(names);
       localStorage.scores = JSON.stringify(scores);
 
-      clearInterval(this.run);
+      var highScoresArray = [],
+          highScoresString = "";
+
+      for (var i = 0; i < names.length && i < 11; i++) {
+        var highScore = names[i] + " : " + scores[i];
+        highScoresArray.push(highScore);
+      }
+
+      highScoresArray.forEach( function (highScore) {
+        highScoresString += "\n" + highScore;
+      })
+
+      alert(
+        "You Win! Your score: " + this.timeLimit + "\n \nHigh scores:" + highScoresString
+      );
+
       window.location.reload();
     }
   };
