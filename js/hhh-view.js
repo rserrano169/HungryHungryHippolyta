@@ -4,12 +4,18 @@
   };
 
 // *** LOCAL STORAGE *** //
+  var currentLocalStorageVersion = "1";
+
+  if (localStorage.version !== currentLocalStorageVersion) {
+    localStorage.clear();
+    localStorage.version = currentLocalStorageVersion;
+  };
 
   if (typeof localStorage.scores === "undefined") {
       localStorage.scores = JSON.stringify([
-      { name: 'GOOD', number: 2500 },
-    { name: 'BAD', number: 1800 },
-  { name: 'UGLY', number: 1338 }
+        { name: 'GOOD', number: 2500 },
+        { name: 'BAD', number: 1800 },
+        { name: 'UGLY', number: 1338 }
       ]);
   };
   var scores = JSON.parse(localStorage.scores);
@@ -266,7 +272,7 @@
 
       var winAlert = "You Win!\nYour score: " +
                       this.timeLimit +
-                      "\n" +
+                      "\n*****************" +
                       "\nHigh scores:" +
                       highScores;
 
