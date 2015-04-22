@@ -3,16 +3,16 @@
     window.HHH = {};
   }
 
-  if (
-    typeof localStorage.names === "undefined" ||
-    typeof localStorage.scores === "undefined"
-  ) {
-      localStorage.names = JSON.stringify(['GOOD', 'BAD', 'UGLY']);
-      localStorage.scores = JSON.stringify([2500, 1800, 1338]);
-  }
-
-  var names = JSON.parse(localStorage.names),
-      scores = JSON.parse(localStorage.scores);
+  // if (
+  //   typeof localStorage.names === "undefined" ||
+  //   typeof localStorage.scores === "undefined"
+  // ) {
+  //     localStorage.names = JSON.stringify(['GOOD', 'BAD', 'UGLY']);
+  //     localStorage.scores = JSON.stringify([2500, 1800, 1338]);
+  // }
+  //
+  // var names = JSON.parse(localStorage.names),
+  //     scores = JSON.parse(localStorage.scores);
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
@@ -244,25 +244,25 @@
     if (this.isWon()) {
       clearInterval(this.run);
 
-      names.push('YOUR SCORE');
-      scores.push(this.timeLimit);
-      localStorage.names = JSON.stringify(names);
-      localStorage.scores = JSON.stringify(scores);
-
-      var highScoresArray = [],
-          highScoresString = "";
-
-      for (var i = 0; i < names.length && i < 11; i++) {
-        var highScore = names[i] + " : " + scores[i];
-        highScoresArray.push(highScore);
-      }
-
-      highScoresArray.forEach( function (highScore) {
-        highScoresString += "\n" + highScore;
-      })
+      // names.push('YOU');
+      // scores.push(this.timeLimit);
+      // localStorage.names = JSON.stringify(names);
+      // localStorage.scores = JSON.stringify(scores);
+      //
+      // var highScoresArray = [],
+      //     highScoresString = "";
+      //
+      // for (var i = 0; i < names.length && i < 11; i++) {
+      //   var highScore = names[i] + " : " + scores[i];
+      //   highScoresArray.push(highScore);
+      // }
+      //
+      // highScoresArray.forEach( function (highScore) {
+      //   highScoresString += "\n" + highScore;
+      // })
 
       alert(
-        "You Win! Your score: " + this.timeLimit + "\n \nHigh scores:" + highScoresString
+        "You Win! Your score: " + this.timeLimit //+ "\n \nHigh scores:" + highScoresString
       );
 
       window.location.reload();
