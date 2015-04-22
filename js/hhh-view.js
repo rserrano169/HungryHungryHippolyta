@@ -1,18 +1,20 @@
 (function () {
   if (typeof HHH === "undefined") {
     window.HHH = {};
-  }
+  };
 
-  // if (
-  //   typeof localStorage.names === "undefined" ||
-  //   typeof localStorage.scores === "undefined"
-  // ) {
-  //     localStorage.names = JSON.stringify(['GOOD', 'BAD', 'UGLY']);
-  //     localStorage.scores = JSON.stringify([2500, 1800, 1338]);
-  // }
-  //
-  // var names = JSON.parse(localStorage.names),
-  //     scores = JSON.parse(localStorage.scores);
+// *** LOCAL STORAGE *** //
+
+  if (typeof localStorage.scores === "undefined") {
+      localStorage.scores = JSON.stringify([
+      { name: 'GOOD', number: 2500 },
+    { name: 'BAD', number: 1800 },
+  { name: 'UGLY', number: 1338 }
+      ]);
+  };
+  var scores = JSON.parse(localStorage.scores);
+
+// *** LOCAL STORAGE *** //
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
@@ -74,11 +76,15 @@
       ' milliseconds'
     );
 
-    if (this.timeLimit <= 0) {
-      alert("You lose... :(");
+    if (this.isLost()) {
       clearInterval(this.timer);
+      alert("You lose... :(");
       window.location.reload();
     };
+  };
+
+  View.prototype.isLost = function () {
+    return this.timeLimit <= 0
   };
 
   View.prototype.BFSforHippolyta = function (event) {
@@ -244,26 +250,29 @@
     if (this.isWon()) {
       clearInterval(this.run);
 
-      // names.push('YOU');
-      // scores.push(this.timeLimit);
-      // localStorage.names = JSON.stringify(names);
-      // localStorage.scores = JSON.stringify(scores);
-      //
-      // var highScoresArray = [],
-      //     highScoresString = "";
-      //
-      // for (var i = 0; i < names.length && i < 11; i++) {
-      //   var highScore = names[i] + " : " + scores[i];
-      //   highScoresArray.push(highScore);
-      // }
-      //
-      // highScoresArray.forEach( function (highScore) {
-      //   highScoresString += "\n" + highScore;
-      // })
+// *** LOCAL STORAGE *** //
 
-      alert(
-        "You Win! Your score: " + this.timeLimit //+ "\n \nHigh scores:" + highScoresString
-      );
+      scores.push({ name: 'YOU', number: this.timeLimit });
+      scores.sort( function (a, b) {
+        return b.number - a.number;
+      }).slice(0, 10);
+      localStorage.scores = JSON.stringify(scores);
+
+      var highScores = "";
+
+      scores.forEach( function (score) {
+        highScores += "\n" + score.name + " : " + score.number
+      });
+
+      var winAlert = "You Win!\nYour score: " +
+                      this.timeLimit +
+                      "\n" +
+                      "\nHigh scores:" +
+                      highScores;
+
+// *** LOCAL STORAGE *** //
+
+      alert(winAlert);
 
       window.location.reload();
     }
