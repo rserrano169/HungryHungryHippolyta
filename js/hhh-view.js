@@ -18,7 +18,7 @@
       View.STEP_MILLISECONDS
     );
     $(window).on("keydown", this.handleKeyEvent.bind(this));
-    $(window).on("mousedown", this.handleClickEvent.bind(this));
+    $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
   };
 
   View.KEYS = {
