@@ -474,7 +474,7 @@ li {
 
 /* --- HIPPOLYTA --- */
 
-.hippolyta {
+/*.hippolyta {
   display: block;
   position: absolute;
   top: -2px;
@@ -483,9 +483,9 @@ li {
   height: 30px;
   background: darkmagenta;
   border-radius: 50%;
-}
+}*/
 
-/*.hippolyta .left {
+/*.hippolyta.mouth-open.left {
   display: block;
   position: absolute;
   top: -6px;
@@ -498,3 +498,18 @@ li {
   background-repeat: no-repeat;
   background-size: contain;
 }*/
+
+.hippolyta {
+/*.mouth-closed.left*/
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: -1px;
+  width: 32px;
+  height: 36px;
+  background-image: url("../images/hippolyta-mouth-closed-left.png");
+  background-position: top left;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
