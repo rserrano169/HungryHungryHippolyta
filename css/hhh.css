@@ -484,3 +484,17 @@ li {
   background: darkmagenta;
   border-radius: 50%;
 }
+
+/*.hippolyta .left {
+  display: block;
+  position: absolute;
+  top: -6px;
+  left: -9px;
+  width: 32px;
+  height: 36px;
+  background-image: url("../images/hippolyta-mouth-open-left.png");
+  background-position: top left;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: contain;
+}*/

@@ -84,6 +84,7 @@
 
     if (this.isLost()) {
       clearInterval(this.timer);
+      clearInterval(this.run);
       alert("You lose... :(");
       window.location.reload();
     };
@@ -255,6 +256,7 @@
 
     if (this.isWon()) {
       clearInterval(this.run);
+      clearInterval(this.timer);
 
 // *** LOCAL STORAGE *** //
 
