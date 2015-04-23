@@ -485,8 +485,9 @@ li {
   border-radius: 50%;
 }*/
 
-/*.hippolyta.mouth-open.left {
-  display: block;
+/*.hippolyta {*/
+  /*.mouth-open.left*/
+  /*display: block;
   position: absolute;
   top: -6px;
   left: -9px;

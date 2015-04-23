@@ -24,22 +24,23 @@
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
-    this.board = new HHH.Board(25, 1);
-    this.minutes = 5;
-    this.timeLimit = this.minutes * 60 * 1000 / View.TIMER_INTERVAL;
+    this.board = new HHH.Board(View.BOARD_SIZE, View.BOARD_TEMPLATE_NUMBER);
+    this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
     this.isTimerStarted = false;
     this.setupBoard();
     this.numOfDots = this.$li.children().filter(".dot").length;
     this.numOfStartingPowerups = this.$li.children().filter(".powerup").length;
     this.board.hippolyta.nextDir = "STAY";
-    this.run = setInterval(
-      this.step.bind(this),
-      View.STEP_MILLISECONDS
-    );
+    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
     $(window).on("keydown", this.handleKeyEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
   };
 
+  View.BOARD_SIZE = 25;
+  View.BOARD_TEMPLATE_NUMBER = 1;
+  View.TIME_LIMIT_MINUTES = 5;
+  View.TIMER_INTERVAL = 100;
+  View.MOVEMENT_SLOWNESS = 150;
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -47,8 +48,6 @@
     37: "LEFT",
     80: "STAY"      // "P" button to pause game
   };
-  View.STEP_MILLISECONDS = 150;
-  View.TIMER_INTERVAL = 100;
 
   View.prototype.handleKeyEvent = function (event) {
     if (View.KEYS[event.keyCode]) {
@@ -70,12 +69,12 @@
 
   View.prototype.startTimer = function () {
     if(this.isTimerStarted === false) {
-      this.timer = setInterval(this.tick.bind(this), View.TIMER_INTERVAL);
+      this.timer = setInterval(this.countDown.bind(this), View.TIMER_INTERVAL);
       this.isTimerStarted = true;
     };
   };
 
-  View.prototype.tick = function () {
+  View.prototype.countDown = function () {
     this.timeLimit -= 1;
     this.$el.find(".timer").html(
       '<b>Timer/Score: </b>' + this.timeLimit +
@@ -96,9 +95,9 @@
 
   View.prototype.BFSforHippolyta = function (event) {
     if ($(event.target).is("li")) {
-      var $clickedTile = $(event.target);
+        var $clickedTile = $(event.target);
     } else {
-      var $clickedTile = $(event.target).parent();
+        var $clickedTile = $(event.target).parent();
     };
 
     var directions = [-25, 1, 25, -1],
@@ -117,10 +116,10 @@
             $adjTile = that.$li.eq(next$liPos);
         if (
           that.isValidMove('undefined', $adjTile) &&
-          (checked$liPositions.indexOf(next$liPos) === -1)
+          checked$liPositions.indexOf(next$liPos) === -1
         ) {
-          childToParent[next$liPos] = checking$liPos;
-          tilesToCheck.push($adjTile);
+            childToParent[next$liPos] = checking$liPos;
+            tilesToCheck.push($adjTile);
         };
       })
 
@@ -128,14 +127,13 @@
       $checking = tilesToCheck.shift();
     };
 
-    var checkingKey = this.$li.index($checking),
+    var $foundHippolytaTile = $checking,
+        child$liPos = this.$li.index($foundHippolytaTile),
         posSequence = [];
-
-    while (posSequence.indexOf(clicked$liPos) === -1 && checkingKey > 0) {
-      checkingKey = childToParent[checkingKey];
-      posSequence.push(checkingKey);
+    while (posSequence.indexOf(clicked$liPos) === -1 && child$liPos > 0) {
+      child$liPos = childToParent[child$liPos];
+      posSequence.push(child$liPos);
     }
-
     if (!this.isValidMove('undefined', $clickedTile)) {
       posSequence.pop();
     };
@@ -147,13 +145,13 @@
   View.prototype.setDirWithBFS = function () {
     if (this.BFSsequence) {
       if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
-        this.board.hippolyta.nextDir = "UP";
+          this.board.hippolyta.nextDir = "UP";
       } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
-        this.board.hippolyta.nextDir = "RIGHT";
+          this.board.hippolyta.nextDir = "RIGHT";
       } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
-        this.board.hippolyta.nextDir = "DOWN";
+          this.board.hippolyta.nextDir = "DOWN";
       } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
-        this.board.hippolyta.nextDir = "LEFT";
+          this.board.hippolyta.nextDir = "LEFT";
       };
     };
 
@@ -171,29 +169,20 @@
     );
 
     if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "UP";
+        this.board.hippolyta.nextDir = "UP";
     } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "RIGHT";
+        this.board.hippolyta.nextDir = "RIGHT";
     } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "DOWN";
+        this.board.hippolyta.nextDir = "DOWN";
     } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "LEFT";
+        this.board.hippolyta.nextDir = "LEFT";
     } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
-      this.board.hippolyta.nextDir = "STAY";
+        this.board.hippolyta.nextDir = "STAY";
     };
   };
 
   View.prototype.numOfPowerups = function () {
     return this.$li.children().filter(".powerup").length;
-  };
-
-  View.prototype.isPoweredup = function () {
-    if (this.numOfStartingPowerups > this.numOfPowerups()) {
-      this.numOfStartingPowerups = this.numOfPowerups();
-      return true;
-    };
-
-    return false;
   };
 
   View.prototype.isValidMove = function (dir, $tile) {
@@ -221,27 +210,13 @@
     return this.$li.eq(this.board.hippolyta.next$liPos(dir));
   };
 
-  View.prototype.$currentTile = function () {
-    return this.$li.eq(this.board.hippolyta.$liPos());
-  };
-
   View.prototype.step = function () {
-    if (this.isPoweredup()) {
-      View.STEP_MILLISECONDS -= 200;
-      clearInterval(this.run);
-      this.run = setInterval(
-        this.step.bind(this),
-        View.STEP_MILLISECONDS
-      );
+    if (this.hasEatenPowerup()) {
+      this.boostSpeed();
     };
 
-    if (View.STEP_MILLISECONDS < 200) {
-      View.STEP_MILLISECONDS += 2;
-      clearInterval(this.run);
-      this.run = setInterval(
-        this.step.bind(this),
-        View.STEP_MILLISECONDS
-      );
+    if (this.isSpeedBoosted()) {
+      this.increaseSlowness();
     };
 
     this.setDirWithBFS();
@@ -286,6 +261,33 @@
     }
   };
 
+  View.prototype.hasEatenPowerup = function () {
+    if (this.numOfStartingPowerups > this.numOfPowerups()) {
+      this.numOfStartingPowerups = this.numOfPowerups();
+      return true;
+    };
+
+    return false;
+  };
+
+  View.prototype.boostSpeed = function () {
+    View.MOVEMENT_SLOWNESS -= 200;
+    clearInterval(this.run);
+
+    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+  };
+
+  View.prototype.isSpeedBoosted = function () {
+    return View.MOVEMENT_SLOWNESS < 200;
+  };
+
+  View.prototype.increaseSlowness = function () {
+    View.MOVEMENT_SLOWNESS += 2;
+    clearInterval(this.run);
+
+    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+  };
+
   View.prototype.isWon = function () {
     return this.$li.children().filter(".dot").length === 0;
   };
@@ -318,6 +320,10 @@
     } else {
         this.$currentTile().html('<div class="hippolyta"></div>');
     };
+  };
+
+  View.prototype.$currentTile = function () {
+    return this.$li.eq(this.board.hippolyta.$liPos());
   };
 
   View.prototype.setupBoard = function () {
