@@ -28,6 +28,7 @@
     this.numOfStartingPowerups = this.$li.children().filter(".powerup").length;
     this.board.hippolyta.prevHorDir = "LEFT";
     this.board.hippolyta.nextDir = "STAY";
+    this.board.hippolyta.mouthClosed = true;
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
     $(window).on("keydown", this.handleKeyEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
@@ -59,15 +60,22 @@
       this.increaseSlowness();
     };
 
-    this.setNextDirWithBFS(); // if applicable
+    if (this.board.hippolyta.mouthClosed === true) {
+        this.board.hippolyta.mouthClosed = false;
+        this.renderMouthOpen();
+    } else {
+        this.setNextDirWithBFS(); // if applicable
 
-    if (this.isNextDirValid()) {
-      this.setPrevHorDir();
-      this.changeDirection();
-    };
-    console.log(this.board.hippolyta.prevHorDir);
-    if (this.isValidMove()) {
-      this.render();
+        if (this.isNextDirValid()) {
+          this.setPrevHorDir();
+          this.changeDirection();
+        };
+
+        if (this.isValidMove()) {
+          this.render();
+        };
+
+        this.board.hippolyta.mouthClosed = true;
     };
 
     if (this.isWon()) {
@@ -108,6 +116,52 @@
     clearInterval(this.run);
 
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+  };
+
+  View.prototype.renderMouthOpen = function () {
+    if (
+      this.board.hippolyta.dir === "STAY" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+        this.$currentTile().html('<div id="hippolyta"></div>')
+          .append('<div class="hippolyta-mouth-closed-left"></div>');
+    } else if (
+      this.board.hippolyta.dir === "STAY" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+        this.$currentTile().html('<div id="hippolyta"></div>')
+          .append('<div class="hippolyta-mouth-closed-right"></div>');
+    } else if (
+      this.board.hippolyta.dir === "UP" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+        this.$currentTile().html('<div id="hippolyta"></div>')
+          .append('<div class="hippolyta-mouth-open-up-left"></div>');
+    } else if (
+      this.board.hippolyta.dir === "UP" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+        this.$currentTile().html('<div id="hippolyta"></div>')
+          .append('<div class="hippolyta-mouth-open-up-right"></div>');
+    } else if (
+      this.board.hippolyta.dir === "DOWN" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+        this.$currentTile().html('<div id="hippolyta"></div>')
+          .append('<div class="hippolyta-mouth-open-down-left"></div>');
+    } else if (
+      this.board.hippolyta.dir === "DOWN" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+        this.$currentTile().html('<div id="hippolyta"></div>')
+          .append('<div class="hippolyta-mouth-open-down-right"></div>');
+    } else if (this.board.hippolyta.dir === "LEFT") {
+        this.$currentTile().html('<div id="hippolyta"></div>')
+          .append('<div class="hippolyta-mouth-open-left"></div>');
+    } else if (this.board.hippolyta.dir === "RIGHT") {
+        this.$currentTile().html('<div id="hippolyta"></div>')
+          .append('<div class="hippolyta-mouth-open-right"></div>');
+    };
   };
 
   View.prototype.isNextDirValid = function () {

@@ -485,19 +485,7 @@ li {
   border-radius: 50%;
 }*/
 
-.hippolyta-mouth-open-left {
-  display: block;
-  position: absolute;
-  top: -6px;
-  left: -9px;
-  width: 32px;
-  height: 32px;
-  background-image: url("../images/hippolyta-mouth-open-left.png");
-  background-position: top left;
-  background-attachment: scroll;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
+/* --- MOUTH CLOSED --- */
 
 .hippolyta-mouth-closed-left {
   display: block;
@@ -578,6 +566,92 @@ li {
   height: 32px;
   background-image: url("../images/hippolyta-mouth-closed-down-right.png");
   background-position: top left;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* --- MOUTH OPEN --- */
+
+.hippolyta-mouth-open-left {
+  display: block;
+  position: absolute;
+  top: -6px;
+  left: -9px;
+  width: 32px;
+  height: 32px;
+  background-image: url("../images/hippolyta-mouth-open-left.png");
+  background-position: top left;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.hippolyta-mouth-open-right {
+  display: block;
+  position: absolute;
+  top: -6px;
+  right: -9px;
+  width: 32px;
+  height: 32px;
+  background-image: url("../images/hippolyta-mouth-open-right.png");
+  background-position: top right;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.hippolyta-mouth-open-up-left {
+  display: block;
+  position: absolute;
+  top: -9px;
+  right: -6px;
+  width: 32px;
+  height: 32px;
+  background-image: url("../images/hippolyta-mouth-open-up-left.png");
+  background-position: top right;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.hippolyta-mouth-open-up-right {
+  display: block;
+  position: absolute;
+  top: -9px;
+  left: -6px;
+  width: 32px;
+  height: 32px;
+  background-image: url("../images/hippolyta-mouth-open-up-right.png");
+  background-position: top left;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.hippolyta-mouth-open-down-left {
+  display: block;
+  position: absolute;
+  bottom: -9px;
+  left: -6px;
+  width: 32px;
+  height: 32px;
+  background-image: url("../images/hippolyta-mouth-open-down-left.png");
+  background-position: bottom left;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.hippolyta-mouth-open-down-right {
+  display: block;
+  position: absolute;
+  bottom: -9px;
+  right: -6px;
+  width: 32px;
+  height: 32px;
+  background-image: url("../images/hippolyta-mouth-open-down-right.png");
+  background-position: bottom right;
   background-attachment: scroll;
   background-repeat: no-repeat;
   background-size: contain;
