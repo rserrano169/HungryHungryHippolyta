@@ -3,9 +3,7 @@
     window.HHH = {};
   };
 
-// *** LOCAL STORAGE *** //
   var currentLocalStorageVersion = "1";
-
   if (localStorage.version !== currentLocalStorageVersion) {
     localStorage.clear();
     localStorage.version = currentLocalStorageVersion;
@@ -19,8 +17,6 @@
       ]);
   };
   var scores = JSON.parse(localStorage.scores);
-
-// *** LOCAL STORAGE *** //
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
@@ -51,6 +47,133 @@
     80: "STAY"  // "P" button to pause game
   };
 
+  View.prototype.step = function () {
+    if (this.hasEatenPowerup()) {
+      this.boostSpeed();
+    };
+
+    if (this.isSpeedBoosted()) {
+      this.increaseSlowness();
+    };
+
+    this.setNextDirWithBFS(); // if applicable
+
+    if (this.isNextDirValid()) {
+      this.changeDirection();
+    };
+
+    if (this.isValidMove()) {
+      this.render();
+    };
+
+    if (this.isWon()) {
+      clearInterval(this.timer);
+      clearInterval(this.run);
+      this.recordScore();
+      this.alertWin();
+      window.location.reload();
+    };
+  };
+
+  View.prototype.hasEatenPowerup = function () {
+    if (this.numOfStartingPowerups > this.numOfPowerups()) {
+      this.numOfStartingPowerups = this.numOfPowerups();
+      return true;
+    };
+
+    return false;
+  };
+
+  View.prototype.numOfPowerups = function () {
+    return this.$li.children().filter(".powerup").length;
+  };
+
+  View.prototype.boostSpeed = function () {
+    View.MOVEMENT_SLOWNESS -= 200;
+    clearInterval(this.run);
+
+    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+  };
+
+  View.prototype.isSpeedBoosted = function () {
+    return View.MOVEMENT_SLOWNESS < 200;
+  };
+
+  View.prototype.increaseSlowness = function () {
+    View.MOVEMENT_SLOWNESS += 2;
+    clearInterval(this.run);
+
+    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+  };
+
+  View.prototype.isNextDirValid = function () {
+    return this.isValidMove(this.board.hippolyta.nextDir);
+  };
+
+  View.prototype.changeDirection = function () {
+    return this.board.hippolyta.dir = this.board.hippolyta.nextDir;
+  };
+
+  View.prototype.isValidMove = function (dir, $tile) {
+    if (typeof dir === 'undefined') {
+      dir = this.board.hippolyta.dir;
+    };
+
+    if (typeof $tile === 'undefined') {
+      $tile = this.$nextTile(dir);
+    };
+
+    return (
+      $tile.children().hasClass("dot") ||
+      $tile.children().hasClass("powerup") ||
+      $tile.children().hasClass("portal") ||
+      $tile.children().hasClass("") ||
+      $tile.children().hasClass("hippolyta")
+    );
+  };
+
+  View.prototype.$nextTile = function (dir) {
+    if (typeof dir === 'undefined') {
+      dir = this.board.hippolyta.dir;
+    };
+
+    return this.$li.eq(this.board.hippolyta.next$liPos(dir));
+  };
+
+  View.prototype.render = function () {
+    if (this.$currentTile().children().hasClass("portal-left")) {
+        this.$currentTile()
+          .html('<div class="portal portal-left"></div>')
+          .append('<div class="portal portal-left-overlay"></div>');
+    } else if (this.$currentTile().children().hasClass("portal-right")) {
+        this.$currentTile()
+          .html('<div class="portal portal-right"></div>')
+          .append('<div class="portal portal-right-overlay"></div>');
+    } else {
+        this.$currentTile().html('<div class=""></div>');
+    };
+
+    this.board.hippolyta.move();
+
+    if (this.$currentTile().children().hasClass("portal-left")) {
+        this.$currentTile()
+          .html('<div class="portal portal-left"></div>')
+          .append('<div class="portal portal-left-overlay"></div>')
+          .append('<div class="portal portal-left-pass-through"></div>');
+    } else if (this.$currentTile().children().hasClass("portal-right")) {
+        this.$currentTile()
+        .html('<div class="portal portal-right"></div>')
+          .append('<div class="portal portal-right-overlay"></div>')
+          .append('<div class="portal portal-right-pass-through"></div>');
+    } else {
+        this.$currentTile().html('<div class="hippolyta"></div>');
+    };
+  };
+
+  View.prototype.$currentTile = function () {
+    return this.$li.eq(this.board.hippolyta.$liPos());
+  };
+
   View.prototype.handleKeyEvent = function (event) {
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
@@ -66,6 +189,94 @@
         this.BFSforHippolyta(event);
     } else {
         this.setNextDirNESWonClick(event);
+    };
+  };
+
+  View.prototype.setNextDirWithBFS = function () {
+    if (this.BFSsequence) {
+      if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
+          this.board.hippolyta.nextDir = "UP";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
+          this.board.hippolyta.nextDir = "RIGHT";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
+          this.board.hippolyta.nextDir = "DOWN";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
+          this.board.hippolyta.nextDir = "LEFT";
+      };
+    };
+
+    this.BFScounter++;
+  };
+
+  View.prototype.BFSforHippolyta = function (event) {
+    if ($(event.target).is("li")) {
+        var $clickedTile = $(event.target);
+    } else {
+        var $clickedTile = $(event.target).parent();
+    };
+
+    var directions = [-25, 1, 25, -1],
+        clicked$liPos = this.$li.index($clickedTile),
+        checked$liPositions = [],
+        tilesToCheck = [$clickedTile],
+        $checking = tilesToCheck.shift(),
+        breakCount = 0;
+        childToParent = {},
+        that = this;
+
+    while ($checking && $checking.find(".hippolyta").length === 0) {
+      directions.forEach( function (dir) {
+        var checking$liPos = that.$li.index($checking),
+        next$liPos = checking$liPos + dir;
+        $adjTile = that.$li.eq(next$liPos);
+        if (
+          that.isValidMove('undefined', $adjTile) &&
+          checked$liPositions.indexOf(next$liPos) === -1
+        ) {
+            childToParent[next$liPos] = checking$liPos;
+            tilesToCheck.push($adjTile);
+        };
+      })
+
+      checked$liPositions.push(this.$li.index($checking));
+      $checking = tilesToCheck.shift();
+    };
+
+    var $foundHippolytaTile = $checking,
+        child$liPos = this.$li.index($foundHippolytaTile),
+        posSequence = [];
+    while (posSequence.indexOf(clicked$liPos) === -1 && child$liPos > 0) {
+      child$liPos = childToParent[child$liPos];
+      posSequence.push(child$liPos);
+    }
+    if (!this.isValidMove('undefined', $clickedTile)) {
+      posSequence.pop();
+    };
+
+    this.BFScounter = 0;
+    return this.BFSsequence = posSequence;
+  };
+
+  View.prototype.setNextDirNESWonClick = function (event) {
+    var clickWindowCoord = new HHH.Coord(
+      event.pageX,
+      event.pageY
+    );
+    var hippolytaCenterWindowCoord = new HHH.Coord(
+      Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
+      Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
+    );
+
+    if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "UP";
+    } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "RIGHT";
+    } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "DOWN";
+    } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "LEFT";
+    } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
+        this.board.hippolyta.nextDir = "STAY";
     };
   };
 
@@ -95,179 +306,6 @@
     return this.timeLimit <= 0
   };
 
-  View.prototype.setNextDirNESWonClick = function (event) {
-    var clickWindowCoord = new HHH.Coord(
-      event.pageX,
-      event.pageY
-    );
-    var hippolytaCenterWindowCoord = new HHH.Coord(
-      Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
-      Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
-    );
-
-    if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "UP";
-    } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "RIGHT";
-    } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "DOWN";
-    } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "LEFT";
-    } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "STAY";
-    };
-  };
-
-  View.prototype.numOfPowerups = function () {
-    return this.$li.children().filter(".powerup").length;
-  };
-
-  View.prototype.isValidMove = function (dir, $tile) {
-    if (typeof dir === 'undefined') {
-      dir = this.board.hippolyta.dir;
-    };
-
-    if (typeof $tile === 'undefined') {
-      $tile = this.$nextTile(dir);
-    };
-
-    return (
-      $tile.children().hasClass("dot") ||
-      $tile.children().hasClass("powerup") ||
-      $tile.children().hasClass("portal") ||
-      $tile.children().hasClass("") ||
-      $tile.children().hasClass("hippolyta")
-    );
-  };
-
-  View.prototype.$nextTile = function (dir) {
-    if (typeof dir === 'undefined') {
-      dir = this.board.hippolyta.dir;
-    };
-
-    return this.$li.eq(this.board.hippolyta.next$liPos(dir));
-  };
-
-  View.prototype.step = function () {
-    if (this.hasEatenPowerup()) {
-      this.boostSpeed();
-    };
-
-    if (this.isSpeedBoosted()) {
-      this.increaseSlowness();
-    };
-
-    this.setNextDirWithBFS();
-
-    if (this.isValidMove(this.board.hippolyta.nextDir)) {
-      this.board.hippolyta.dir = this.board.hippolyta.nextDir;
-    };
-
-    if (this.isValidMove()) {
-      this.render();
-    };
-
-    if (this.isWon()) {
-      clearInterval(this.timer);
-      clearInterval(this.run);
-      this.recordScore();
-      this.alertWin();
-      window.location.reload();
-    };
-  };
-
-  View.prototype.hasEatenPowerup = function () {
-    if (this.numOfStartingPowerups > this.numOfPowerups()) {
-      this.numOfStartingPowerups = this.numOfPowerups();
-      return true;
-    };
-
-    return false;
-  };
-
-  View.prototype.boostSpeed = function () {
-    View.MOVEMENT_SLOWNESS -= 200;
-    clearInterval(this.run);
-
-    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
-  };
-
-  View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 200;
-  };
-
-  View.prototype.increaseSlowness = function () {
-    View.MOVEMENT_SLOWNESS += 2;
-    clearInterval(this.run);
-
-    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
-  };
-
-  View.prototype.setNextDirWithBFS = function () {
-    if (this.BFSsequence) {
-      if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
-        this.board.hippolyta.nextDir = "UP";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
-        this.board.hippolyta.nextDir = "RIGHT";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
-        this.board.hippolyta.nextDir = "DOWN";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
-        this.board.hippolyta.nextDir = "LEFT";
-      };
-    };
-
-    this.BFScounter++;
-  };
-
-  View.prototype.BFSforHippolyta = function (event) {
-    if ($(event.target).is("li")) {
-      var $clickedTile = $(event.target);
-    } else {
-      var $clickedTile = $(event.target).parent();
-    };
-
-    var directions = [-25, 1, 25, -1],
-    clicked$liPos = this.$li.index($clickedTile),
-    checked$liPositions = [],
-    tilesToCheck = [$clickedTile],
-    $checking = tilesToCheck.shift(),
-    breakCount = 0;
-    childToParent = {},
-    that = this;
-
-    while ($checking && $checking.find(".hippolyta").length === 0) {
-      directions.forEach( function (dir) {
-        var checking$liPos = that.$li.index($checking),
-        next$liPos = checking$liPos + dir;
-        $adjTile = that.$li.eq(next$liPos);
-        if (
-          that.isValidMove('undefined', $adjTile) &&
-          checked$liPositions.indexOf(next$liPos) === -1
-        ) {
-          childToParent[next$liPos] = checking$liPos;
-          tilesToCheck.push($adjTile);
-        };
-      })
-
-      checked$liPositions.push(this.$li.index($checking));
-      $checking = tilesToCheck.shift();
-    };
-
-    var $foundHippolytaTile = $checking,
-    child$liPos = this.$li.index($foundHippolytaTile),
-    posSequence = [];
-    while (posSequence.indexOf(clicked$liPos) === -1 && child$liPos > 0) {
-      child$liPos = childToParent[child$liPos];
-      posSequence.push(child$liPos);
-    }
-    if (!this.isValidMove('undefined', $clickedTile)) {
-      posSequence.pop();
-    };
-
-    this.BFScounter = 0;
-    return this.BFSsequence = posSequence;
-  };
-
   View.prototype.isWon = function () {
     return this.$li.children().filter(".dot").length === 0;
   };
@@ -292,40 +330,6 @@
                     "\nHigh scores:" +
                     highScores;
     alert(winAlert);
-  };
-
-  View.prototype.render = function () {
-    if (this.$currentTile().children().hasClass("portal-left")) {
-        this.$currentTile()
-          .html('<div class="portal portal-left"></div>')
-          .append('<div class="portal portal-left-overlay"></div>');
-    } else if (this.$currentTile().children().hasClass("portal-right")) {
-        this.$currentTile()
-          .html('<div class="portal portal-right"></div>')
-          .append('<div class="portal portal-right-overlay"></div>');
-    } else {
-        this.$currentTile().html('<div class=""></div>');
-    };
-
-    this.board.hippolyta.move();
-
-    if (this.$currentTile().children().hasClass("portal-left")) {
-        this.$currentTile()
-          .html('<div class="portal portal-left"></div>')
-          .append('<div class="portal portal-left-overlay"></div>')
-          .append('<div class="portal portal-left-pass-through"></div>');
-    } else if (this.$currentTile().children().hasClass("portal-right")) {
-        this.$currentTile()
-          .html('<div class="portal portal-right"></div>')
-          .append('<div class="portal portal-right-overlay"></div>')
-          .append('<div class="portal portal-right-pass-through"></div>');
-    } else {
-        this.$currentTile().html('<div class="hippolyta"></div>');
-    };
-  };
-
-  View.prototype.$currentTile = function () {
-    return this.$li.eq(this.board.hippolyta.$liPos());
   };
 
   View.prototype.setupBoard = function () {
