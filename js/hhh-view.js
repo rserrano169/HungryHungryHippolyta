@@ -24,7 +24,7 @@
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
-    this.board = new HHH.Board(View.BOARD_SIZE, View.BOARD_TEMPLATE_NUMBER);
+    this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER, View.BOARD_SIZE);
     this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
     this.isTimerStarted = false;
     this.setupBoard();
@@ -36,8 +36,10 @@
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
   };
 
-  View.BOARD_SIZE = 25;
   View.BOARD_TEMPLATE_NUMBER = 1;
+    if (View.BOARD_TEMPLATE_NUMBER === 1) {
+      View.BOARD_SIZE = 25;
+    };
   View.TIME_LIMIT_MINUTES = 5;
   View.TIMER_INTERVAL = 100;
   View.MOVEMENT_SLOWNESS = 150;
@@ -46,7 +48,7 @@
     39: "RIGHT",
     40: "DOWN",
     37: "LEFT",
-    80: "STAY"      // "P" button to pause game
+    80: "STAY"  // "P" button to pause game
   };
 
   View.prototype.handleKeyEvent = function (event) {
@@ -63,7 +65,7 @@
     if (this.BFSforHippolyta(event).length > 0) {
         this.BFSforHippolyta(event);
     } else {
-        this.setDirNESWonClick(event);
+        this.setNextDirNESWonClick(event);
     };
   };
 
@@ -93,72 +95,7 @@
     return this.timeLimit <= 0
   };
 
-  View.prototype.BFSforHippolyta = function (event) {
-    if ($(event.target).is("li")) {
-        var $clickedTile = $(event.target);
-    } else {
-        var $clickedTile = $(event.target).parent();
-    };
-
-    var directions = [-25, 1, 25, -1],
-        clicked$liPos = this.$li.index($clickedTile),
-        checked$liPositions = [],
-        tilesToCheck = [$clickedTile],
-        $checking = tilesToCheck.shift(),
-        breakCount = 0;
-        childToParent = {},
-        that = this;
-
-    while ($checking && $checking.find(".hippolyta").length === 0) {
-      directions.forEach( function (dir) {
-        var checking$liPos = that.$li.index($checking),
-            next$liPos = checking$liPos + dir;
-            $adjTile = that.$li.eq(next$liPos);
-        if (
-          that.isValidMove('undefined', $adjTile) &&
-          checked$liPositions.indexOf(next$liPos) === -1
-        ) {
-            childToParent[next$liPos] = checking$liPos;
-            tilesToCheck.push($adjTile);
-        };
-      })
-
-      checked$liPositions.push(this.$li.index($checking));
-      $checking = tilesToCheck.shift();
-    };
-
-    var $foundHippolytaTile = $checking,
-        child$liPos = this.$li.index($foundHippolytaTile),
-        posSequence = [];
-    while (posSequence.indexOf(clicked$liPos) === -1 && child$liPos > 0) {
-      child$liPos = childToParent[child$liPos];
-      posSequence.push(child$liPos);
-    }
-    if (!this.isValidMove('undefined', $clickedTile)) {
-      posSequence.pop();
-    };
-
-    this.BFScounter = 0;
-    return this.BFSsequence = posSequence;
-  };
-
-  View.prototype.setDirWithBFS = function () {
-    if (this.BFSsequence) {
-      if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
-          this.board.hippolyta.nextDir = "UP";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
-          this.board.hippolyta.nextDir = "RIGHT";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
-          this.board.hippolyta.nextDir = "DOWN";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
-          this.board.hippolyta.nextDir = "LEFT";
-      };
-    };
-
-    this.BFScounter++;
-  };
-
-  View.prototype.setDirNESWonClick = function (event) {
+  View.prototype.setNextDirNESWonClick = function (event) {
     var clickWindowCoord = new HHH.Coord(
       event.pageX,
       event.pageY
@@ -207,6 +144,7 @@
     if (typeof dir === 'undefined') {
       dir = this.board.hippolyta.dir;
     };
+
     return this.$li.eq(this.board.hippolyta.next$liPos(dir));
   };
 
@@ -219,7 +157,7 @@
       this.increaseSlowness();
     };
 
-    this.setDirWithBFS();
+    this.setNextDirWithBFS();
 
     if (this.isValidMove(this.board.hippolyta.nextDir)) {
       this.board.hippolyta.dir = this.board.hippolyta.nextDir;
@@ -230,35 +168,12 @@
     };
 
     if (this.isWon()) {
-      clearInterval(this.run);
       clearInterval(this.timer);
-
-// *** LOCAL STORAGE *** //
-
-      scores.push({ name: 'YOU', number: this.timeLimit });
-      scores.sort( function (a, b) {
-        return b.number - a.number;
-      }).slice(0, 10);
-      localStorage.scores = JSON.stringify(scores);
-
-      var highScores = "";
-
-      scores.forEach( function (score) {
-        highScores += "\n" + score.name + " : " + score.number
-      });
-
-      var winAlert = "You Win!\nYour score: " +
-                      this.timeLimit +
-                      "\n*****************" +
-                      "\nHigh scores:" +
-                      highScores;
-
-// *** LOCAL STORAGE *** //
-
-      alert(winAlert);
-
+      clearInterval(this.run);
+      this.recordScore();
+      this.alertWin();
       window.location.reload();
-    }
+    };
   };
 
   View.prototype.hasEatenPowerup = function () {
@@ -288,8 +203,95 @@
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
   };
 
+  View.prototype.setNextDirWithBFS = function () {
+    if (this.BFSsequence) {
+      if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
+        this.board.hippolyta.nextDir = "UP";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
+        this.board.hippolyta.nextDir = "RIGHT";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
+        this.board.hippolyta.nextDir = "DOWN";
+      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
+        this.board.hippolyta.nextDir = "LEFT";
+      };
+    };
+
+    this.BFScounter++;
+  };
+
+  View.prototype.BFSforHippolyta = function (event) {
+    if ($(event.target).is("li")) {
+      var $clickedTile = $(event.target);
+    } else {
+      var $clickedTile = $(event.target).parent();
+    };
+
+    var directions = [-25, 1, 25, -1],
+    clicked$liPos = this.$li.index($clickedTile),
+    checked$liPositions = [],
+    tilesToCheck = [$clickedTile],
+    $checking = tilesToCheck.shift(),
+    breakCount = 0;
+    childToParent = {},
+    that = this;
+
+    while ($checking && $checking.find(".hippolyta").length === 0) {
+      directions.forEach( function (dir) {
+        var checking$liPos = that.$li.index($checking),
+        next$liPos = checking$liPos + dir;
+        $adjTile = that.$li.eq(next$liPos);
+        if (
+          that.isValidMove('undefined', $adjTile) &&
+          checked$liPositions.indexOf(next$liPos) === -1
+        ) {
+          childToParent[next$liPos] = checking$liPos;
+          tilesToCheck.push($adjTile);
+        };
+      })
+
+      checked$liPositions.push(this.$li.index($checking));
+      $checking = tilesToCheck.shift();
+    };
+
+    var $foundHippolytaTile = $checking,
+    child$liPos = this.$li.index($foundHippolytaTile),
+    posSequence = [];
+    while (posSequence.indexOf(clicked$liPos) === -1 && child$liPos > 0) {
+      child$liPos = childToParent[child$liPos];
+      posSequence.push(child$liPos);
+    }
+    if (!this.isValidMove('undefined', $clickedTile)) {
+      posSequence.pop();
+    };
+
+    this.BFScounter = 0;
+    return this.BFSsequence = posSequence;
+  };
+
   View.prototype.isWon = function () {
     return this.$li.children().filter(".dot").length === 0;
+  };
+
+  View.prototype.recordScore = function () {
+    scores.push({ name: 'YOU', number: this.timeLimit });
+    scores.sort( function (a, b) {
+      return b.number - a.number;
+    }).slice(0, 10);
+    localStorage.scores = JSON.stringify(scores);
+  };
+
+  View.prototype.alertWin = function () {
+    var highScores = "";
+    scores.forEach( function (score) {
+      highScores += "\n" + score.name + " : " + score.number
+    });
+
+    var winAlert = "You Win!\nYour score: " +
+                    this.timeLimit +
+                    "\n*****************" +
+                    "\nHigh scores:" +
+                    highScores;
+    alert(winAlert);
   };
 
   View.prototype.render = function () {

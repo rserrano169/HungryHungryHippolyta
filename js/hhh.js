@@ -5,9 +5,9 @@
 
 //* --- BOARD --- *//
 
-  var Board = HHH.Board = function (dimension, templateNum) {
-    this.dim = dimension;
+  var Board = HHH.Board = function (templateNum, size) {
     this.temp = templateNum;
+    this.dim = size;
     this.hippolyta = new HHH.Hippolyta(this);
   };
 
