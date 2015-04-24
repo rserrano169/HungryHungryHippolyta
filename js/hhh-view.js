@@ -52,9 +52,6 @@
   };
 
   View.prototype.step = function () {
-    console.log("next dir", this.board.hippolyta.nextDir);
-    console.log("prev dir", this.board.hippolyta.prevHorDir);
-    console.log("mouth closed", this.board.hippolyta.isMouthClosed);
     if (this.hasEatenPowerup()) {
       this.boostSpeed();
     };
@@ -64,6 +61,7 @@
     };
 
     if (this.board.hippolyta.isMouthClosed === true) {
+        this.board.hippolyta.isMouthClosed = false;
         this.renderMouthOpen();
     } else {
         this.setNextDirWithBFS(); // if applicable
@@ -127,16 +125,12 @@
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
           .append('<div class="hippolyta-mouth-closed-left"></div>');
-
-        return this.board.hippolyta.isMouthClosed = true;
     } else if (
       this.board.hippolyta.dir === "STAY" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
           .append('<div class="hippolyta-mouth-closed-right"></div>');
-
-        return this.board.hippolyta.isMouthClosed = true;
     } else if (
       this.board.hippolyta.dir === "UP" &&
       this.board.hippolyta.prevHorDir === "LEFT"
@@ -232,8 +226,6 @@
   View.prototype.renderMovingTo = function () {
     if (this.isMovingToOrFromPortal()) {
         this.renderMovingToPortal();
-
-// *** IMAGE DIRECTION CONSIDERATIONS *** //
     } else if (
       this.board.hippolyta.dir === "STAY" &&
       this.board.hippolyta.prevHorDir === "LEFT"
