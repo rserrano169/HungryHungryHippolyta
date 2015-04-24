@@ -42,7 +42,7 @@
     };
   View.TIME_LIMIT_MINUTES = 5;
   View.TIMER_INTERVAL = 100;
-  View.MOVEMENT_SLOWNESS = 150;
+  View.MOVEMENT_SLOWNESS = 140;
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -101,18 +101,18 @@
   };
 
   View.prototype.boostSpeed = function () {
-    View.MOVEMENT_SLOWNESS -= 200;
+    View.MOVEMENT_SLOWNESS /= 5;
     clearInterval(this.run);
 
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
   };
 
   View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 200;
+    return View.MOVEMENT_SLOWNESS < 140;
   };
 
   View.prototype.increaseSlowness = function () {
-    View.MOVEMENT_SLOWNESS += 2;
+    View.MOVEMENT_SLOWNESS += 1.5;
     clearInterval(this.run);
 
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
