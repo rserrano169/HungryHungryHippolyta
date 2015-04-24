@@ -26,13 +26,13 @@
     this.setupBoard();
     this.numOfDots = this.$li.children().filter(".dot").length;
     this.numOfStartingPowerups = this.$li.children().filter(".powerup").length;
-    this.board.hippolyta.prevHorDir = "LEFT";
     this.board.hippolyta.nextDir = "STAY";
-    this.board.hippolyta.mouthClosed = true;
+    this.board.hippolyta.prevHorDir = "LEFT";
+    this.board.hippolyta.isMouthClosed = true;
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
     $(window).on("keydown", this.handleKeyEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
-    this.BFScounter = 0;
+    this.BFSindex = 0;
     this.BFSsequence = [];
   };
 
@@ -52,6 +52,9 @@
   };
 
   View.prototype.step = function () {
+    console.log("next dir", this.board.hippolyta.nextDir);
+    console.log("prev dir", this.board.hippolyta.prevHorDir);
+    console.log("mouth closed", this.board.hippolyta.isMouthClosed);
     if (this.hasEatenPowerup()) {
       this.boostSpeed();
     };
@@ -60,8 +63,7 @@
       this.increaseSlowness();
     };
 
-    if (this.board.hippolyta.mouthClosed === true) {
-        this.board.hippolyta.mouthClosed = false;
+    if (this.board.hippolyta.isMouthClosed === true) {
         this.renderMouthOpen();
     } else {
         this.setNextDirWithBFS(); // if applicable
@@ -75,7 +77,7 @@
           this.render();
         };
 
-        this.board.hippolyta.mouthClosed = true;
+        this.board.hippolyta.isMouthClosed = true;
     };
 
     if (this.isWon()) {
@@ -125,12 +127,16 @@
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
           .append('<div class="hippolyta-mouth-closed-left"></div>');
+
+        return this.board.hippolyta.isMouthClosed = true;
     } else if (
       this.board.hippolyta.dir === "STAY" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
           .append('<div class="hippolyta-mouth-closed-right"></div>');
+
+        return this.board.hippolyta.isMouthClosed = true;
     } else if (
       this.board.hippolyta.dir === "UP" &&
       this.board.hippolyta.prevHorDir === "LEFT"
@@ -162,6 +168,8 @@
         this.$currentTile().html('<div id="hippolyta"></div>')
           .append('<div class="hippolyta-mouth-open-right"></div>');
     };
+
+    this.board.hippolyta.isMouthClosed = false;
   };
 
   View.prototype.isNextDirValid = function () {
@@ -320,30 +328,29 @@
   View.prototype.handleClickEvent = function (event) {
     event.preventDefault();
     this.startTimer();
-    if (this.BFSforHippolyta(event).length > 0) {
-        this.BFSforHippolyta(event);
-    } else {
-        this.setNextDirNESWonClick(event);
+    this.createBFSsequence(event);
+    if (this.BFSsequence.length <= 0) {
+      this.setNextDirNESWonClick(event);
     };
   };
 
   View.prototype.setNextDirWithBFS = function () {
     if (this.BFSsequence) {
-      if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -25) {
+      if (this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === -25) {
           this.board.hippolyta.nextDir = "UP";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 1) {
+      } else if (this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === 1) {
           this.board.hippolyta.nextDir = "RIGHT";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === 25) {
+      } else if (this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === 25) {
           this.board.hippolyta.nextDir = "DOWN";
-      } else if (this.BFSsequence[this.BFScounter] - this.board.hippolyta.$liPos() === -1) {
+      } else if (this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === -1) {
           this.board.hippolyta.nextDir = "LEFT";
       };
     };
 
-    this.BFScounter++;
+    this.BFSindex++;
   };
 
-  View.prototype.BFSforHippolyta = function (event) {
+  View.prototype.createBFSsequence = function (event) {
     if ($(event.target).is("li")) {
         var $clickedTile = $(event.target);
     } else {
@@ -388,8 +395,8 @@
       posSequence.pop();
     };
 
-    this.BFScounter = 0;
-    return this.BFSsequence = posSequence;
+    this.BFSindex = 0;
+    this.BFSsequence = posSequence;
   };
 
   View.prototype.setNextDirNESWonClick = function (event) {
