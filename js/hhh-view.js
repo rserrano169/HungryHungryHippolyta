@@ -141,6 +141,12 @@
   };
 
   View.prototype.render = function () {
+    this.renderMovingFrom();
+    this.board.hippolyta.move();
+    this.renderMovingTo();
+  };
+
+  View.prototype.renderMovingFrom = function () {
     if (this.$currentTile().children().hasClass("portal-left")) {
         this.$currentTile()
           .html('<div class="portal portal-left"></div>')
@@ -152,19 +158,19 @@
     } else {
         this.$currentTile().html('<div class=""></div>');
     };
+  };
 
-    this.board.hippolyta.move();
-
+  View.prototype.renderMovingTo = function () {
     if (this.$currentTile().children().hasClass("portal-left")) {
         this.$currentTile()
           .html('<div class="portal portal-left"></div>')
           .append('<div class="portal portal-left-overlay"></div>')
-          .append('<div class="portal portal-left-pass-through"></div>');
+          .append('<div class="portal portal-left-pass-through hippolyta"></div>');
     } else if (this.$currentTile().children().hasClass("portal-right")) {
         this.$currentTile()
-        .html('<div class="portal portal-right"></div>')
+          .html('<div class="portal portal-right"></div>')
           .append('<div class="portal portal-right-overlay"></div>')
-          .append('<div class="portal portal-right-pass-through"></div>');
+          .append('<div class="portal portal-right-pass-through hippolyta"></div>');
     } else {
         this.$currentTile().html('<div class="hippolyta"></div>');
     };

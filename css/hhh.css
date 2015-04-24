@@ -415,7 +415,7 @@ li {
   border-radius: 50%;
 }
 
-.portal-left-pass-through {
+.portal.portal-left-pass-through {
   display: block;
   position: absolute;
   top: -2px;
@@ -448,7 +448,7 @@ li {
   border-radius: 50%;
 }
 
-.portal-right-pass-through {
+.portal.portal-right-pass-through {
   display: block;
   position: absolute;
   top: -2px;
@@ -504,8 +504,6 @@ li {
 /*.mouth-closed.left*/
   display: block;
   position: absolute;
-  top: 0px;
-  left: -1px;
   width: 32px;
   height: 36px;
   background-image: url("../images/hippolyta-mouth-closed-left.png");
