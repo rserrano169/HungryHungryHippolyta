@@ -128,7 +128,7 @@
       $tile.children().hasClass("powerup") ||
       $tile.children().hasClass("portal") ||
       $tile.children().hasClass("") ||
-      $tile.children().hasClass("hippolyta")
+      $tile.find("#hippolyta").length > 0
     );
   };
 
@@ -163,16 +163,16 @@
   View.prototype.renderMovingTo = function () {
     if (this.$currentTile().children().hasClass("portal-left")) {
         this.$currentTile()
-          .html('<div class="portal portal-left"></div>')
+          .html('<div id="hippolyta" class="portal portal-left"></div>')
           .append('<div class="portal portal-left-overlay"></div>')
-          .append('<div class="portal portal-left-pass-through hippolyta"></div>');
+          .append('<div class="portal portal-left-pass-through"></div>');
     } else if (this.$currentTile().children().hasClass("portal-right")) {
         this.$currentTile()
-          .html('<div class="portal portal-right"></div>')
+          .html('<div id="hippolyta" class="portal portal-right"></div>')
           .append('<div class="portal portal-right-overlay"></div>')
-          .append('<div class="portal portal-right-pass-through hippolyta"></div>');
+          .append('<div class="portal portal-right-pass-through"></div>');
     } else {
-        this.$currentTile().html('<div class="hippolyta"></div>');
+        this.$currentTile().html('<div id="hippolyta"></div>');
     };
   };
 
@@ -230,7 +230,7 @@
         childToParent = {},
         that = this;
 
-    while ($checking && $checking.find(".hippolyta").length === 0) {
+    while ($checking && $checking.find("#hippolyta").length === 0) {
       directions.forEach( function (dir) {
         var checking$liPos = that.$li.index($checking),
         next$liPos = checking$liPos + dir;
@@ -269,8 +269,8 @@
       event.pageY
     );
     var hippolytaCenterWindowCoord = new HHH.Coord(
-      Math.floor($(".hippolyta").offset().left + $(".hippolyta").width() / 2),
-      Math.floor($(".hippolyta").offset().top + $(".hippolyta").height() / 2)
+      Math.floor($("#hippolyta").offset().left + $("#hippolyta").width() / 2),
+      Math.floor($("#hippolyta").offset().top + $("#hippolyta").height() / 2)
     );
 
     if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
@@ -318,17 +318,19 @@
 
   View.prototype.recordScore = function () {
     scores.push({ name: 'YOU', number: this.timeLimit });
-    scores.sort( function (a, b) {
-      return b.number - a.number;
-    }).slice(0, 10);
+    scores = scores.sort( function (a, b) {
+               return b.number - a.number;
+             }).slice(0, 10);
     localStorage.scores = JSON.stringify(scores);
   };
 
   View.prototype.alertWin = function () {
-    var highScores = "";
+    var highScores = "",
+        rankNum = 1;
     scores.forEach( function (score) {
-      highScores += "\n" + score.name + " : " + score.number
-    });
+      highScores += "\n" + rankNum + ". " + score.name + " : " + score.number;
+      rankNum++;
+    })
 
     var winAlert = "You Win!\nYour score: " +
                     this.timeLimit +
