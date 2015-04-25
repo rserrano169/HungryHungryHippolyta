@@ -21,7 +21,7 @@
   var View = HHH.View = function ($el) {
     this.$el = $el;
     this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER, View.BOARD_SIZE);
-    this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.GAME_INTERVAL;
+    this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
     this.isGameStarted = false;
     this.board.hippolyta.nextDir = "STAY";
     this.board.hippolyta.prevHorDir = "LEFT";
@@ -39,8 +39,9 @@
     if (View.BOARD_TEMPLATE_NUMBER === 1) {
       View.BOARD_SIZE = 25;
     };
-  View.TIME_LIMIT_MINUTES = 5.25;
-  View.GAME_INTERVAL = 100;
+  View.TIME_LIMIT_MINUTES = 5.5;
+  View.TIMER_INTERVAL = 100;
+  View.MOVEMENT_SLOWNESS = 100;
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -50,8 +51,6 @@
   };
 
   View.prototype.step = function () {
-    this.countDown();
-
     if (this.hasEatenPowerup()) {
       this.boostSpeed();
     };
@@ -113,21 +112,21 @@
   };
 
   View.prototype.boostSpeed = function () {
-    View.GAME_INTERVAL /= 5;
+    View.MOVEMENT_SLOWNESS /= 5;
     clearInterval(this.run);
 
-    this.run = setInterval(this.step.bind(this), View.GAME_INTERVAL);
+    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
   };
 
   View.prototype.isSpeedBoosted = function () {
-    return View.GAME_INTERVAL < 90;
+    return View.MOVEMENT_SLOWNESS < 100;
   };
 
   View.prototype.increaseSlowness = function () {
-    View.GAME_INTERVAL += .2;
+    View.MOVEMENT_SLOWNESS += .5;
     clearInterval(this.run);
 
-    this.run = setInterval(this.step.bind(this), View.GAME_INTERVAL);
+    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
   };
 
   View.prototype.renderMouthOpen = function () {
@@ -259,7 +258,7 @@
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
           .append('<div class="hippolyta-mouth-closed-left"></div>');
-        } else if (
+    } else if (
       this.board.hippolyta.dir === "STAY" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
@@ -347,7 +346,7 @@
 
   View.prototype.handleClickEvent = function (event) {
     event.preventDefault();
-    this.startGame();
+    this.startGame()
     this.stepNum = 1;
     this.createBFSsequence(event);
     if (this.BFSsequence.length <= 0) {
@@ -383,7 +382,6 @@
         checked$liPositions = [],
         tilesToCheck = [$clickedTile],
         $checking = tilesToCheck.shift(),
-        breakCount = 0;
         childToParent = {},
         that = this;
 
@@ -443,11 +441,8 @@
     };
   };
 
-  View.prototype.startGame = function () {
-    if(this.isGameStarted === false) {
-      this.run = setInterval(this.step.bind(this), View.GAME_INTERVAL);
-      this.isGameStarted = true;
-    };
+  View.prototype.startTimer = function () {
+    this.timer = setInterval(this.countDown.bind(this), View.TIMER_INTERVAL);
   };
 
   View.prototype.countDown = function () {
@@ -456,6 +451,14 @@
       '<b>Timer/Score: </b>' + this.timeLimit +
       ' milliseconds'
     );
+  };
+
+  View.prototype.startGame = function () {
+    if (!this.isGameStarted) {
+      this.startTimer();
+      this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+      this.isGameStarted = true;
+    };
   };
 
   View.prototype.isLost = function () {
