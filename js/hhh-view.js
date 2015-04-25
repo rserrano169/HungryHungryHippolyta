@@ -28,7 +28,7 @@
     this.numOfStartingPowerups = this.$li.children().filter(".powerup").length;
     this.board.hippolyta.nextDir = "STAY";
     this.board.hippolyta.prevHorDir = "LEFT";
-    this.board.hippolyta.isMouthClosed = true;
+    this.stepNum = 1;
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
     $(window).on("keydown", this.handleKeyEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
@@ -40,9 +40,9 @@
     if (View.BOARD_TEMPLATE_NUMBER === 1) {
       View.BOARD_SIZE = 25;
     };
-  View.TIME_LIMIT_MINUTES = 5;
+  View.TIME_LIMIT_MINUTES = 5.5;
   View.TIMER_INTERVAL = 100;
-  View.MOVEMENT_SLOWNESS = 140;
+  View.MOVEMENT_SLOWNESS = 90;
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -60,10 +60,7 @@
       this.increaseSlowness();
     };
 
-    if (this.board.hippolyta.isMouthClosed === true) {
-        this.board.hippolyta.isMouthClosed = false;
-        this.renderMouthOpen();
-    } else {
+    if (this.stepNum === 1) {
         this.setNextDirWithBFS(); // if applicable
 
         if (this.isNextDirValid()) {
@@ -71,11 +68,19 @@
           this.changeDirection();
         };
 
+        this.stepNum = 2;
+    } else if (this.stepNum === 2) {
+        if(this.isValidMove()) {
+          this.renderMouthOpen();
+        };
+
+        this.stepNum = 3;
+    } else if (this.stepNum === 3) {
         if (this.isValidMove()) {
           this.render();
         };
 
-        this.board.hippolyta.isMouthClosed = true;
+        this.stepNum = 1;
     };
 
     if (this.isWon()) {
@@ -108,11 +113,11 @@
   };
 
   View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 140;
+    return View.MOVEMENT_SLOWNESS < 90;
   };
 
   View.prototype.increaseSlowness = function () {
-    View.MOVEMENT_SLOWNESS += 1.5;
+    View.MOVEMENT_SLOWNESS += .5;
     clearInterval(this.run);
 
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
@@ -162,8 +167,6 @@
         this.$currentTile().html('<div id="hippolyta"></div>')
           .append('<div class="hippolyta-mouth-open-right"></div>');
     };
-
-    this.board.hippolyta.isMouthClosed = false;
   };
 
   View.prototype.isNextDirValid = function () {
@@ -313,6 +316,7 @@
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
       this.startTimer();
+      this.stepNum = 1;
       this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
     };
   };
@@ -320,6 +324,7 @@
   View.prototype.handleClickEvent = function (event) {
     event.preventDefault();
     this.startTimer();
+    this.stepNum = 1;
     this.createBFSsequence(event);
     if (this.BFSsequence.length <= 0) {
       this.setNextDirNESWonClick(event);
