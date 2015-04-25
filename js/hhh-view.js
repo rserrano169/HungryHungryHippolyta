@@ -345,7 +345,7 @@
   };
 
   View.prototype.handleClickEvent = function (event) {
-    event.preventDefault();
+    // event.preventDefault();
     this.startGame()
     this.stepNum = 1;
     this.createBFSsequence(event);
