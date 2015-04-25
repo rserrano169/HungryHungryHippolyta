@@ -29,6 +29,7 @@
     this.board.hippolyta.nextDir = "STAY";
     this.board.hippolyta.prevHorDir = "LEFT";
     this.stepNum = 1;
+    this.justStarted = true;
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
     $(window).on("keydown", this.handleKeyEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
@@ -125,7 +126,7 @@
 
   View.prototype.renderMouthOpen = function () {
     if (this.isMovingToOrFromPortal()) {
-        this.renderMovingFromPortal();
+        this.renderMovingToPortal();
     } else if (
       this.board.hippolyta.dir === "STAY" &&
       this.board.hippolyta.prevHorDir === "LEFT"
@@ -215,9 +216,17 @@
   };
 
   View.prototype.render = function () {
+    if (this.justStarted) {
+      this.loadAllImages();
+      this.justStarted = false;
+    };
     this.renderMovingFrom();
     this.board.hippolyta.move();
     this.renderMovingTo();
+  };
+
+  View.prototype.loadAllImages = function () {
+    this.$el.find
   };
 
   View.prototype.renderMovingFrom = function () {
