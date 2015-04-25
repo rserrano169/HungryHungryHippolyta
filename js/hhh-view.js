@@ -106,7 +106,7 @@
   };
 
   View.prototype.boostSpeed = function () {
-    View.MOVEMENT_SLOWNESS /= 5;
+    View.MOVEMENT_SLOWNESS /= 6;
     clearInterval(this.run);
 
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
@@ -124,7 +124,9 @@
   };
 
   View.prototype.renderMouthOpen = function () {
-    if (
+    if (this.isMovingToOrFromPortal()) {
+        this.renderMovingFromPortal();
+    } else if (
       this.board.hippolyta.dir === "STAY" &&
       this.board.hippolyta.prevHorDir === "LEFT"
     ) {
