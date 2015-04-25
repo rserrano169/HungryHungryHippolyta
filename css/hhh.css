@@ -422,7 +422,7 @@ li {
   left: 4px;
   width: 17px;
   height: 29px;
-  background: purple;
+  background: gold;
   border-radius: 50% 150% 150% 50% / 100% 100% 100% 100%;
 }
 
@@ -455,7 +455,7 @@ li {
   right: 4px;
   width: 17px;
   height: 29px;
-  background: purple;
+  background: deepskyblue;
   border-radius: 150% 50% 50% 150% / 100% 100% 100% 100%;
 }
 
