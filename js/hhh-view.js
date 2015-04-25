@@ -21,16 +21,14 @@
   var View = HHH.View = function ($el) {
     this.$el = $el;
     this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER, View.BOARD_SIZE);
-    this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
-    this.isTimerStarted = false;
+    this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.GAME_INTERVAL;
+    this.isGameStarted = false;
+    this.board.hippolyta.nextDir = "STAY";
+    this.board.hippolyta.prevHorDir = "LEFT";
     this.setupBoard();
     this.numOfDots = this.$li.children().filter(".dot").length;
     this.numOfStartingPowerups = this.$li.children().filter(".powerup").length;
-    this.board.hippolyta.nextDir = "STAY";
-    this.board.hippolyta.prevHorDir = "LEFT";
     this.stepNum = 1;
-    this.justStarted = true;
-    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
     $(window).on("keydown", this.handleKeyEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
     this.BFSindex = 0;
@@ -41,9 +39,8 @@
     if (View.BOARD_TEMPLATE_NUMBER === 1) {
       View.BOARD_SIZE = 25;
     };
-  View.TIME_LIMIT_MINUTES = 5.5;
-  View.TIMER_INTERVAL = 100;
-  View.MOVEMENT_SLOWNESS = 90;
+  View.TIME_LIMIT_MINUTES = 5.25;
+  View.GAME_INTERVAL = 100;
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -53,6 +50,8 @@
   };
 
   View.prototype.step = function () {
+    this.countDown();
+
     if (this.hasEatenPowerup()) {
       this.boostSpeed();
     };
@@ -84,6 +83,13 @@
         this.stepNum = 1;
     };
 
+    if (this.isLost()) {
+      clearInterval(this.timer);
+      clearInterval(this.run);
+      alert("You lose... :(");
+      window.location.reload();
+    };
+
     if (this.isWon()) {
       clearInterval(this.timer);
       clearInterval(this.run);
@@ -107,21 +113,21 @@
   };
 
   View.prototype.boostSpeed = function () {
-    View.MOVEMENT_SLOWNESS /= 6;
+    View.GAME_INTERVAL /= 5;
     clearInterval(this.run);
 
-    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+    this.run = setInterval(this.step.bind(this), View.GAME_INTERVAL);
   };
 
   View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 90;
+    return View.GAME_INTERVAL < 90;
   };
 
   View.prototype.increaseSlowness = function () {
-    View.MOVEMENT_SLOWNESS += .5;
+    View.GAME_INTERVAL += .2;
     clearInterval(this.run);
 
-    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+    this.run = setInterval(this.step.bind(this), View.GAME_INTERVAL);
   };
 
   View.prototype.renderMouthOpen = function () {
@@ -216,28 +222,24 @@
   };
 
   View.prototype.render = function () {
-    if (this.justStarted) {
-      this.loadAllImages();
-      this.justStarted = false;
-    };
     this.renderMovingFrom();
     this.board.hippolyta.move();
     this.renderMovingTo();
   };
 
   View.prototype.loadAllImages = function () {
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-left"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-right"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-up-left"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-up-right"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-down-left"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-down-right"></div>');
     this.$currentTile().html('<div class="hippolyta-mouth-open-left"></div>');
     this.$currentTile().html('<div class="hippolyta-mouth-open-right"></div>');
     this.$currentTile().html('<div class="hippolyta-mouth-open-up-left"></div>');
     this.$currentTile().html('<div class="hippolyta-mouth-open-up-right"></div>');
     this.$currentTile().html('<div class="hippolyta-mouth-open-down-left"></div>');
     this.$currentTile().html('<div class="hippolyta-mouth-open-down-right"></div>');
+    this.$currentTile().html('<div class="hippolyta-mouth-closed-down-right"></div>');
+    this.$currentTile().html('<div class="hippolyta-mouth-closed-down-left"></div>');
+    this.$currentTile().html('<div class="hippolyta-mouth-closed-up-right"></div>');
+    this.$currentTile().html('<div class="hippolyta-mouth-closed-up-left"></div>');
+    this.$currentTile().html('<div class="hippolyta-mouth-closed-right"></div>');
+    this.$currentTile().html('<div class="hippolyta-mouth-closed-left"></div>');
   };
 
   View.prototype.renderMovingFrom = function () {
@@ -257,7 +259,7 @@
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
           .append('<div class="hippolyta-mouth-closed-left"></div>');
-    } else if (
+        } else if (
       this.board.hippolyta.dir === "STAY" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
@@ -337,7 +339,7 @@
   View.prototype.handleKeyEvent = function (event) {
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
-      this.startTimer();
+      this.startGame();
       this.stepNum = 1;
       this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
     };
@@ -345,7 +347,7 @@
 
   View.prototype.handleClickEvent = function (event) {
     event.preventDefault();
-    this.startTimer();
+    this.startGame();
     this.stepNum = 1;
     this.createBFSsequence(event);
     if (this.BFSsequence.length <= 0) {
@@ -441,10 +443,10 @@
     };
   };
 
-  View.prototype.startTimer = function () {
-    if(this.isTimerStarted === false) {
-      this.timer = setInterval(this.countDown.bind(this), View.TIMER_INTERVAL);
-      this.isTimerStarted = true;
+  View.prototype.startGame = function () {
+    if(this.isGameStarted === false) {
+      this.run = setInterval(this.step.bind(this), View.GAME_INTERVAL);
+      this.isGameStarted = true;
     };
   };
 
@@ -454,13 +456,6 @@
       '<b>Timer/Score: </b>' + this.timeLimit +
       ' milliseconds'
     );
-
-    if (this.isLost()) {
-      clearInterval(this.timer);
-      clearInterval(this.run);
-      alert("You lose... :(");
-      window.location.reload();
-    };
   };
 
   View.prototype.isLost = function () {
@@ -840,6 +835,7 @@
       that.$li.eq(pos - 1).html('<div class="powerup"></div>');
     });
 
+    this.loadAllImages();
     this.render();
   };
 })();
