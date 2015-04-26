@@ -226,21 +226,6 @@
     this.renderMovingTo();
   };
 
-  View.prototype.loadAllImages = function () {
-    this.$currentTile().html('<div class="hippolyta-mouth-open-left"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-open-right"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-open-up-left"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-open-up-right"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-open-down-left"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-open-down-right"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-down-right"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-down-left"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-up-right"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-up-left"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-right"></div>');
-    this.$currentTile().html('<div class="hippolyta-mouth-closed-left"></div>');
-  };
-
   View.prototype.renderMovingFrom = function () {
     if (this.isMovingToOrFromPortal()) {
         this.renderMovingFromPortal();
@@ -838,7 +823,6 @@
       that.$li.eq(pos - 1).html('<div class="powerup"></div>');
     });
 
-    this.loadAllImages();
     this.render();
   };
 })();
