@@ -491,9 +491,10 @@
       for (var j = 0; j < this.board.dim; j++) {
         html += '<li></li>';
       }
+      
+      html += '</ul>';
     }
 
-    html += '</ul>';
 
     this.$el.html(html);
     this.$li = this.$el.find("li");
