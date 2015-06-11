@@ -27,7 +27,7 @@
     this.board.hippolyta.prevHorDir = "LEFT";
     this.setupBoard();
     this.numOfDots = this.$li.children().filter(".dot").length;
-    this.numOfStartingPowerups = this.$li.children().filter(".powerup").length;
+    this.numOfCurrentPowerups = this.$li.children().filter(".powerup").length;
     this.stepNum = 1;
     $(window).on("keydown", this.handleKeyEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
@@ -99,8 +99,8 @@
   };
 
   View.prototype.hasEatenPowerup = function () {
-    if (this.numOfStartingPowerups > this.numOfPowerups()) {
-      this.numOfStartingPowerups = this.numOfPowerups();
+    if (this.numOfCurrentPowerups > this.numOfPowerups()) {
+      this.numOfCurrentPowerups = this.numOfPowerups();
       return true;
     };
 
@@ -491,11 +491,9 @@
       for (var j = 0; j < this.board.dim; j++) {
         html += '<li></li>';
       }
-      
+
       html += '</ul>';
     }
-
-
     this.$el.html(html);
     this.$li = this.$el.find("li");
 

@@ -1,7 +1,7 @@
 ## Hungry Hungry Hippolyta!
 **Hungry Hungry Hippolyta is a time trial browser game that was designed to look and feel like Pac-Man.**
 
-**I used JavaScript, jQuery, HTML, CSS, and various picture files that I editted myself using GIMP Image Editor, to engineer and design this game**
+**I used JavaScript, jQuery, HTML, CSS, and various picture files that I editted myself using GIMP Image Editor, to engineer and design this game.**
 
 
 One of the most challenging implementations for me, was the click-to-move
