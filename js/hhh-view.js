@@ -478,6 +478,33 @@
     alert(winAlert);
   };
 
+  View.prototype.loadAllImages = function () {
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-closed-left"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-closed-up-left"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-closed-up-right"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-closed-right"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-closed-down-right"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-closed-down-left"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-open-left"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-open-up-left"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-open-up-right"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-open-right"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-open-down-right"></div>');
+    this.$currentTile().html('<div id="hippolyta"></div>')
+      .append('<div class="hippolyta-mouth-open-down-left"></div>');
+  };
+
   View.prototype.setupBoard = function () {
     var that = this,
         html = '<section class="top-bar group">';
@@ -822,6 +849,7 @@
       that.$li.eq(pos - 1).html('<div class="powerup"></div>');
     });
 
+    this.loadAllImages();
     this.render();
   };
 })();
