@@ -30,7 +30,9 @@
     this.numOfDots = this.$li.children().filter(".dot").length;
     this.numOfCurrentPowerups = this.$li.children().filter(".powerup").length;
     this.stepNum = 1;
-    $(window).on("keydown", this.handleKeyEvent.bind(this));
+    this.isFiring = false;
+    $(window).on("keydown", this.handleKeyDownEvent.bind(this));
+    $(window).on("keyup", this.handleKeyUpEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
     this.BFSindex = 0;
     this.BFSsequence = [];
@@ -321,13 +323,18 @@
     return this.$li.eq(this.board.hippolyta.$liPos());
   };
 
-  View.prototype.handleKeyEvent = function (event) {
-    if (View.KEYS[event.keyCode]) {
+  View.prototype.handleKeyDownEvent = function (event) {
+    if (View.KEYS[event.keyCode] && !this.isFiring) {
       event.preventDefault();
       this.startGame();
       this.stepNum = 1;
       this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
+      this.isFiring = true;
     };
+  };
+
+  View.prototype.handleKeyUpEvent = function (event) {
+    this.isFiring = false;
   };
 
   View.prototype.handleClickEvent = function (event) {
