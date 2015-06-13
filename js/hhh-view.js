@@ -44,7 +44,7 @@
     };
   View.TIME_LIMIT_MINUTES = 5.5;
   View.TIMER_INTERVAL = 100;
-  View.MOVEMENT_SLOWNESS = 100;
+  View.MOVEMENT_SLOWNESS = 1;
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -88,17 +88,14 @@
     if (this.isLost()) {
       clearInterval(this.timer);
       clearInterval(this.run);
-      // alert("You lose... :(");
-      this.showGameOver();
-      // window.location.reload();
+      this.renderYouLose();
     };
 
     if (this.isWon()) {
       clearInterval(this.timer);
       clearInterval(this.run);
       this.recordScore();
-      this.alertWin();
-      window.location.reload();
+      this.renderYouWin();
     };
   };
 
@@ -123,7 +120,7 @@
   };
 
   View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 100;
+    return View.MOVEMENT_SLOWNESS < 1;
   };
 
   View.prototype.increaseSlowness = function () {
@@ -461,6 +458,21 @@
     return this.timeLimit <= 0
   };
 
+  View.prototype.renderYouLose = function () {
+    this.$el.prepend(
+      "<div id='game-lose-modal'>" +
+      "<div id='you-win-or-lose'>You Lose!</div>" +
+      "<div id='play-again'>Play Again?</div>" +
+      "<div>"
+    );
+
+    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
+  };
+
+  View.prototype.reloadPage = function () {
+    window.location.reload();
+  };
+
   View.prototype.isWon = function () {
     return this.$li.children().filter(".dot").length === 0;
   };
@@ -473,20 +485,36 @@
     localStorage.scores = JSON.stringify(scores);
   };
 
-  View.prototype.alertWin = function () {
+  View.prototype.renderYouWin = function () {
     var highScores = "",
         rankNum = 1;
     scores.forEach( function (score) {
-      highScores += "\n" + rankNum + ". " + score.name + " : " + score.number;
-      rankNum++;
+      if (rankNum === 1){
+        highScores += rankNum + ". " + score.name + " : " + score.number;
+        rankNum++;
+      } else {
+        highScores += "<br>" + rankNum + ". " + score.name + " : " + score.number;
+        rankNum++;
+      };
     })
 
-    var winAlert = "You Win!\nYour score: " +
-                    this.timeLimit +
-                    "\n*****************" +
-                    "\nHigh scores:" +
-                    highScores;
-    alert(winAlert);
+    this.$el.prepend(
+      "<div id='game-win-modal'>" +
+      "<div id='you-win-or-lose'>You Win!!!</div>" +
+      "<div id='your-score'>Your Score: " +
+      this.timeLimit +
+      "</div>" +
+      "<div id='high-scores-list'>" +
+      "<div id='high-scores-title'>" +
+      "High Scores:" +
+      "</div>" +
+      highScores +
+      "</div>" +
+      "<div id='play-again'>Play Again?</div>" +
+      "<div>"
+    );
+
+    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
   };
 
   View.prototype.loadAllImages = function () {
@@ -690,21 +718,5 @@
     });
 
     this.loadingImages = setInterval(this.loadAllImages.bind(this), 10);
-  };
-
-  View.prototype.showGameOver = function () {
-
-    this.$el.prepend(
-      "<div id='game-over-modal'>" +
-      "<div id='you-lose'>You Lose!</div>" +
-      "<div id='play-again'>Play Again?</div>" +
-      "<div>"
-    );
-
-    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
-  };
-
-  View.prototype.reloadPage = function () {
-    window.location.reload();
   };
 })();
