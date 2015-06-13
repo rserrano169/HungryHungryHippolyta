@@ -30,7 +30,7 @@
     this.numOfDots = this.$li.children().filter(".dot").length;
     this.numOfCurrentPowerups = this.$li.children().filter(".powerup").length;
     this.stepNum = 1;
-    this.isFiring = false;
+    this.isPressing = false;
     $(window).on("keydown", this.handleKeyDownEvent.bind(this));
     $(window).on("keyup", this.handleKeyUpEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
@@ -326,17 +326,17 @@
   View.prototype.handleKeyDownEvent = function (event) {
     if (View.KEYS[event.keyCode]) {
       event.preventDefault();
-      if (!this.isFiring) {
+      if (!this.isPressing) {
         this.startGame();
         this.stepNum = 1;
         this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
-        this.isFiring = true;
+        this.isPressing = true;
       };
     };
   };
 
   View.prototype.handleKeyUpEvent = function (event) {
-    this.isFiring = false;
+    this.isPressing = false;
   };
 
   View.prototype.handleClickEvent = function (event) {
