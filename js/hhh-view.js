@@ -521,7 +521,7 @@
     var loading = false,
         that = this,
         increaseImageLoadNum = function () {
-          // that.imageLoadNum++;
+          that.imageLoadNum++;
           loading = false;
         };
 
@@ -536,7 +536,7 @@
                 'class="hippolyta-mouth-closed-left"' +
                 'alt="hmcl">'
               );
-            $(".hippolyta-mouth-closed-left")
+            $(".hippolyta-mouth-closed-")
               .one("load", increaseImageLoadNum())
               // .each(function () {
               //   if(this.complete) {
