@@ -521,7 +521,7 @@
     var loading = false,
         that = this,
         increaseImageLoadNum = function () {
-          that.imageLoadNum++;
+          // that.imageLoadNum++;
           loading = false;
         };
 
