@@ -613,35 +613,60 @@
           if (loading === false) {
             loading = true;
             this.$currentTile().html('<div id="hippolyta"></div>')
-              .append('<img src="images/hippolyta-mouth-open-up-left.png" class="hippolyta-mouth-open-up-left" alt="">');
+              .append(
+                '<img' +
+                'src="images/hippolyta-mouth-open-up-left.png"' +
+                'class="hippolyta-mouth-open-up-left"' +
+                'alt="hmoul">'
+              );
             $(".hippolyta-mouth-open-up-left").one("load", increaseImageLoadNum);
           };
       } else if (this.imageLoadNum == 8) {
           if (loading === false) {
             loading = true;
             this.$currentTile().html('<div id="hippolyta"></div>')
-              .append('<img src="images/hippolyta-mouth-open-up-right.png" class="hippolyta-mouth-open-up-right" alt="">');
+              .append(
+                '<img' +
+                'src="images/hippolyta-mouth-open-up-right.png"' +
+                'class="hippolyta-mouth-open-up-right"' +
+                'alt="hmour">'
+              );
             $(".hippolyta-mouth-open-up-right").one("load", increaseImageLoadNum);
           };
       } else if (this.imageLoadNum == 9) {
           if (loading === false) {
             loading = true;
             this.$currentTile().html('<div id="hippolyta"></div>')
-              .append('<img src="images/hippolyta-mouth-open-right.png" class="hippolyta-mouth-open-right" alt="">');
+              .append(
+                '<img' +
+                'src="images/hippolyta-mouth-open-right.png"' +
+                'class="hippolyta-mouth-open-right"' +
+                'alt="hmor">'
+              );
             $(".hippolyta-mouth-open-right").one("load", increaseImageLoadNum);
           };
       } else if (this.imageLoadNum == 10) {
           if (loading === false) {
             loading = true;
             this.$currentTile().html('<div id="hippolyta"></div>')
-              .append('<img src="images/hippolyta-mouth-open-down-right.png" class="hippolyta-mouth-open-down-right" alt="">');
+              .append(
+                '<img' +
+                'src="images/hippolyta-mouth-open-down-right.png"' +
+                'class="hippolyta-mouth-open-down-right"' +
+                'alt="hmodr">'
+              );
             $(".hippolyta-mouth-open-down-right").one("load", increaseImageLoadNum);
           };
       } else if (this.imageLoadNum == 11) {
           if (loading === false) {
             loading = true;
             this.$currentTile().html('<div id="hippolyta"></div>')
-              .append('<img src="images/hippolyta-mouth-open-down-left.png" class="hippolyta-mouth-open-down-left" alt="">');
+              .append(
+                '<img' +
+                'src="images/hippolyta-mouth-open-down-left.png"' +
+                'class="hippolyta-mouth-open-down-left"' +
+                'alt="hmodl">'
+              );
             $(".hippolyta-mouth-open-down-left").one("load", increaseImageLoadNum);
           };
       };
