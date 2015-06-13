@@ -1,7 +1,7 @@
 (function () {
   if (typeof HHH === "undefined") {
     window.HHH = {};
-  }
+  };
 
 //* --- BOARD --- *//
 
