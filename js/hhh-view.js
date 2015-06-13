@@ -42,7 +42,7 @@
     if (View.BOARD_TEMPLATE_NUMBER === 1) {
       View.BOARD_SIZE = 25;
     };
-  View.TIME_LIMIT_MINUTES = 5.5;
+  View.TIME_LIMIT_MINUTES = .01;
   View.TIMER_INTERVAL = 100;
   View.MOVEMENT_SLOWNESS = 100;
   View.KEYS = {
@@ -88,8 +88,9 @@
     if (this.isLost()) {
       clearInterval(this.timer);
       clearInterval(this.run);
-      alert("You lose... :(");
-      window.location.reload();
+      // alert("You lose... :(");
+      this.showGameOver();
+      // window.location.reload();
     };
 
     if (this.isWon()) {
@@ -689,5 +690,21 @@
     });
 
     this.loadingImages = setInterval(this.loadAllImages.bind(this), 10);
+  };
+
+  View.prototype.showGameOver = function () {
+
+    this.$el.prepend(
+      "<div id='game-over-modal'>" +
+      "<div id='you-lose'>You Lose!</div>" +
+      "<div id='play-again'>Play Again?</div>" +
+      "<div>"
+    );
+
+    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
+  };
+
+  View.prototype.reloadPage = function () {
+    window.location.reload();
   };
 })();
