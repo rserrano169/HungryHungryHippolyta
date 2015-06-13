@@ -138,43 +138,43 @@
       this.board.hippolyta.prevHorDir === "LEFT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-left"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-left.png" class="hippolyta-mouth-closed-left" alt="">');
     } else if (
       this.board.hippolyta.dir === "STAY" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-right"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-right.png" class="hippolyta-mouth-closed-right" alt="">');
     } else if (
       this.board.hippolyta.dir === "UP" &&
       this.board.hippolyta.prevHorDir === "LEFT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-up-left"></div>');
+          .append('<img src="images/hippolyta-mouth-open-up-left.png" class="hippolyta-mouth-open-up-left" alt="">');
     } else if (
       this.board.hippolyta.dir === "UP" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-up-right"></div>');
+          .append('<img src="images/hippolyta-mouth-open-up-right.png" class="hippolyta-mouth-open-up-right" alt="">');
     } else if (
       this.board.hippolyta.dir === "DOWN" &&
       this.board.hippolyta.prevHorDir === "LEFT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-down-left"></div>');
+          .append('<img src="images/hippolyta-mouth-open-down-left.png" class="hippolyta-mouth-open-down-left" alt="">');
     } else if (
       this.board.hippolyta.dir === "DOWN" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-down-right"></div>');
+          .append('<img src="images/hippolyta-mouth-open-down-right.png" class="hippolyta-mouth-open-down-right" alt="">');
     } else if (this.board.hippolyta.dir === "LEFT") {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-left"></div>');
+          .append('<img src="images/hippolyta-mouth-open-left.png" class="hippolyta-mouth-open-left" alt="">');
     } else if (this.board.hippolyta.dir === "RIGHT") {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-right"></div>');
+          .append('<img src="images/hippolyta-mouth-open-right.png" class="hippolyta-mouth-open-right" alt="">');
     };
   };
 
@@ -243,43 +243,43 @@
       this.board.hippolyta.prevHorDir === "LEFT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-left"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-left.png" class="hippolyta-mouth-closed-left" alt="">');
     } else if (
       this.board.hippolyta.dir === "STAY" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-right"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-right.png" class="hippolyta-mouth-closed-right" alt="">');
     } else if (
       this.board.hippolyta.dir === "UP" &&
       this.board.hippolyta.prevHorDir === "LEFT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-up-left"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-up-left.png" class="hippolyta-mouth-closed-up-left" alt="">');
     } else if (
       this.board.hippolyta.dir === "UP" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-up-right"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-up-right.png" class="hippolyta-mouth-closed-up-right" alt="">');
     } else if (
       this.board.hippolyta.dir === "DOWN" &&
       this.board.hippolyta.prevHorDir === "LEFT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-down-left"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-down-left.png" class="hippolyta-mouth-closed-down-left" alt="">');
     } else if (
       this.board.hippolyta.dir === "DOWN" &&
       this.board.hippolyta.prevHorDir === "RIGHT"
     ) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-down-right"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-down-right.png" class="hippolyta-mouth-closed-down-right" alt="">');
     } else if (this.board.hippolyta.dir === "LEFT") {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-left"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-left.png" class="hippolyta-mouth-closed-left" alt="">');
     } else if (this.board.hippolyta.dir === "RIGHT") {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-right"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-right.png" class="hippolyta-mouth-closed-right" alt="">');
     };
   };
 
@@ -523,51 +523,51 @@
         this.render();
     } else if (this.imageLoadNum == 0) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-left"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-left.png" class="hippolyta-mouth-closed-left" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 1) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-up-left"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-up-left.png" class="hippolyta-mouth-closed-up-left" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 2) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-up-right"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-up-right.png" class="hippolyta-mouth-closed-up-right" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 3) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-right"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-right.png" class="hippolyta-mouth-closed-right" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 4) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-down-right"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-down-right.png" class="hippolyta-mouth-closed-down-right" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 5) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-closed-down-left"></div>');
+          .append('<img src="images/hippolyta-mouth-closed-down-left.png" class="hippolyta-mouth-closed-down-left" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 6) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-left"></div>');
+          .append('<img src="images/hippolyta-mouth-open-left.png" class="hippolyta-mouth-open-left" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 7) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-up-left"></div>');
+          .append('<img src="images/hippolyta-mouth-open-up-left.png" class="hippolyta-mouth-open-up-left" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 8) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-up-right"></div>');
+          .append('<img src="images/hippolyta-mouth-open-up-right.png" class="hippolyta-mouth-open-up-right" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 9) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-right"></div>');
+          .append('<img src="images/hippolyta-mouth-open-right.png" class="hippolyta-mouth-open-right" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 10) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-down-right"></div>');
+          .append('<img src="images/hippolyta-mouth-open-down-right.png" class="hippolyta-mouth-open-down-right" alt="">');
         this.imageLoadNum += 1;
     } else if (this.imageLoadNum == 11) {
         this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<div class="hippolyta-mouth-open-down-left"></div>');
+          .append('<img src="images/hippolyta-mouth-open-down-left.png" class="hippolyta-mouth-open-down-left" alt="">');
         this.imageLoadNum += 1;
     };
   };
