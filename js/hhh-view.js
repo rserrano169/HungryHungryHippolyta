@@ -44,7 +44,7 @@
     };
   View.TIME_LIMIT_MINUTES = 5.5;
   View.TIMER_INTERVAL = 100;
-  View.MOVEMENT_SLOWNESS = 1;
+  View.MOVEMENT_SLOWNESS = 100;
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -120,7 +120,7 @@
   };
 
   View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 1;
+    return View.MOVEMENT_SLOWNESS < 100;
   };
 
   View.prototype.increaseSlowness = function () {
