@@ -324,12 +324,14 @@
   };
 
   View.prototype.handleKeyDownEvent = function (event) {
-    if (View.KEYS[event.keyCode] && !this.isFiring) {
+    if (View.KEYS[event.keyCode]) {
       event.preventDefault();
-      this.startGame();
-      this.stepNum = 1;
-      this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
-      this.isFiring = true;
+      if (!this.isFiring) {
+        this.startGame();
+        this.stepNum = 1;
+        this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
+        this.isFiring = true;
+      };
     };
   };
 
