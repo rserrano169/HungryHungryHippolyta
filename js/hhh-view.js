@@ -1,6 +1,4 @@
 (function () {
-  console.log("here2");
-
   if (typeof HHH === "undefined") {
     window.HHH = {};
   };
