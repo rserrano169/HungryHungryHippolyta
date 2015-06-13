@@ -25,4 +25,4 @@ process, that would reset if interrupted by a change in Hippolyta's
 direction or a full stop in Hippolyta's movement.
 
 
-[Play What I've Made So Far!](http://rserrano169.github.io/HungryHungryHippolyta/html/index.html)
+[Play What I've Made So Far!](http://rserrano169.github.io/HungryHungryHippolyta/index.html)
