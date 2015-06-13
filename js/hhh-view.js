@@ -536,14 +536,14 @@
                 'class="hippolyta-mouth-closed-left"' +
                 'alt="hmcl">'
               );
-            $(".hippolyta-mouth-closed-")
-              .one("load", increaseImageLoadNum())
-              // .each(function () {
-              //   if(this.complete) {
-              //     $(this).load();
-              //   };
-              // });
-            console.log($(".hippolyta-mouth-closed-"))
+            $(".hippolyta-mouth-closed-left")
+              .one("load", increaseImageLoadNum)
+              .each(function () {
+                if(this.complete) {
+                  $(this).load();
+                };
+              });
+            console.log($(".hippolyta-mouth-closed-left"))
             console.log(this.imageLoadNum);
           // };
       // } else if (this.imageLoadNum === 1) {
