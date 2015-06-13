@@ -518,58 +518,181 @@
   };
 
   View.prototype.loadAllImages = function () {
-    if (this.imageLoadNum >= 12) {
-        clearInterval(this.loadingImages);
-        this.render();
-    } else if (this.imageLoadNum == 0) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-left.png" class="hippolyta-mouth-closed-left" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 1) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-up-left.png" class="hippolyta-mouth-closed-up-left" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 2) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-up-right.png" class="hippolyta-mouth-closed-up-right" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 3) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-right.png" class="hippolyta-mouth-closed-right" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 4) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-down-right.png" class="hippolyta-mouth-closed-down-right" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 5) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-down-left.png" class="hippolyta-mouth-closed-down-left" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 6) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-left.png" class="hippolyta-mouth-open-left" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 7) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-up-left.png" class="hippolyta-mouth-open-up-left" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 8) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-up-right.png" class="hippolyta-mouth-open-up-right" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 9) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-right.png" class="hippolyta-mouth-open-right" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 10) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-down-right.png" class="hippolyta-mouth-open-down-right" alt="">');
-        this.imageLoadNum += 1;
-    } else if (this.imageLoadNum == 11) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-down-left.png" class="hippolyta-mouth-open-down-left" alt="">');
-        this.imageLoadNum += 1;
-    };
+    var loading = false,
+        that = this,
+        increaseImageLoadNum = function () {
+          that.imageLoadNum++;
+          loading = false;
+        };
+
+    // while (this.imageLoadNum < 1) {
+    //   if (this.imageLoadNum === 0) {
+    //       if (loading === false) {
+    //         loading = true;
+            this.$currentTile().html('<div id="hippolyta"></div>')
+              .append(
+                '<img ' +
+                'src="images/hippolyta-mouth-closed-left.png"' +
+                'class="hippolyta-mouth-closed-left"' +
+                'alt="hmcl">'
+              );
+            $(".hippolyta-mouth-closed-left")
+              .one("load", increaseImageLoadNum())
+              // .each(function () {
+              //   if(this.complete) {
+              //     $(this).load();
+              //   };
+              // });
+            console.log($(".hippolyta-mouth-closed-left"))
+            console.log(this.imageLoadNum);
+          // };
+      // } else if (this.imageLoadNum === 1) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-closed-up-left.png"' +
+      //           'class="hippolyta-mouth-closed-up-left"' +
+      //           'alt="hmcul">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-closed-up-left").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 2) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-closed-up-right.png"' +
+      //           'class="hippolyta-mouth-closed-up-right"' +
+      //           'alt="hmcur">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-closed-up-right").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 3) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-closed-right.png"' +
+      //           'class="hippolyta-mouth-closed-right"' +
+      //           'alt="hmcr">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-closed-right").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 4) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-closed-down-right.png"' +
+      //           'class="hippolyta-mouth-closed-down-right"' +
+      //           'alt="hmcdr">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-closed-down-right").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 5) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-closed-down-left.png"' +
+      //           'class="hippolyta-mouth-closed-down-left"' +
+      //           'alt="hmcdl">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-closed-down-left").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 6) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-open-left.png"' +
+      //           'class="hippolyta-mouth-open-left"' +
+      //           'alt="hmol">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-open-left").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 7) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-open-up-left.png"' +
+      //           'class="hippolyta-mouth-open-up-left"' +
+      //           'alt="hmoul">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-open-up-left").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 8) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-open-up-right.png"' +
+      //           'class="hippolyta-mouth-open-up-right"' +
+      //           'alt="hmour">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-open-up-right").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 9) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-open-right.png"' +
+      //           'class="hippolyta-mouth-open-right"' +
+      //           'alt="hmor">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-open-right").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 10) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-open-down-right.png"' +
+      //           'class="hippolyta-mouth-open-down-right"' +
+      //           'alt="hmodr">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-open-down-right").one("load", increaseImageLoadNum);
+      //     };
+      // } else if (this.imageLoadNum === 11) {
+      //     if (loading === false) {
+      //       loading = true;
+      //       this.$currentTile().html('<div id="hippolyta"></div>')
+      //         .append(
+      //           '<img' +
+      //           'src="images/hippolyta-mouth-open-down-left.png"' +
+      //           'class="hippolyta-mouth-open-down-left"' +
+      //           'alt="hmodl">'
+      //         );
+      //       increaseImageLoadNum();
+      //       // $(".hippolyta-mouth-open-down-left").one("load", increaseImageLoadNum);
+      //     };
+      // };
+    // };
+
+    this.render();
   };
 
 
@@ -717,6 +840,6 @@
       that.$li.eq(pos - 1).html('<div class="powerup"></div>');
     });
 
-    this.loadingImages = setInterval(this.loadAllImages.bind(this), 10);
+    this.loadAllImages();
   };
 })();
