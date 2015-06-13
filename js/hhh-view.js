@@ -543,7 +543,7 @@
                   $(this).load();
                 };
               });
-            console.log($(".hippolyta-mouth-closed-left"))
+            console.log($(".hippolyta-mouth-closed-left")[0])
             console.log(this.imageLoadNum);
           // };
       // } else if (this.imageLoadNum === 1) {
