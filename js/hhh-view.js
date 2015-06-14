@@ -39,9 +39,9 @@
     if (View.BOARD_TEMPLATE_NUMBER === 1) {
       View.BOARD_SIZE = 25;
     };
-  View.TIME_LIMIT_MINUTES = 5;
+  View.TIME_LIMIT_MINUTES = 5.1;
   View.TIMER_INTERVAL = 100;
-  View.MOVEMENT_SLOWNESS = 70;
+  View.MOVEMENT_SLOWNESS = 1; //70
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -117,7 +117,7 @@
   };
 
   View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 70;
+    return View.MOVEMENT_SLOWNESS < 1; //70
   };
 
   View.prototype.increaseSlowness = function () {
@@ -328,6 +328,12 @@
         this.isPressing = true;
       };
     };
+
+    if (event.keyCode === 13 && $("#play-again")) {
+      event.preventDefault();
+      $("#play-again").mousedown();
+      $("#play-again").touchstart();
+    };
   };
 
   View.prototype.handleKeyUpEvent = function (event) {
@@ -464,6 +470,7 @@
     );
 
     $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
+    $
   };
 
   View.prototype.reloadPage = function () {
