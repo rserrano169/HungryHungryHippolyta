@@ -31,9 +31,6 @@
     this.numOfCurrentPowerups = this.$li.children().filter(".powerup").length;
     this.stepNum = 1;
     this.isPressing = false;
-    $(window).on("keydown", this.handleKeyDownEvent.bind(this));
-    $(window).on("keyup", this.handleKeyUpEvent.bind(this));
-    $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
     this.BFSindex = 0;
     this.BFSsequence = [];
   };
@@ -42,9 +39,9 @@
     if (View.BOARD_TEMPLATE_NUMBER === 1) {
       View.BOARD_SIZE = 25;
     };
-  View.TIME_LIMIT_MINUTES = 5.5;
+  View.TIME_LIMIT_MINUTES = 5;
   View.TIMER_INTERVAL = 100;
-  View.MOVEMENT_SLOWNESS = 100;
+  View.MOVEMENT_SLOWNESS = 70;
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -120,11 +117,11 @@
   };
 
   View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 100;
+    return View.MOVEMENT_SLOWNESS < 70;
   };
 
   View.prototype.increaseSlowness = function () {
-    View.MOVEMENT_SLOWNESS += .5;
+    View.MOVEMENT_SLOWNESS += .3;
     clearInterval(this.run);
 
     this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
@@ -528,6 +525,10 @@
     if (this.imageLoadNum >= 12) {
         clearInterval(this.loadingImages)
         this.render();
+        $("#loading").remove();
+        $(window).on("keydown", this.handleKeyDownEvent.bind(this));
+        $(window).on("keyup", this.handleKeyUpEvent.bind(this));
+        $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
     } else if (this.imageLoadNum === 0) {
         if (!loading) {
           loading = true;
@@ -844,6 +845,11 @@
       that.$li.eq(pos - 1).html('<div class="powerup"></div>');
     });
 
-    this.loadingImages = setInterval(this.loadAllImages.bind(this), 1);
+    this.$el.prepend(
+      "<div id='loading'>" +
+      "<div id='loading-title'>Loading...</div>" +
+      "</div>"
+    );
+    this.loadingImages = setInterval(this.loadAllImages.bind(this), 70);
   };
 })();
