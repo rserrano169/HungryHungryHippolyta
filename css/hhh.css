@@ -661,6 +661,29 @@ li {
   background-size: contain;*/
 }
 
+/* --- LOADING MODAL --- */
+
+#loading {
+  display: block;
+  position: absolute;
+  left: 110px;
+  top: 380px;
+  width: 401px;
+  height: 55px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  background: black;
+  border: 2px solid blue;
+  border-radius: 5px;
+  z-index: 1;
+}
+
+#loading-title {
+  display: block;
+  padding-top: 17px;
+}
+
 /* --- GAME OVER MODAL --- */
 
 #game-lose-modal {
