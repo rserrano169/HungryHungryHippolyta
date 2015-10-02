@@ -521,24 +521,24 @@
     $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
   };
 
-  View.prototype.loadAllImages = function () {
-    var loading = false,
+  View.prototype.renderAllImages = function () {
+    var isLoading = false,
         that = this,
         loadNextImage = function () {
           that.imageLoadNum++;
-          loading = false;
+          isLoading = false;
         };
 
     if (this.imageLoadNum >= 12) {
-        clearInterval(this.loadingImages)
+        clearInterval(this.loadingImagesIntervalId)
         this.render();
         $("#loading").remove();
         $(window).on("keydown", this.handleKeyDownEvent.bind(this));
         $(window).on("keyup", this.handleKeyUpEvent.bind(this));
         $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
     } else if (this.imageLoadNum === 0) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -551,8 +551,8 @@
           loadNextImage();
         };
     } else if (this.imageLoadNum === 1) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -565,8 +565,8 @@
           loadNextImage();
         };
     } else if (this.imageLoadNum === 2) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -579,8 +579,8 @@
           loadNextImage();
         };
     } else if (this.imageLoadNum === 3) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -593,8 +593,8 @@
           loadNextImage();
         };
     } else if (this.imageLoadNum === 4) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -607,8 +607,8 @@
           loadNextImage();
         };
       } else if (this.imageLoadNum === 5) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -621,8 +621,8 @@
           loadNextImage();
         };
       } else if (this.imageLoadNum === 6) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -635,8 +635,8 @@
           loadNextImage();
         };
       } else if (this.imageLoadNum === 7) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -649,8 +649,8 @@
           loadNextImage();
         };
       } else if (this.imageLoadNum === 8) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -663,8 +663,8 @@
           loadNextImage();
         };
       } else if (this.imageLoadNum === 9) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -677,8 +677,8 @@
           loadNextImage();
         };
       } else if (this.imageLoadNum === 10) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -691,8 +691,8 @@
           loadNextImage();
         };
       } else if (this.imageLoadNum === 11) {
-        if (!loading) {
-          loading = true;
+        if (!isLoading) {
+          isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -852,11 +852,26 @@
       that.$li.eq(pos - 1).html('<div class="powerup"></div>');
     });
 
+    this.loadAllImages();
+  };
+
+  View.prototype.loadAllImages = function () {
+    this.renderLoading();
+    this.setRenderImagesInterval();
+  };
+
+  View.prototype.renderLoading = function () {
     this.$el.prepend(
       "<div id='loading'>" +
       "<div id='loading-title'>Loading...</div>" +
       "</div>"
     );
-    this.loadingImages = setInterval(this.loadAllImages.bind(this), 70);
+  };
+
+  View.prototype.setRenderImagesInterval = function () {
+    this.loadingImagesIntervalId = setInterval(
+      this.renderAllImages.bind(this),
+      70
+    );
   };
 })();
