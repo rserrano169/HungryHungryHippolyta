@@ -25,7 +25,8 @@
     this.isGameStarted = false;
     this.board.hippolyta.nextDir = "STAY";
     this.board.hippolyta.prevHorDir = "LEFT";
-    this.imageLoadNum = 0;
+    this.imageRenderNum = 0;
+    this.isLoading = false;
     this.setupBoard();
     this.numOfDots = this.$li.children().filter(".dot").length;
     this.numOfCurrentPowerups = this.$li.children().filter(".powerup").length;
@@ -39,9 +40,13 @@
     if (View.BOARD_TEMPLATE_NUMBER === 1) {
       View.BOARD_SIZE = 25;
     };
+
   View.TIME_LIMIT_MINUTES = 5;
+
   View.TIMER_INTERVAL = 100;
+
   View.MOVEMENT_SLOWNESS = 70;
+
   View.KEYS = {
     38: "UP",
     39: "RIGHT",
@@ -49,6 +54,23 @@
     37: "LEFT",
     80: "STAY"  // "P" button to stop Hippolyta from moving
   };
+
+  View.HIPPOLYTA_IMG_DIRS = [
+    "closed-left",
+    "closed-up-left",
+    "closed-up-right",
+    "closed-right",
+    "closed-down-right",
+    "closed-down-left",
+    "open-left",
+    "open-up-left",
+    "open-up-right",
+    "open-right",
+    "open-down-right",
+    "open-down-left"
+  ];
+
+  View.NUM_OF_IMGS_TO_PRE_RENDER = View.HIPPOLYTA_IMG_DIRS.length;
 
   View.prototype.step = function () {
     if (this.hasEatenPowerup()) {
@@ -522,23 +544,16 @@
   };
 
   View.prototype.renderAllImages = function () {
-    var isLoading = false,
-        that = this,
-        loadNextImage = function () {
-          that.imageLoadNum++;
-          isLoading = false;
-        };
-
-    if (this.imageLoadNum >= 12) {
+    if (this.imageRenderNum >= 12) {
         clearInterval(this.loadingImagesIntervalId)
         this.render();
         $("#loading").remove();
         $(window).on("keydown", this.handleKeyDownEvent.bind(this));
         $(window).on("keyup", this.handleKeyUpEvent.bind(this));
         $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
-    } else if (this.imageLoadNum === 0) {
-        if (!isLoading) {
-          isLoading = true;
+    } else if (this.imageRenderNum === 0) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -548,11 +563,11 @@
             );
         };
         if ($(".hippolyta-mouth-closed-left")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-    } else if (this.imageLoadNum === 1) {
-        if (!isLoading) {
-          isLoading = true;
+    } else if (this.imageRenderNum === 1) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -562,11 +577,11 @@
             );
         };
         if ($(".hippolyta-mouth-closed-up-left")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-    } else if (this.imageLoadNum === 2) {
-        if (!isLoading) {
-          isLoading = true;
+    } else if (this.imageRenderNum === 2) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -576,11 +591,11 @@
             );
         };
         if ($(".hippolyta-mouth-closed-up-right")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-    } else if (this.imageLoadNum === 3) {
-        if (!isLoading) {
-          isLoading = true;
+    } else if (this.imageRenderNum === 3) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -590,11 +605,11 @@
             );
         };
         if ($(".hippolyta-mouth-closed-right")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-    } else if (this.imageLoadNum === 4) {
-        if (!isLoading) {
-          isLoading = true;
+    } else if (this.imageRenderNum === 4) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -604,11 +619,11 @@
             );
         };
         if ($(".hippolyta-mouth-closed-down-right")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-      } else if (this.imageLoadNum === 5) {
-        if (!isLoading) {
-          isLoading = true;
+      } else if (this.imageRenderNum === 5) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -618,11 +633,11 @@
             );
         };
         if ($(".hippolyta-mouth-closed-down-left")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-      } else if (this.imageLoadNum === 6) {
-        if (!isLoading) {
-          isLoading = true;
+      } else if (this.imageRenderNum === 6) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -632,11 +647,11 @@
             );
         };
         if ($(".hippolyta-mouth-open-left")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-      } else if (this.imageLoadNum === 7) {
-        if (!isLoading) {
-          isLoading = true;
+      } else if (this.imageRenderNum === 7) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -646,11 +661,11 @@
             );
         };
         if ($(".hippolyta-mouth-open-up-left")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-      } else if (this.imageLoadNum === 8) {
-        if (!isLoading) {
-          isLoading = true;
+      } else if (this.imageRenderNum === 8) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -660,11 +675,11 @@
             );
         };
         if ($(".hippolyta-mouth-open-up-right")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-      } else if (this.imageLoadNum === 9) {
-        if (!isLoading) {
-          isLoading = true;
+      } else if (this.imageRenderNum === 9) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -674,11 +689,11 @@
             );
         };
         if ($(".hippolyta-mouth-open-right")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-      } else if (this.imageLoadNum === 10) {
-        if (!isLoading) {
-          isLoading = true;
+      } else if (this.imageRenderNum === 10) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -688,11 +703,11 @@
             );
         };
         if ($(".hippolyta-mouth-open-down-right")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
-      } else if (this.imageLoadNum === 11) {
-        if (!isLoading) {
-          isLoading = true;
+      } else if (this.imageRenderNum === 11) {
+        if (!this.isLoading) {
+          this.isLoading = true;
           this.$currentTile().html('<div id="hippolyta"></div>')
             .append(
               '<img ' +
@@ -702,11 +717,15 @@
             );
         };
         if ($(".hippolyta-mouth-open-down-left")[0].complete) {
-          loadNextImage();
+          this.renderNextImage();
         };
       };
   };
 
+  View.prototype.renderNextImage = function () {
+    this.imageRenderNum++;
+    this.isLoading = false;
+  };
 
   View.prototype.setupBoard = function () {
     var that = this,
@@ -727,9 +746,7 @@
     this.$el.html(html);
     this.$li = this.$el.find("li");
 
-    if (this.board.temp === 1) {
-      var template = new HHH.TemplateOne();
-    };
+    var template = new HHH.Template(this.board.temp);
 
     //* --- OUTER WALLS RENDER --- *//
 
