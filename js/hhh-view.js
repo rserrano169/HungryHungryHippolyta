@@ -73,7 +73,7 @@
 
   View.NUM_OF_IMGS_TO_RENDER = View.HIPPOLYTA_IMG_DIRS.length;
 
-  View.LOAD_IMAGES_RENDER_SLOWNESS = 70;
+  View.IMAGE_RENDER_SLOWNESS = 70;
 
   View.prototype.renderInstructions = function () {
     this.$el.prepend(
@@ -112,6 +112,9 @@
       "mousedown touchstart",
       this.handleInstructionsClickAndTouch.bind(this)
     );
+
+    $(window).on("keydown", this.handleKeyDownEvent.bind(this));
+    $(window).on("keyup", this.handleKeyUpEvent.bind(this));
   };
 
   View.prototype.handleInstructionsClickAndTouch = function (event) {
@@ -402,10 +405,16 @@
       };
     };
 
-    if (event.keyCode === 13 && $("#play-again")) {
+    if (event.keyCode === 13) {
       event.preventDefault();
-      $("#play-again").mousedown();
-      $("#play-again").touchstart();
+
+      if ($("#play-again").length) {
+        $("#play-again").trigger("mousedown");
+      }
+
+      if ($("#instructions-modal-start-game").length) {
+        $("#instructions-modal-start-game").trigger("mousedown");
+      }
     };
   };
 
@@ -803,7 +812,7 @@
   View.prototype.setRenderImagesInterval = function () {
     this.loadingImagesIntervalId = setInterval(
       this.renderAllImages.bind(this),
-      View.LOAD_IMAGES_RENDER_SLOWNESS
+      View.IMAGE_RENDER_SLOWNESS
     );
   };
 })();
