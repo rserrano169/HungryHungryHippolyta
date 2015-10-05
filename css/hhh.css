@@ -686,6 +686,45 @@ li {
 
 /* --- GAME OVER MODAL --- */
 
+#instructions-modal {
+  display: block;
+  position: absolute;
+  left: 100px;
+  top: 48px;
+  width: 421px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  background: black;
+  border: 2px solid blue;
+  border-radius: 5px;
+  z-index: 1;
+}
+
+#instructions-modal-content {
+  padding: 20px;
+}
+
+#instructions-modal-header {
+  font-size: 26px;
+}
+
+.instructions-modal-instruction {
+  margin-bottom: 20px;
+}
+
+#instructions-modal-start-game {
+  font-size: 26px;
+  padding: 10px;
+  margin-top: 20px;
+  border: 1px solid blue;
+  border-radius: 5px;
+}
+
+#instructions-modal-start-game:hover {
+  cursor: pointer;
+}
+
 #game-lose-modal {
   display: block;
   position: absolute;

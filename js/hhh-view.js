@@ -28,6 +28,7 @@
     this.imageRenderNum = 0;
     this.isLoading = false;
     this.setupBoard();
+    this.renderInstructions();
     this.numOfDots = this.$li.children().filter(".dot").length;
     this.numOfCurrentPowerups = this.$li.children().filter(".powerup").length;
     this.stepNum = 1;
@@ -71,6 +72,36 @@
   ];
 
   View.NUM_OF_IMGS_TO_PRE_RENDER = View.HIPPOLYTA_IMG_DIRS.length;
+
+  View.prototype.renderInstructions = function () {
+    this.$el.prepend(
+      "<div id='instructions-modal'>" +
+        "<div id='instructions-modal-content'>" +
+          "<div id='instructions-modal-header' " +
+              "class='instructions-modal-instruction'>" +
+            "Instructions:" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "Use the ARROW KEYS to move, " +
+            "or CLICK / TOUCH where you want to go!" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "The game and timer start when you start moving. " +
+            "The game ends when you run out of time, " +
+            "or eat all the dots. "+
+            "Eat the large dots for a speed boost!" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "When you're ready to begin, then just hit \"Enter\", \"Return\", " +
+            "or click \"Start Game!!!\"" +
+          "</div>" +
+          "<div id='instructions-modal-start-game'>" +
+            "Start Game!!!" +
+          "</div>" +
+        "</div>" +
+      "<div>"
+    );
+  };
 
   View.prototype.step = function () {
     if (this.hasEatenPowerup()) {
