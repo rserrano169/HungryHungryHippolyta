@@ -20,7 +20,7 @@
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
-    this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER, View.BOARD_SIZE);
+    this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER);
     this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
     this.isGameStarted = false;
     this.board.hippolyta.nextDir = "STAY";
@@ -41,9 +41,6 @@
   };
 
   View.BOARD_TEMPLATE_NUMBER = 1;
-    if (View.BOARD_TEMPLATE_NUMBER === 1) {
-      View.BOARD_SIZE = 25;
-    };
 
   View.TIME_LIMIT_MINUTES = 5;
 
@@ -112,7 +109,7 @@
 
   View.prototype.bindInstructionsEvents = function () {
     $("#instructions-modal-start-game").on(
-      "click touch",
+      "mousedown touchstart",
       this.handleInstructionsClickAndTouch.bind(this)
     );
   };

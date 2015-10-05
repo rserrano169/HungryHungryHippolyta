@@ -722,6 +722,7 @@ li {
 }
 
 #instructions-modal-start-game:hover {
+  color: purple;
   cursor: pointer;
 }
 
@@ -729,7 +730,7 @@ li {
   display: block;
   position: absolute;
   left: 110px;
-  top: 253px;
+  top: 263px;
   width: 401px;
   color: white;
   font-size: 20px;
@@ -775,7 +776,10 @@ li {
 #play-again {
   display: block;
   font-size: 24px;
-  margin: 30px 0px 40px 0px;
+  padding: 5px;
+  margin: 25px 30px 35px 30px;
+  border: 1px solid blue;
+  border-radius: 5px;
 }
 
 #play-again:hover {
