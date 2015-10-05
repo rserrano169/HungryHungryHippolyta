@@ -27,6 +27,7 @@
     this.board.hippolyta.prevHorDir = "LEFT";
     this.imageRenderNum = 0;
     this.isLoading = false;
+    this.areInstructionsShowing = false;
     this.setupBoard();
     this.renderInstructions();
     this.renderLoading();
@@ -90,13 +91,12 @@
           "</div>" +
           "<div class='instructions-modal-instruction'>" +
             "The game and timer start when you start moving. " +
-            "The game ends when you run out of time, " +
-            "or eat all the dots. "+
+            "The game ends when you run out of time, or eat all the dots. " +
             "Eat the large dots for a speed boost!" +
           "</div>" +
           "<div class='instructions-modal-instruction'>" +
-            "When you're ready to begin, then just hit \"Enter\", \"Return\", " +
-            "or click \"Start Game!!!\"" +
+            "When you're ready to begin, then just hit \"Enter\", " +
+            "\"Return\", or click \"Start Game!!!\"" +
           "</div>" +
           "<div id='instructions-modal-start-game'>" +
             "Start Game!!!" +
@@ -104,6 +104,8 @@
         "</div>" +
       "<div>"
     );
+
+    this.areInstructionsShowing = true;
   };
 
   View.prototype.step = function () {
@@ -766,7 +768,7 @@
   };
 
   View.prototype.renderLoading = function () {
-    if (this.isLoading) {
+    if (!this.areInstructionsShowing) {
       this.$el.prepend(
         "<div id='loading'>" +
         "<div id='loading-title'>Loading...</div>" +
