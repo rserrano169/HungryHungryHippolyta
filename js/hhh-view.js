@@ -27,7 +27,8 @@
     this.board.hippolyta.prevHorDir = "LEFT";
     this.imageRenderNum = 0;
     this.isLoading = false;
-    this.areInstructionsShowing = false;
+    this.areInstructionsRendered = false;
+    this.isLoadingRendered = false;
     this.setupBoard();
     this.renderInstructions();
     this.renderLoading();
@@ -75,7 +76,7 @@
 
   View.NUM_OF_IMGS_TO_RENDER = View.HIPPOLYTA_IMG_DIRS.length;
 
-  View.LOAD_IMAGES_RENDER_SPEED = 70;
+  View.LOAD_IMAGES_RENDER_SLOWNESS = 70;
 
   View.prototype.renderInstructions = function () {
     this.$el.prepend(
@@ -105,7 +106,24 @@
       "<div>"
     );
 
-    this.areInstructionsShowing = true;
+    this.areInstructionsRendered = true;
+    this.bindInstructionsEvents();
+  };
+
+  View.prototype.bindInstructionsEvents = function () {
+    $("#instructions-modal-start-game").on(
+      "click touch",
+      this.handleInstructionsClickAndTouch.bind(this)
+    );
+  };
+
+  View.prototype.handleInstructionsClickAndTouch = function (event) {
+    this.removeInstructions();
+  };
+
+  View.prototype.removeInstructions = function () {
+    $("#instructions-modal").remove();
+    this.areInstructionsRendered = false;
   };
 
   View.prototype.step = function () {
@@ -588,7 +606,7 @@
     } else {
       if (!this.isLoading) {
         this.isLoading = true;
-        // this.renderLoading();
+        this.renderLoading();
 
         this.$currentTile()
           .html("<div id='hippolyta'></div>")
@@ -612,7 +630,7 @@
 
   View.prototype.setupGameStart = function () {
     this.renderHippolyta();
-    $("#loading").remove();
+    this.removeLoading();
     $(window).on("keydown", this.handleKeyDownEvent.bind(this));
     $(window).on("keyup", this.handleKeyUpEvent.bind(this));
     $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
@@ -768,25 +786,27 @@
   };
 
   View.prototype.renderLoading = function () {
-    if (!this.areInstructionsShowing) {
+    if (!this.areInstructionsRendered && !this.isLoadingRendered) {
       this.$el.prepend(
         "<div id='loading'>" +
-        "<div id='loading-title'>Loading...</div>" +
+          "<div id='loading-content'>Loading...</div>" +
         "</div>"
       );
+
+      this.isLoadingRendered = true;
     }
   };
 
   View.prototype.removeLoading = function () {
-    if (!this.isLoading) {
-      $('#loading').remove();
-    }
+    $('#loading').remove();
+
+    this.isLoadingRendered = false;
   };
 
   View.prototype.setRenderImagesInterval = function () {
     this.loadingImagesIntervalId = setInterval(
       this.renderAllImages.bind(this),
-      View.LOAD_IMAGES_RENDER_SPEED
+      View.LOAD_IMAGES_RENDER_SLOWNESS
     );
   };
 })();
