@@ -72,7 +72,9 @@
     "open-down-left"
   ];
 
-  View.NUM_OF_IMGS_TO_PRE_RENDER = View.HIPPOLYTA_IMG_DIRS.length;
+  View.NUM_OF_IMGS_TO_RENDER = View.HIPPOLYTA_IMG_DIRS.length;
+
+  View.LOAD_IMAGES_RENDER_SPEED = 70;
 
   View.prototype.renderInstructions = function () {
     this.$el.prepend(
@@ -578,12 +580,13 @@
   View.prototype.renderAllImages = function () {
     var dir = View.HIPPOLYTA_IMG_DIRS[this.imageRenderNum];
 
-    if (this.imageRenderNum >= View.HIPPOLYTA_IMG_DIRS.length) {
+    if (this.imageRenderNum >= View.NUM_OF_IMGS_TO_RENDER) {
         clearInterval(this.loadingImagesIntervalId)
         this.setupGameStart();
     } else {
       if (!this.isLoading) {
         this.isLoading = true;
+        // this.renderLoading();
 
         this.$currentTile()
           .html("<div id='hippolyta'></div>")
@@ -781,7 +784,7 @@
   View.prototype.setRenderImagesInterval = function () {
     this.loadingImagesIntervalId = setInterval(
       this.renderAllImages.bind(this),
-      70
+      View.LOAD_IMAGES_RENDER_SPEED
     );
   };
 })();
