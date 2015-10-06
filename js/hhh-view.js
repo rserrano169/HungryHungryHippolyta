@@ -20,6 +20,7 @@
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
+    this.$grid;
     this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER);
     this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
     this.isGameStarted = false;
@@ -34,8 +35,8 @@
     this.setupBoard();
     this.loadAllImages();
     this.renderInstructions();
-    this.numOfDots = this.$li.children().filter(".dot").length;
-    this.numOfCurrentPowerups = this.$li.children().filter(".powerup").length;
+    this.numOfDots = this.$grid.children().filter(".dot").length;
+    this.numOfCurrentPowerups = this.$grid.children().filter(".powerup").length;
     this.stepNum = 1;
     this.isPressing = false;
     this.BFSindex = 0;
@@ -96,16 +97,16 @@
     }
 
     this.$el.html(html);
-    this.$li = this.$el.find("li");
+    this.$grid = this.$el.find("li");
 
     for (var key in template.noOverlayWallPositions) {
       var wallPositions = template.noOverlayWallPositions[key],
           wallPositionsClassStr = key;
 
       wallPositions.forEach( function (pos) {
-        var $liPos = that.$li.eq(pos - 1);
+        var $gridPos = that.$grid.eq(pos - 1);
 
-        $liPos.html("<div class=" + wallPositionsClassStr + "></div>");
+        $gridPos.html("<div class=" + wallPositionsClassStr + "></div>");
       })
     }
 
@@ -114,9 +115,9 @@
           wallPositionsClassStr = key;
 
       wallPositions.forEach( function (pos) {
-        var $liPos = that.$li.eq(pos - 1);
+        var $gridPos = that.$grid.eq(pos - 1);
 
-        $liPos
+        $gridPos
           .html("<div class=" + wallPositionsClassStr + "></div>")
           .append("<div class=" + wallPositionsClassStr + "-overlay></div>");
       })
@@ -128,20 +129,20 @@
 
       rangesOfWallPositions.forEach( function (range) {
         for (var i = range[0]; i <= range[1]; i++) {
-          var $liPos = that.$li.eq(i - 1);
+          var $gridPos = that.$grid.eq(i - 1);
 
-          $liPos.html("<div class=" + wallPositionsClassStr + "></div>");
+          $gridPos.html("<div class=" + wallPositionsClassStr + "></div>");
         }
       })
     }
 
     //* --- PORTALS RENDER --- *//
 
-    this.$li.eq(template.portalLeftPosition - 1)
+    this.$grid.eq(template.portalLeftPosition - 1)
       .append('<div class="portal portal-left"></div>')
       .append('<div class="portal portal-left-overlay"></div>');
 
-    this.$li.eq(template.portalRightPosition - 1)
+    this.$grid.eq(template.portalRightPosition - 1)
       .append('<div class="portal portal-right"></div>')
       .append('<div class="portal portal-right-overlay"></div>');
 
@@ -149,14 +150,14 @@
 
     template.dotPositionRanges.forEach( function (range) {
       for (var i = range[0]; i <= range[1]; i++) {
-        that.$li.eq(i - 1).append('<div class="dot"></div>');
+        that.$grid.eq(i - 1).append('<div class="dot"></div>');
       }
     })
 
     //* --- POWERUPS RENDER --- *//
 
     template.powerupPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="powerup"></div>');
+      that.$grid.eq(pos - 1).html('<div class="powerup"></div>');
     })
   };
 
@@ -361,7 +362,7 @@
   };
 
   View.prototype.numOfPowerups = function () {
-    return this.$li.children().filter(".powerup").length;
+    return this.$grid.children().filter(".powerup").length;
   };
 
   View.prototype.boostSpeed = function () {
@@ -510,7 +511,7 @@
       dir = this.board.hippolyta.dir;
     }
 
-    return this.$li.eq(this.board.hippolyta.next$liPos(dir));
+    return this.$grid.eq(this.board.hippolyta.next$gridPos(dir));
   };
 
   View.prototype.renderHippolyta = function () {
@@ -650,7 +651,7 @@
   };
 
   View.prototype.$currentTile = function () {
-    return this.$li.eq(this.board.hippolyta.$liPos());
+    return this.$grid.eq(this.board.hippolyta.$gridPos());
   };
 
   View.prototype.handleKeyDownEvent = function (event) {
@@ -690,19 +691,19 @@
   View.prototype.setNextDirWithBFS = function () {
     if (this.BFSsequence) {
       if (
-        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === -25
+        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$gridPos() === -25
       ) {
         this.board.hippolyta.nextDir = "UP";
       } else if (
-        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === 1
+        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$gridPos() === 1
       ) {
         this.board.hippolyta.nextDir = "RIGHT";
       } else if (
-        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === 25
+        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$gridPos() === 25
       ) {
         this.board.hippolyta.nextDir = "DOWN";
       } else if (
-        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === -1
+        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$gridPos() === -1
       ) {
         this.board.hippolyta.nextDir = "LEFT";
       }
@@ -719,8 +720,8 @@
     }
 
     var directions = [-25, 1, 25, -1],
-        clicked$liPos = this.$li.index($clickedTile),
-        checked$liPositions = [],
+        clicked$gridPos = this.$grid.index($clickedTile),
+        checked$gridPositions = [],
         tilesToCheck = [$clickedTile],
         $checking = tilesToCheck.shift(),
         childToParent = {},
@@ -728,30 +729,30 @@
 
     while ($checking && $checking.find("#hippolyta").length === 0) {
       directions.forEach( function (dir) {
-        var checking$liPos = that.$li.index($checking),
-        next$liPos = checking$liPos + dir;
-        $adjTile = that.$li.eq(next$liPos);
+        var checking$gridPos = that.$grid.index($checking),
+        next$gridPos = checking$gridPos + dir;
+        $adjTile = that.$grid.eq(next$gridPos);
 
         if (
           that.isValidMove('undefined', $adjTile) &&
-          checked$liPositions.indexOf(next$liPos) === -1
+          checked$gridPositions.indexOf(next$gridPos) === -1
         ) {
-            childToParent[next$liPos] = checking$liPos;
+            childToParent[next$gridPos] = checking$gridPos;
             tilesToCheck.push($adjTile);
         }
       })
 
-      checked$liPositions.push(this.$li.index($checking));
+      checked$gridPositions.push(this.$grid.index($checking));
       $checking = tilesToCheck.shift();
     };
 
     var $foundHippolytaTile = $checking,
-        child$liPos = this.$li.index($foundHippolytaTile),
+        child$gridPos = this.$grid.index($foundHippolytaTile),
         posSequence = [];
 
-    while (posSequence.indexOf(clicked$liPos) === -1 && child$liPos > 0) {
-      child$liPos = childToParent[child$liPos];
-      posSequence.push(child$liPos);
+    while (posSequence.indexOf(clicked$gridPos) === -1 && child$gridPos > 0) {
+      child$gridPos = childToParent[child$gridPos];
+      posSequence.push(child$gridPos);
     }
 
     if (!this.isValidMove('undefined', $clickedTile)) {
@@ -823,7 +824,7 @@
   };
 
   View.prototype.isWon = function () {
-    return this.$li.children().filter(".dot").length === 0;
+    return this.$grid.children().filter(".dot").length === 0;
   };
 
   View.prototype.recordScore = function () {
