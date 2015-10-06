@@ -254,7 +254,7 @@
 
   View.prototype.bindInstructionsEvents = function () {
     $("#instructions-modal-start-game").on(
-      "mousedown touchstart",
+      "click touch",
       this.handleInstructionsClickAndTouch.bind(this)
     );
 
