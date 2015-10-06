@@ -20,10 +20,11 @@
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
+    this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
+    this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER);
     this.$grid;
     this.template = new HHH.Template(View.BOARD_TEMPLATE_NUMBER);
-    this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER);
-    this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
+    this.setupBoard();
     this.isGameStarted = false;
     this.board.hippolyta.nextDir = "STAY";
     this.board.hippolyta.prevHorDir = "LEFT";
@@ -33,7 +34,6 @@
     this.isLoadingModalRendered = false;
     this.areWindowEventsBound = false;
     this.areAllImagesLoaded = false;
-    this.setupBoard();
     this.loadAllImages();
     this.renderInstructions();
     this.numOfDots = this.$grid.children().filter(".dot").length;
@@ -44,12 +44,11 @@
     this.BFSsequence = [];
   };
 
-
-  View.BOARD_TEMPLATE_NUMBER = 1;
-
   View.TIME_LIMIT_MINUTES = 5;
 
   View.TIMER_INTERVAL = 100;
+
+  View.BOARD_TEMPLATE_NUMBER = 1;
 
   View.MOVEMENT_SLOWNESS = 70;
 
@@ -250,6 +249,18 @@
     this.areInstructionsRendered = false;
   };
 
+  View.prototype.bindWindowEvents = function () {
+    if (!this.areInstructionsRendered &&
+        !this.areWindowEventsBound &&
+        this.areAllImagesLoaded) {
+      $(window).on("keydown", this.handleKeyDownEvent.bind(this));
+      $(window).on("keyup", this.handleKeyUpEvent.bind(this));
+      $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
+
+      this.areWindowEventsBound = true;
+    }
+  };
+
   View.prototype.handleInstructionsKeyDownEvent = function (event) {
     if (event.keyCode === 13) {
       event.preventDefault();
@@ -305,20 +316,6 @@
   View.prototype.renderNextImage = function () {
     this.imageRenderNum++;
     this.isImageLoading = false;
-  };
-
-  View.prototype.bindWindowEvents = function () {
-    if (
-      !this.areInstructionsRendered &&
-      !this.areWindowEventsBound &&
-      this.areAllImagesLoaded
-    ) {
-      $(window).on("keydown", this.handleKeyDownEvent.bind(this));
-      $(window).on("keyup", this.handleKeyUpEvent.bind(this));
-      $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
-
-      this.areWindowEventsBound = true;
-    }
   };
 
   View.prototype.renderLoading = function () {
