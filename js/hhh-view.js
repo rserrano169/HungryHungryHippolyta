@@ -26,13 +26,14 @@
     this.board.hippolyta.nextDir = "STAY";
     this.board.hippolyta.prevHorDir = "LEFT";
     this.imageRenderNum = 0;
-    this.isLoading = false;
+    this.isImageLoading = false;
     this.areInstructionsRendered = false;
-    this.isLoadingRendered = false;
+    this.isLoadingModalRendered = false;
+    this.areWindowEventsBound = false;
+    this.areAllImagesLoaded = false;
     this.setupBoard();
     this.loadAllImages();
     this.renderInstructions();
-    this.renderLoading();
     this.numOfDots = this.$li.children().filter(".dot").length;
     this.numOfCurrentPowerups = this.$li.children().filter(".powerup").length;
     this.stepNum = 1;
@@ -265,6 +266,7 @@
 
   View.prototype.handleInstructionsClickAndTouch = function (event) {
     this.removeInstructions();
+    this.bindWindowEvents();
   };
 
   View.prototype.removeInstructions = function () {
@@ -278,10 +280,89 @@
     if (event.keyCode === 13) {
       event.preventDefault();
 
-      if ($("#instructions-modal-start-game").length) {
-        $("#instructions-modal-start-game").trigger("mousedown");
-      }
+      this.removeInstructions();
+      this.bindWindowEvents();
     }
+  };
+
+  View.prototype.loadAllImages = function () {
+    this.setRenderImagesInterval();
+  };
+
+  View.prototype.setRenderImagesInterval = function () {
+    this.renderImagesIntervalId = setInterval(
+      this.renderAllImages.bind(this),
+      View.IMAGE_RENDER_SLOWNESS
+    );
+  };
+
+  View.prototype.renderAllImages = function () {
+    var dir = View.HIPPOLYTA_IMG_DIRS[this.imageRenderNum];
+
+    if (this.imageRenderNum < View.NUM_OF_IMGS_TO_RENDER) {
+      if (!this.isImageLoading) {
+        this.isImageLoading = true;
+        this.renderLoading();
+        this.renderCurrentImage(dir);
+      }
+
+      if ($(".hippolyta-mouth-" + dir)[0].complete) {
+        this.renderNextImage();
+      }
+    } else {
+      clearInterval(this.renderImagesIntervalId)
+      this.renderHippolyta();
+      this.removeLoading();
+      this.areAllImagesLoaded = true;
+      this.bindWindowEvents();
+    }
+  };
+
+  View.prototype.renderCurrentImage = function (dir) {
+    this.$currentTile()
+      .html("<div id='hippolyta'></div>")
+      .append(
+        "<img src='images/hippolyta-mouth-" + dir + ".png' " +
+              "class='hippolyta-mouth-" + dir + "' " +
+              "alt='hmcl'>"
+      );
+  };
+
+  View.prototype.renderNextImage = function () {
+    this.imageRenderNum++;
+    this.isImageLoading = false;
+  };
+
+  View.prototype.bindWindowEvents = function () {
+    if (
+      !this.areInstructionsRendered &&
+      !this.areWindowEventsBound &&
+      this.areAllImagesLoaded
+    ) {
+      $(window).on("keydown", this.handleKeyDownEvent.bind(this));
+      $(window).on("keyup", this.handleKeyUpEvent.bind(this));
+      $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
+
+      this.areWindowEventsBound = true;
+    }
+  };
+
+  View.prototype.renderLoading = function () {
+    if (!this.areInstructionsRendered && !this.isLoadingModalRendered) {
+      this.$el.prepend(
+        "<div id='loading'>" +
+          "<div id='loading-content'>Loading...</div>" +
+        "</div>"
+      );
+
+      this.isLoadingModalRendered = true;
+    }
+  };
+
+  View.prototype.removeLoading = function () {
+    $('#loading').remove();
+
+    this.isLoadingModalRendered = false;
   };
 
   View.prototype.step = function () {
@@ -650,10 +731,6 @@
       if ($("#play-again").length) {
         $("#play-again").trigger("mousedown");
       }
-
-      if ($("#instructions-modal-start-game").length) {
-        $("#instructions-modal-start-game").trigger("mousedown");
-      }
     }
   };
 
@@ -662,7 +739,6 @@
   };
 
   View.prototype.handleClickEvent = function (event) {
-    // event.preventDefault();
     this.startGame()
     this.stepNum = 1;
     this.createBFSsequence(event);
@@ -851,72 +927,5 @@
     );
 
     $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
-  };
-
-  View.prototype.loadAllImages = function () {
-    this.setRenderImagesInterval();
-  };
-
-  View.prototype.setRenderImagesInterval = function () {
-    this.loadingImagesIntervalId = setInterval(
-      this.renderAllImages.bind(this),
-      View.IMAGE_RENDER_SLOWNESS
-    );
-  };
-
-  View.prototype.renderAllImages = function () {
-    var dir = View.HIPPOLYTA_IMG_DIRS[this.imageRenderNum];
-
-    if (this.imageRenderNum >= View.NUM_OF_IMGS_TO_RENDER) {
-      clearInterval(this.loadingImagesIntervalId)
-      this.removeLoading();
-      this.setupGameStart();
-    } else {
-      if (!this.isLoading) {
-        this.isLoading = true;
-        this.renderLoading();
-
-        this.$currentTile()
-          .html("<div id='hippolyta'></div>")
-          .append(
-            "<img src='images/hippolyta-mouth-" + dir + ".png' " +
-                  "class='hippolyta-mouth-" + dir + "' " +
-                  "alt='hmcl'>"
-          );
-      }
-      if ($(".hippolyta-mouth-" + dir)[0].complete) {
-        this.renderNextImage();
-      }
-    }
-  };
-
-  View.prototype.renderNextImage = function () {
-    this.imageRenderNum++;
-    this.isLoading = false;
-  };
-
-  View.prototype.setupGameStart = function () {
-    this.renderHippolyta();
-    $(window).on("keydown", this.handleKeyDownEvent.bind(this));
-    $(window).on("keyup", this.handleKeyUpEvent.bind(this));
-    $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
-  };
-
-  View.prototype.renderLoading = function () {
-    if (!this.areInstructionsRendered && !this.isLoadingRendered) {
-      this.$el.prepend(
-        "<div id='loading'>" +
-          "<div id='loading-content'>Loading...</div>" +
-        "</div>"
-      );
-
-      this.isLoadingRendered = true;
-    }
-  };
-
-  View.prototype.removeLoading = function () {
-    $('#loading').remove();
-
-    this.isLoadingRendered = false;
   };
 })();
