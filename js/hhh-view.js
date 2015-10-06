@@ -24,7 +24,6 @@
     this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER);
     this.$grid;
     this.template = new HHH.Template(View.BOARD_TEMPLATE_NUMBER);
-    this.setupBoard();
     this.renderImagesIntervalId;
     this.imageRenderNum = 0;
     this.isImageLoading = false;
@@ -42,10 +41,10 @@
     this.BFSsequence = [];
     this.BFSindex = 0;
     this.board.hippolyta.nextDir = "STAY";
-    // NEXT
+    
+    this.setupBoard();
     this.loadAllImages();
     this.renderInstructions();
-    this.numOfDots = this.$grid.children().filter(".dot").length;
   };
 
   View.TIME_LIMIT_MINUTES = 5;
@@ -575,69 +574,43 @@
     return this.isValidMove(this.board.hippolyta.nextDir);
   };
 
-  View.prototype.renderInstructions = function () {
-    this.$el.prepend(
-      "<div id='instructions-modal'>" +
-        "<div id='instructions-modal-content'>" +
-          "<div id='instructions-modal-header' " +
-              "class='instructions-modal-instruction'>" +
-            "Instructions:" +
-          "</div>" +
-          "<div class='instructions-modal-instruction'>" +
-            "Use the ARROW KEYS to move, " +
-            "or CLICK / TOUCH where you want to go!" +
-          "</div>" +
-          "<div class='instructions-modal-instruction'>" +
-            "The game and timer start when you start moving. " +
-            "The game ends when you run out of time, or eat all the dots. " +
-            "Eat the large dots for a speed boost!" +
-          "</div>" +
-          "<div class='instructions-modal-instruction'>" +
-            "When you're ready to begin, then just hit \"Enter\", " +
-            "\"Return\", or click \"Start Game!!!\"" +
-          "</div>" +
-          "<div id='instructions-modal-start-game'>" +
-            "Start Game!!!" +
-          "</div>" +
-        "</div>" +
-      "<div>"
-    );
-
-    this.areInstructionsRendered = true;
-    this.bindInstructionsEvents();
-  };
-
-  View.prototype.bindInstructionsEvents = function () {
-    $("#instructions-modal-start-game").on(
-      "click touch",
-      this.handleInstructionsClickAndTouch.bind(this)
-    );
-
-    $(window).on(
-      "keydown.instructions",
-      this.handleInstructionsKeyDownEvent.bind(this)
-    );
-  };
-
-  View.prototype.handleInstructionsClickAndTouch = function (event) {
-    this.removeInstructions();
-    this.bindWindowEvents();
-  };
-
-  View.prototype.removeInstructions = function () {
-    $("#instructions-modal").remove();
-    $(window).off(".instructions");
-
-    this.areInstructionsRendered = false;
-  };
-
-  View.prototype.handleInstructionsKeyDownEvent = function (event) {
-    if (event.keyCode === 13) {
-      event.preventDefault();
-
-      this.removeInstructions();
-      this.bindWindowEvents();
+  View.prototype.isValidMove = function (dir, $tile) {
+    if (typeof dir === 'undefined') {
+      dir = this.board.hippolyta.dir;
     }
+
+    if (typeof $tile === 'undefined') {
+      $tile = this.$nextTile(dir);
+    }
+
+    return (
+      $tile.children().hasClass("dot") ||
+      $tile.children().hasClass("powerup") ||
+      $tile.children().hasClass("portal") ||
+      $tile.children().hasClass("") ||
+      $tile.find("#hippolyta").length > 0
+    );
+  };
+
+  View.prototype.setPrevHorDir = function () {
+    if (this.board.hippolyta.nextDir !== this.board.hippolyta.dir && (
+      this.board.hippolyta.dir === "RIGHT" ||
+      this.board.hippolyta.dir === "LEFT"
+    )) {
+      this.board.hippolyta.prevHorDir = this.board.hippolyta.dir;
+    }
+  };
+
+  View.prototype.$nextTile = function (dir) {
+    if (typeof dir === 'undefined') {
+      dir = this.board.hippolyta.dir;
+    }
+
+    return this.$grid.eq(this.board.hippolyta.next$gridPos(dir));
+  };
+
+  View.prototype.changeDirection = function () {
+    return this.board.hippolyta.dir = this.board.hippolyta.nextDir;
   };
 
   View.prototype.renderMouthOpen = function () {
@@ -728,43 +701,75 @@
     }
   };
 
-  View.prototype.setPrevHorDir = function () {
-    if (this.board.hippolyta.nextDir !== this.board.hippolyta.dir && (
-      this.board.hippolyta.dir === "RIGHT" ||
-      this.board.hippolyta.dir === "LEFT"
-    )) {
-      this.board.hippolyta.prevHorDir = this.board.hippolyta.dir;
-    }
+  View.prototype.isLost = function () {
+    return this.timeLimit <= 0
   };
 
-  View.prototype.changeDirection = function () {
-    return this.board.hippolyta.dir = this.board.hippolyta.nextDir;
-  };
-
-  View.prototype.isValidMove = function (dir, $tile) {
-    if (typeof dir === 'undefined') {
-      dir = this.board.hippolyta.dir;
-    }
-
-    if (typeof $tile === 'undefined') {
-      $tile = this.$nextTile(dir);
-    }
-
-    return (
-      $tile.children().hasClass("dot") ||
-      $tile.children().hasClass("powerup") ||
-      $tile.children().hasClass("portal") ||
-      $tile.children().hasClass("") ||
-      $tile.find("#hippolyta").length > 0
+  View.prototype.renderYouLose = function () {
+    this.$el.prepend(
+      "<div id='game-lose-modal'>" +
+      "<div id='you-win-or-lose'>You Lose!</div>" +
+      "<div id='play-again'>Play Again?</div>" +
+      "<div>"
     );
+
+    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
+    $
   };
 
-  View.prototype.$nextTile = function (dir) {
-    if (typeof dir === 'undefined') {
-      dir = this.board.hippolyta.dir;
-    }
+  View.prototype.reloadPage = function () {
+    window.location.reload();
+  };
 
-    return this.$grid.eq(this.board.hippolyta.next$gridPos(dir));
+  View.prototype.isWon = function () {
+    return this.numberOfDotsLeft() === 0;
+  };
+
+  View.prototype.numberOfDotsLeft = function () {
+    return this.$grid.children().filter(".dot").length;
+  };
+
+  View.prototype.recordScore = function () {
+    scores.push({ name: 'YOU', number: this.timeLimit });
+    scores = scores
+      .sort( function (a, b) {
+        return b.number - a.number;
+      })
+      .slice(0, 10);
+    localStorage.scores = JSON.stringify(scores);
+  };
+
+  View.prototype.renderYouWin = function () {
+    var highScores = "",
+        rankNum = 1;
+
+    scores.forEach( function (score) {
+      if (rankNum === 1){
+        highScores += rankNum + ". " + score.name + " : " + score.number;
+        rankNum++;
+      } else {
+        highScores += "<br>" + rankNum + ". " + score.name + " : " + score.number;
+        rankNum++;
+      }
+    })
+
+    this.$el.prepend(
+      "<div id='game-win-modal'>" +
+        "<div id='you-win-or-lose'>You Win!!!</div>" +
+        "<div id='your-score'>Your Score: " +
+          this.timeLimit +
+        "</div>" +
+        "<div id='high-scores-list'>" +
+          "<div id='high-scores-title'>" +
+            "High Scores:" +
+          "</div>" +
+          highScores +
+        "</div>" +
+        "<div id='play-again'>Play Again?</div>" +
+      "<div>"
+    );
+
+    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
   };
 
   View.prototype.handleKeyUpEvent = function (event) {
@@ -851,70 +856,68 @@
     }
   };
 
-  View.prototype.isLost = function () {
-    return this.timeLimit <= 0
-  };
-
-  View.prototype.renderYouLose = function () {
+  View.prototype.renderInstructions = function () {
     this.$el.prepend(
-      "<div id='game-lose-modal'>" +
-      "<div id='you-win-or-lose'>You Lose!</div>" +
-      "<div id='play-again'>Play Again?</div>" +
-      "<div>"
-    );
-
-    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
-    $
-  };
-
-  View.prototype.reloadPage = function () {
-    window.location.reload();
-  };
-
-  View.prototype.isWon = function () {
-    return this.$grid.children().filter(".dot").length === 0;
-  };
-
-  View.prototype.recordScore = function () {
-    scores.push({ name: 'YOU', number: this.timeLimit });
-    scores = scores
-      .sort( function (a, b) {
-        return b.number - a.number;
-      })
-      .slice(0, 10);
-    localStorage.scores = JSON.stringify(scores);
-  };
-
-  View.prototype.renderYouWin = function () {
-    var highScores = "",
-        rankNum = 1;
-
-    scores.forEach( function (score) {
-      if (rankNum === 1){
-        highScores += rankNum + ". " + score.name + " : " + score.number;
-        rankNum++;
-      } else {
-        highScores += "<br>" + rankNum + ". " + score.name + " : " + score.number;
-        rankNum++;
-      }
-    })
-
-    this.$el.prepend(
-      "<div id='game-win-modal'>" +
-        "<div id='you-win-or-lose'>You Win!!!</div>" +
-        "<div id='your-score'>Your Score: " +
-          this.timeLimit +
-        "</div>" +
-        "<div id='high-scores-list'>" +
-          "<div id='high-scores-title'>" +
-            "High Scores:" +
+      "<div id='instructions-modal'>" +
+        "<div id='instructions-modal-content'>" +
+          "<div id='instructions-modal-header' " +
+              "class='instructions-modal-instruction'>" +
+            "Instructions:" +
           "</div>" +
-          highScores +
+          "<div class='instructions-modal-instruction'>" +
+            "Use the ARROW KEYS to move, " +
+            "or CLICK / TOUCH where you want to go!" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "The game and timer start when you start moving. " +
+            "The game ends when you run out of time, or eat all the dots. " +
+            "Eat the large dots for a speed boost!" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "When you're ready to begin, then just hit \"Enter\", " +
+            "\"Return\", or click \"Start Game!!!\"" +
+          "</div>" +
+          "<div id='instructions-modal-start-game'>" +
+            "Start Game!!!" +
+          "</div>" +
         "</div>" +
-        "<div id='play-again'>Play Again?</div>" +
       "<div>"
     );
 
-    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
+    this.areInstructionsRendered = true;
+    this.bindInstructionsEvents();
+  };
+
+  View.prototype.bindInstructionsEvents = function () {
+    $("#instructions-modal-start-game").on(
+      "click touch",
+      this.handleInstructionsClickAndTouch.bind(this)
+    );
+
+    $(window).on(
+      "keydown.instructions",
+      this.handleInstructionsKeyDownEvent.bind(this)
+    );
+  };
+
+  View.prototype.handleInstructionsClickAndTouch = function (event) {
+    this.removeInstructions();
+    this.bindWindowEvents();
+  };
+
+  View.prototype.removeInstructions = function () {
+    $("#instructions-modal").remove();
+    $(window).off(".instructions");
+
+    this.areInstructionsRendered = false;
+  };
+
+  View.prototype.handleInstructionsKeyDownEvent = function (event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+
+      this.removeInstructions();
+      this.bindWindowEvents();
+    }
   };
 })();
