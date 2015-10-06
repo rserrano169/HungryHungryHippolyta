@@ -25,23 +25,27 @@
     this.$grid;
     this.template = new HHH.Template(View.BOARD_TEMPLATE_NUMBER);
     this.setupBoard();
-    this.isGameStarted = false;
-    this.board.hippolyta.nextDir = "STAY";
-    this.board.hippolyta.prevHorDir = "LEFT";
+    this.renderImagesIntervalId;
     this.imageRenderNum = 0;
     this.isImageLoading = false;
     this.areInstructionsRendered = false;
     this.isLoadingModalRendered = false;
-    this.areWindowEventsBound = false;
+    this.board.hippolyta.prevHorDir = "LEFT";
     this.areAllImagesLoaded = false;
+    this.areWindowEventsBound = false;
+    this.isPressing = false;
+    this.isGameStarted = false;
+    this.timerIntervalId;
+    this.runIntervalId;
+    this.numOfCurrentPowerups = this.$grid.children().filter(".powerup").length;
+    this.stepNum = 1;
+    this.BFSsequence = [];
+    this.BFSindex = 0;
+    this.board.hippolyta.nextDir = "STAY";
+    // NEXT
     this.loadAllImages();
     this.renderInstructions();
     this.numOfDots = this.$grid.children().filter(".dot").length;
-    this.numOfCurrentPowerups = this.$grid.children().filter(".powerup").length;
-    this.stepNum = 1;
-    this.isPressing = false;
-    this.BFSindex = 0;
-    this.BFSsequence = [];
   };
 
   View.TIME_LIMIT_MINUTES = 5;
@@ -50,15 +54,7 @@
 
   View.BOARD_TEMPLATE_NUMBER = 1;
 
-  View.MOVEMENT_SLOWNESS = 70;
-
-  View.KEYS = {
-    38: "UP",
-    39: "RIGHT",
-    40: "DOWN",
-    37: "LEFT",
-    80: "STAY"  // "P" button to stop Hippolyta from moving
-  };
+  View.IMAGE_RENDER_SLOWNESS = 70;
 
   View.HIPPOLYTA_IMG_DIRS = [
     "closed-left",
@@ -77,7 +73,21 @@
 
   View.NUM_OF_IMGS_TO_RENDER = View.HIPPOLYTA_IMG_DIRS.length;
 
-  View.IMAGE_RENDER_SLOWNESS = 70;
+  View.KEYS = {
+    38: "UP",
+    39: "RIGHT",
+    40: "DOWN",
+    37: "LEFT",
+    80: "STAY"  // "P" button to stop Hippolyta from moving
+  };
+
+  View.MOVEMENT_SLOWNESS = 70;
+
+  View.SPEED_BOOST_DIVISOR = 4;
+
+  View.ORIGINAL_MOVEMENT_SLOWNESS = View.MOVEMENT_SLOWNESS;
+
+  View.RATE_OF_SLOWNESS_RECOVERY_AFTER_BOOST = 0.2;
 
   View.prototype.setupBoard = function () {
     this.create$Grid();
@@ -193,83 +203,6 @@
     })
   };
 
-  View.prototype.renderInstructions = function () {
-    this.$el.prepend(
-      "<div id='instructions-modal'>" +
-        "<div id='instructions-modal-content'>" +
-          "<div id='instructions-modal-header' " +
-              "class='instructions-modal-instruction'>" +
-            "Instructions:" +
-          "</div>" +
-          "<div class='instructions-modal-instruction'>" +
-            "Use the ARROW KEYS to move, " +
-            "or CLICK / TOUCH where you want to go!" +
-          "</div>" +
-          "<div class='instructions-modal-instruction'>" +
-            "The game and timer start when you start moving. " +
-            "The game ends when you run out of time, or eat all the dots. " +
-            "Eat the large dots for a speed boost!" +
-          "</div>" +
-          "<div class='instructions-modal-instruction'>" +
-            "When you're ready to begin, then just hit \"Enter\", " +
-            "\"Return\", or click \"Start Game!!!\"" +
-          "</div>" +
-          "<div id='instructions-modal-start-game'>" +
-            "Start Game!!!" +
-          "</div>" +
-        "</div>" +
-      "<div>"
-    );
-
-    this.areInstructionsRendered = true;
-    this.bindInstructionsEvents();
-  };
-
-  View.prototype.bindInstructionsEvents = function () {
-    $("#instructions-modal-start-game").on(
-      "click touch",
-      this.handleInstructionsClickAndTouch.bind(this)
-    );
-
-    $(window).on(
-      "keydown.instructions",
-      this.handleInstructionsKeyDownEvent.bind(this)
-    );
-  };
-
-  View.prototype.handleInstructionsClickAndTouch = function (event) {
-    this.removeInstructions();
-    this.bindWindowEvents();
-  };
-
-  View.prototype.removeInstructions = function () {
-    $("#instructions-modal").remove();
-    $(window).off(".instructions");
-
-    this.areInstructionsRendered = false;
-  };
-
-  View.prototype.bindWindowEvents = function () {
-    if (!this.areInstructionsRendered &&
-        !this.areWindowEventsBound &&
-        this.areAllImagesLoaded) {
-      $(window).on("keydown", this.handleKeyDownEvent.bind(this));
-      $(window).on("keyup", this.handleKeyUpEvent.bind(this));
-      $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
-
-      this.areWindowEventsBound = true;
-    }
-  };
-
-  View.prototype.handleInstructionsKeyDownEvent = function (event) {
-    if (event.keyCode === 13) {
-      event.preventDefault();
-
-      this.removeInstructions();
-      this.bindWindowEvents();
-    }
-  };
-
   View.prototype.loadAllImages = function () {
     this.setRenderImagesInterval();
   };
@@ -287,7 +220,7 @@
     if (this.imageRenderNum < View.NUM_OF_IMGS_TO_RENDER) {
       if (!this.isImageLoading) {
         this.isImageLoading = true;
-        this.renderLoading();
+        this.renderLoadingModal();
         this.renderCurrentImage(dir);
       }
 
@@ -303,22 +236,7 @@
     }
   };
 
-  View.prototype.renderCurrentImage = function (dir) {
-    this.$currentTile()
-      .html("<div id='hippolyta'></div>")
-      .append(
-        "<img src='images/hippolyta-mouth-" + dir + ".png' " +
-              "class='hippolyta-mouth-" + dir + "' " +
-              "alt='hmcl'>"
-      );
-  };
-
-  View.prototype.renderNextImage = function () {
-    this.imageRenderNum++;
-    this.isImageLoading = false;
-  };
-
-  View.prototype.renderLoading = function () {
+  View.prototype.renderLoadingModal = function () {
     if (!this.areInstructionsRendered && !this.isLoadingModalRendered) {
       this.$el.prepend(
         "<div id='loading'>" +
@@ -330,218 +248,23 @@
     }
   };
 
-  View.prototype.removeLoading = function () {
-    $('#loading').remove();
-
-    this.isLoadingModalRendered = false;
+  View.prototype.renderCurrentImage = function (dir) {
+    this.$currentTile()
+      .html("<div id='hippolyta'></div>")
+      .append(
+        "<img src='images/hippolyta-mouth-" + dir + ".png' " +
+              "class='hippolyta-mouth-" + dir + "' " +
+              "alt='hmcl'>"
+      );
   };
 
-  View.prototype.step = function () {
-    if (this.hasEatenPowerup()) {
-      this.boostSpeed();
-    }
-
-    if (this.isSpeedBoosted()) {
-      this.increaseSlowness();
-    }
-
-    if (this.stepNum === 1) {
-      this.setNextDirWithBFS(); // if applicable
-
-      if (this.isNextDirValid()) {
-        this.setPrevHorDir();
-        this.changeDirection();
-      }
-
-      this.stepNum = 2;
-    } else if (this.stepNum === 2) {
-      if(this.isValidMove()) {
-        this.renderMouthOpen();
-      }
-
-      this.stepNum = 3;
-    } else if (this.stepNum === 3) {
-      if (this.isValidMove()) {
-        this.renderHippolyta();
-      }
-
-      this.stepNum = 1;
-    }
-
-    if (this.isLost()) {
-      clearInterval(this.timer);
-      clearInterval(this.run);
-      this.renderYouLose();
-    }
-
-    if (this.isWon()) {
-      clearInterval(this.timer);
-      clearInterval(this.run);
-      this.recordScore();
-      this.renderYouWin();
-    }
+  View.prototype.$currentTile = function () {
+    return this.$grid.eq(this.board.hippolyta.$gridPos());
   };
 
-  View.prototype.hasEatenPowerup = function () {
-    if (this.numOfCurrentPowerups > this.numOfPowerups()) {
-      this.numOfCurrentPowerups = this.numOfPowerups();
-      return true;
-    }
-
-    return false;
-  };
-
-  View.prototype.numOfPowerups = function () {
-    return this.$grid.children().filter(".powerup").length;
-  };
-
-  View.prototype.boostSpeed = function () {
-    View.MOVEMENT_SLOWNESS /= 4;
-    clearInterval(this.run);
-
-    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
-  };
-
-  View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 70.0;
-  };
-
-  View.prototype.increaseSlowness = function () {
-    View.MOVEMENT_SLOWNESS += .2;
-    clearInterval(this.run);
-
-    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
-  };
-
-  View.prototype.renderMouthOpen = function () {
-    if (this.isMovingToOrFromPortal()) {
-      this.renderMovingToPortal();
-    } else if (
-      this.board.hippolyta.dir === "STAY" &&
-      this.board.hippolyta.prevHorDir === "LEFT"
-    ) {
-      this.$currentTile()
-        .html('<div id="hippolyta"></div>')
-        .append(
-          '<img src="images/hippolyta-mouth-closed-left.png" ' +
-                'class="hippolyta-mouth-closed-left" ' +
-                'alt="">'
-        );
-    } else if (
-      this.board.hippolyta.dir === "STAY" &&
-      this.board.hippolyta.prevHorDir === "RIGHT"
-    ) {
-      this.$currentTile()
-        .html('<div id="hippolyta"></div>')
-        .append(
-          '<img src="images/hippolyta-mouth-closed-right.png" ' +
-                'class="hippolyta-mouth-closed-right" ' +
-                'alt="">'
-        );
-    } else if (
-      this.board.hippolyta.dir === "UP" &&
-      this.board.hippolyta.prevHorDir === "LEFT"
-    ) {
-      this.$currentTile()
-        .html('<div id="hippolyta"></div>')
-        .append(
-          '<img src="images/hippolyta-mouth-open-up-left.png" ' +
-                'class="hippolyta-mouth-open-up-left" ' +
-                'alt="">'
-        );
-    } else if (
-      this.board.hippolyta.dir === "UP" &&
-      this.board.hippolyta.prevHorDir === "RIGHT"
-    ) {
-      this.$currentTile()
-        .html('<div id="hippolyta"></div>')
-        .append(
-          '<img src="images/hippolyta-mouth-open-up-right.png" ' +
-                'class="hippolyta-mouth-open-up-right" ' +
-                'alt="">'
-        );
-    } else if (
-      this.board.hippolyta.dir === "DOWN" &&
-      this.board.hippolyta.prevHorDir === "LEFT"
-    ) {
-      this.$currentTile()
-        .html('<div id="hippolyta"></div>')
-        .append(
-          '<img src="images/hippolyta-mouth-open-down-left.png" ' +
-                'class="hippolyta-mouth-open-down-left" ' +
-                'alt="">'
-        );
-    } else if (
-      this.board.hippolyta.dir === "DOWN" &&
-      this.board.hippolyta.prevHorDir === "RIGHT"
-    ) {
-      this.$currentTile()
-        .html('<div id="hippolyta"></div>')
-        .append(
-          '<img src="images/hippolyta-mouth-open-down-right.png" ' +
-                'class="hippolyta-mouth-open-down-right" ' +
-                'alt="">'
-        );
-    } else if (this.board.hippolyta.dir === "LEFT") {
-      this.$currentTile()
-        .html('<div id="hippolyta"></div>')
-        .append(
-          '<img src="images/hippolyta-mouth-open-left.png" ' +
-                'class="hippolyta-mouth-open-left" ' +
-                'alt="">'
-        );
-    } else if (this.board.hippolyta.dir === "RIGHT") {
-      this.$currentTile()
-        .html('<div id="hippolyta"></div>')
-        .append(
-          '<img src="images/hippolyta-mouth-open-right.png" ' +
-                'class="hippolyta-mouth-open-right" ' +
-                'alt="">'
-        );
-    }
-  };
-
-  View.prototype.isNextDirValid = function () {
-    return this.isValidMove(this.board.hippolyta.nextDir);
-  };
-
-  View.prototype.setPrevHorDir = function () {
-    if (this.board.hippolyta.nextDir !== this.board.hippolyta.dir && (
-      this.board.hippolyta.dir === "RIGHT" ||
-      this.board.hippolyta.dir === "LEFT"
-    )) {
-      this.board.hippolyta.prevHorDir = this.board.hippolyta.dir;
-    }
-  };
-
-  View.prototype.changeDirection = function () {
-    return this.board.hippolyta.dir = this.board.hippolyta.nextDir;
-  };
-
-  View.prototype.isValidMove = function (dir, $tile) {
-    if (typeof dir === 'undefined') {
-      dir = this.board.hippolyta.dir;
-    }
-
-    if (typeof $tile === 'undefined') {
-      $tile = this.$nextTile(dir);
-    }
-
-    return (
-      $tile.children().hasClass("dot") ||
-      $tile.children().hasClass("powerup") ||
-      $tile.children().hasClass("portal") ||
-      $tile.children().hasClass("") ||
-      $tile.find("#hippolyta").length > 0
-    );
-  };
-
-  View.prototype.$nextTile = function (dir) {
-    if (typeof dir === 'undefined') {
-      dir = this.board.hippolyta.dir;
-    }
-
-    return this.$grid.eq(this.board.hippolyta.next$gridPos(dir));
+  View.prototype.renderNextImage = function () {
+    this.imageRenderNum++;
+    this.isImageLoading = false;
   };
 
   View.prototype.renderHippolyta = function () {
@@ -555,6 +278,26 @@
       this.renderMovingFromPortal();
     } else {
       this.$currentTile().html('<div class=""></div>');
+    }
+  };
+
+  View.prototype.isMovingToOrFromPortal = function () {
+    if (this.$currentTile().children().hasClass("portal")) {
+      return true;
+    }
+
+    return false;
+  };
+
+  View.prototype.renderMovingFromPortal = function () {
+    if (this.$currentTile().children().hasClass("portal-left")) {
+      this.$currentTile()
+        .html('<div class="portal portal-left"></div>')
+        .append('<div class="portal portal-left-overlay"></div>');
+    } else if (this.$currentTile().children().hasClass("portal-right")) {
+      this.$currentTile()
+        .html('<div class="portal portal-right"></div>')
+        .append('<div class="portal portal-right-overlay"></div>');
     }
   };
 
@@ -646,26 +389,6 @@
     }
   };
 
-  View.prototype.isMovingToOrFromPortal = function () {
-    if (this.$currentTile().children().hasClass("portal")) {
-      return true;
-    }
-
-    return false;
-  };
-
-  View.prototype.renderMovingFromPortal = function () {
-    if (this.$currentTile().children().hasClass("portal-left")) {
-      this.$currentTile()
-        .html('<div class="portal portal-left"></div>')
-        .append('<div class="portal portal-left-overlay"></div>');
-    } else if (this.$currentTile().children().hasClass("portal-right")) {
-      this.$currentTile()
-        .html('<div class="portal portal-right"></div>')
-        .append('<div class="portal portal-right-overlay"></div>');
-    }
-  };
-
   View.prototype.renderMovingToPortal = function () {
     if (this.$currentTile().children().hasClass("portal-left")) {
       this.$currentTile()
@@ -680,8 +403,22 @@
     }
   };
 
-  View.prototype.$currentTile = function () {
-    return this.$grid.eq(this.board.hippolyta.$gridPos());
+  View.prototype.removeLoading = function () {
+    $('#loading').remove();
+
+    this.isLoadingModalRendered = false;
+  };
+
+  View.prototype.bindWindowEvents = function () {
+    if (!this.areInstructionsRendered &&
+        !this.areWindowEventsBound &&
+        this.areAllImagesLoaded) {
+      $(window).on("keydown", this.handleKeyDownEvent.bind(this));
+      $(window).on("keyup", this.handleKeyUpEvent.bind(this));
+      $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
+
+      this.areWindowEventsBound = true;
+    }
   };
 
   View.prototype.handleKeyDownEvent = function (event) {
@@ -705,6 +442,331 @@
     }
   };
 
+  View.prototype.startGame = function () {
+    if (!this.isGameStarted) {
+      this.startTimer();
+      this.runIntervalId = setInterval(
+        this.step.bind(this),
+        View.MOVEMENT_SLOWNESS
+      );
+      this.isGameStarted = true;
+    }
+  };
+
+  View.prototype.startTimer = function () {
+    this.timerIntervalId = setInterval(
+      this.countDown.bind(this),
+      View.TIMER_INTERVAL
+    );
+  };
+
+  View.prototype.countDown = function () {
+    this.timeLimit -= 1;
+    this.$el.find(".timer").html(
+      '<b>Timer/Score: </b>' + this.timeLimit +
+      ' milliseconds'
+    );
+  };
+
+  View.prototype.step = function () {
+    if (this.hasEatenPowerup()) {
+      this.boostSpeed();
+    }
+
+    if (this.isSpeedBoosted()) {
+      this.increaseSlowness();
+    }
+
+    if (this.stepNum === 1) {
+      this.setNextDirWithBFS(); // if applicable
+
+      if (this.isNextDirValid()) {
+        this.setPrevHorDir();
+        this.changeDirection();
+      }
+
+      this.stepNum = 2;
+    } else if (this.stepNum === 2) {
+      if(this.isValidMove()) {
+        this.renderMouthOpen();
+      }
+
+      this.stepNum = 3;
+    } else if (this.stepNum === 3) {
+      if (this.isValidMove()) {
+        this.renderHippolyta();
+      }
+
+      this.stepNum = 1;
+    }
+
+    if (this.isLost()) {
+      clearInterval(this.timerIntervalId);
+      clearInterval(this.runIntervalId);
+      this.renderYouLose();
+    }
+
+    if (this.isWon()) {
+      clearInterval(this.timerIntervalId);
+      clearInterval(this.runIntervalId);
+      this.recordScore();
+      this.renderYouWin();
+    }
+  };
+
+  View.prototype.hasEatenPowerup = function () {
+    if (this.numOfCurrentPowerups > this.numOfPowerups()) {
+      this.numOfCurrentPowerups = this.numOfPowerups();
+      return true;
+    }
+
+    return false;
+  };
+
+  View.prototype.numOfPowerups = function () {
+    return this.$grid.children().filter(".powerup").length;
+  };
+
+  View.prototype.boostSpeed = function () {
+    View.MOVEMENT_SLOWNESS /= View.SPEED_BOOST_DIVISOR;
+    clearInterval(this.runIntervalId);
+
+    this.runIntervalId = setInterval(
+      this.step.bind(this),
+      View.MOVEMENT_SLOWNESS
+    );
+  };
+
+  View.prototype.isSpeedBoosted = function () {
+    return View.MOVEMENT_SLOWNESS < View.ORIGINAL_MOVEMENT_SLOWNESS;
+  };
+
+  View.prototype.increaseSlowness = function () {
+    View.MOVEMENT_SLOWNESS += View.RATE_OF_SLOWNESS_RECOVERY_AFTER_BOOST;
+    clearInterval(this.runIntervalId);
+
+    this.runIntervalId = setInterval(
+      this.step.bind(this),
+      View.MOVEMENT_SLOWNESS
+    );
+  };
+
+  View.prototype.setNextDirWithBFS = function () {
+    if (this.BFSsequence) {
+      if (this.BFSsequence[this.BFSindex] -
+          this.board.hippolyta.$gridPos() === -25) {
+        this.board.hippolyta.nextDir = "UP";
+      } else if (this.BFSsequence[this.BFSindex] -
+                this.board.hippolyta.$gridPos() === 1) {
+        this.board.hippolyta.nextDir = "RIGHT";
+      } else if (this.BFSsequence[this.BFSindex] -
+                this.board.hippolyta.$gridPos() === 25) {
+        this.board.hippolyta.nextDir = "DOWN";
+      } else if (this.BFSsequence[this.BFSindex] -
+                this.board.hippolyta.$gridPos() === -1) {
+        this.board.hippolyta.nextDir = "LEFT";
+      }
+    }
+
+    this.BFSindex++;
+  };
+
+  View.prototype.isNextDirValid = function () {
+    return this.isValidMove(this.board.hippolyta.nextDir);
+  };
+
+  View.prototype.renderInstructions = function () {
+    this.$el.prepend(
+      "<div id='instructions-modal'>" +
+        "<div id='instructions-modal-content'>" +
+          "<div id='instructions-modal-header' " +
+              "class='instructions-modal-instruction'>" +
+            "Instructions:" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "Use the ARROW KEYS to move, " +
+            "or CLICK / TOUCH where you want to go!" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "The game and timer start when you start moving. " +
+            "The game ends when you run out of time, or eat all the dots. " +
+            "Eat the large dots for a speed boost!" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "When you're ready to begin, then just hit \"Enter\", " +
+            "\"Return\", or click \"Start Game!!!\"" +
+          "</div>" +
+          "<div id='instructions-modal-start-game'>" +
+            "Start Game!!!" +
+          "</div>" +
+        "</div>" +
+      "<div>"
+    );
+
+    this.areInstructionsRendered = true;
+    this.bindInstructionsEvents();
+  };
+
+  View.prototype.bindInstructionsEvents = function () {
+    $("#instructions-modal-start-game").on(
+      "click touch",
+      this.handleInstructionsClickAndTouch.bind(this)
+    );
+
+    $(window).on(
+      "keydown.instructions",
+      this.handleInstructionsKeyDownEvent.bind(this)
+    );
+  };
+
+  View.prototype.handleInstructionsClickAndTouch = function (event) {
+    this.removeInstructions();
+    this.bindWindowEvents();
+  };
+
+  View.prototype.removeInstructions = function () {
+    $("#instructions-modal").remove();
+    $(window).off(".instructions");
+
+    this.areInstructionsRendered = false;
+  };
+
+  View.prototype.handleInstructionsKeyDownEvent = function (event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+
+      this.removeInstructions();
+      this.bindWindowEvents();
+    }
+  };
+
+  View.prototype.renderMouthOpen = function () {
+    if (this.isMovingToOrFromPortal()) {
+      this.renderMovingToPortal();
+    } else if (
+      this.board.hippolyta.dir === "STAY" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-left.png" ' +
+                'class="hippolyta-mouth-closed-left" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "STAY" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-right.png" ' +
+                'class="hippolyta-mouth-closed-right" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "UP" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-up-left.png" ' +
+                'class="hippolyta-mouth-open-up-left" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "UP" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-up-right.png" ' +
+                'class="hippolyta-mouth-open-up-right" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "DOWN" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-down-left.png" ' +
+                'class="hippolyta-mouth-open-down-left" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "DOWN" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-down-right.png" ' +
+                'class="hippolyta-mouth-open-down-right" ' +
+                'alt="">'
+        );
+    } else if (this.board.hippolyta.dir === "LEFT") {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-left.png" ' +
+                'class="hippolyta-mouth-open-left" ' +
+                'alt="">'
+        );
+    } else if (this.board.hippolyta.dir === "RIGHT") {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-right.png" ' +
+                'class="hippolyta-mouth-open-right" ' +
+                'alt="">'
+        );
+    }
+  };
+
+  View.prototype.setPrevHorDir = function () {
+    if (this.board.hippolyta.nextDir !== this.board.hippolyta.dir && (
+      this.board.hippolyta.dir === "RIGHT" ||
+      this.board.hippolyta.dir === "LEFT"
+    )) {
+      this.board.hippolyta.prevHorDir = this.board.hippolyta.dir;
+    }
+  };
+
+  View.prototype.changeDirection = function () {
+    return this.board.hippolyta.dir = this.board.hippolyta.nextDir;
+  };
+
+  View.prototype.isValidMove = function (dir, $tile) {
+    if (typeof dir === 'undefined') {
+      dir = this.board.hippolyta.dir;
+    }
+
+    if (typeof $tile === 'undefined') {
+      $tile = this.$nextTile(dir);
+    }
+
+    return (
+      $tile.children().hasClass("dot") ||
+      $tile.children().hasClass("powerup") ||
+      $tile.children().hasClass("portal") ||
+      $tile.children().hasClass("") ||
+      $tile.find("#hippolyta").length > 0
+    );
+  };
+
+  View.prototype.$nextTile = function (dir) {
+    if (typeof dir === 'undefined') {
+      dir = this.board.hippolyta.dir;
+    }
+
+    return this.$grid.eq(this.board.hippolyta.next$gridPos(dir));
+  };
+
   View.prototype.handleKeyUpEvent = function (event) {
     this.isPressing = false;
   };
@@ -716,30 +778,6 @@
     if (this.BFSsequence.length <= 0) {
       this.setNextDirNESWonClick(event);
     }
-  };
-
-  View.prototype.setNextDirWithBFS = function () {
-    if (this.BFSsequence) {
-      if (
-        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$gridPos() === -25
-      ) {
-        this.board.hippolyta.nextDir = "UP";
-      } else if (
-        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$gridPos() === 1
-      ) {
-        this.board.hippolyta.nextDir = "RIGHT";
-      } else if (
-        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$gridPos() === 25
-      ) {
-        this.board.hippolyta.nextDir = "DOWN";
-      } else if (
-        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$gridPos() === -1
-      ) {
-        this.board.hippolyta.nextDir = "LEFT";
-      }
-    }
-
-    this.BFSindex++;
   };
 
   View.prototype.createBFSsequence = function (event) {
@@ -810,26 +848,6 @@
       this.board.hippolyta.nextDir = "LEFT";
     } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
       this.board.hippolyta.nextDir = "STAY";
-    }
-  };
-
-  View.prototype.startTimer = function () {
-    this.timer = setInterval(this.countDown.bind(this), View.TIMER_INTERVAL);
-  };
-
-  View.prototype.countDown = function () {
-    this.timeLimit -= 1;
-    this.$el.find(".timer").html(
-      '<b>Timer/Score: </b>' + this.timeLimit +
-      ' milliseconds'
-    );
-  };
-
-  View.prototype.startGame = function () {
-    if (!this.isGameStarted) {
-      this.startTimer();
-      this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
-      this.isGameStarted = true;
     }
   };
 
