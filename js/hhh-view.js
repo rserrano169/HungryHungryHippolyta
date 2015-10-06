@@ -25,6 +25,9 @@
     this.$grid;
     this.template = new HHH.Template(View.BOARD_TEMPLATE_NUMBER);
     this.renderImagesIntervalId;
+
+    this.setupBoard();
+
     this.imageRenderNum = 0;
     this.isImageLoading = false;
     this.areInstructionsRendered = false;
@@ -41,8 +44,7 @@
     this.BFSsequence = [];
     this.BFSindex = 0;
     this.board.hippolyta.nextDir = "STAY";
-    
-    this.setupBoard();
+
     this.loadAllImages();
     this.renderInstructions();
   };
