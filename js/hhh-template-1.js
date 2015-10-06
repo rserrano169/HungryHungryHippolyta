@@ -5,169 +5,182 @@
 
   var Template = HHH.Template = function (tempNum) {
     this.tempNum = tempNum;
+    this.noOverlayWallPositions;
+    this.overlayWallPositions;
+    this.rangesOfWallPositions;
+
     //* --- OUTER WALL POSITIONS --- *//
+
     if (this.tempNum === 1) {
-      this.outerWallNWPositions = [
-        1,    // always top left corner
-        14,   // just 14
-        145,  // 6th row * dim(=25) - 5 spaces from the right
-        320,  // 13 * dim - 5
-        376,  // 16 * dim + 1 spaces from the left
-        497,  // 20 * dim - 3
-        501,  // 20 * dim + 1
-        585,  // 23 * dim + 10
-        590   // 23 * dim + 15
-      ];
-      this.outerWallNEPositions = [
-        25,   // dim -> always top right corner
-        12,   //
-        131,  // 5 * dim + 6
-        306,  // 12 * dim + 6
-        400,  // 16 * dim
-        479,  // 19 * dim + 4
-        525,  // 21 * dim
-        586,  // 23 * dim + 11
-        591   // 23 * dim + 16
-      ];
-      this.outerWallSWPositions = [
-        87,   // 3 * dim + 12
-        126,  // 5 * dim + 1
-        270,  // 11 * dim - 5
-        395,  // 16 * dim - 5
-        476,  // 19 * dim + 1
-        522,  // 21 * dim - 3
-        601,  // (dim - 1) * dim + 1 -> always bottom left corner
-        611,  // 24 * dim + 11
-        616   // 24 * dim + 16
-      ];
-      this.outerWallSEPositions = [
-        89,   // 3 * dim + 14
-        150,  // 6 * dim
-        256,  // 10 * dim + 6
-        381,  // 15 * dim + 6
-        500,  // 20 * dim
-        504,  // 20 * dim + 4
-        610,  // 24 * dim + 10
-        615,  // 24 * dim + 15
-        625   // dim * dim -> always bottom right corner
-      ];
-      this.outerWallHorizontalRanges = [
-        [2, 11],      // 1
-        [15, 24],     // 2
-        [88, 88],     // 3
-        [127, 130],   // 4
-        [146, 149],   // 5
-        [251, 255],   // 6
-        [271, 275],   // 7
-        [301, 305],   // 8
-        [321, 325],   // 9
-        [377, 380],   // 10
-        [396, 399],   // 11
-        [477, 478],   // 12
-        [498, 499],   // 13
-        [502, 503],   // 14
-        [523, 524],   // 15
-        [602, 609],   // 16
-        [612, 614],   // 17
-        [617, 624]    // 18
-      ];
-      this.outerWallVerticalPositions = [
-        26, 51, 76, 101,      // wall 1
-        37, 62,               // wall 2
-        39, 64,               // wall 3
-        50, 75, 100, 125,     // wall 4
-        156, 181, 206, 231,   // wall 5
-        170, 195, 220, 245,   // wall 6
-        331, 356,             // wall 7
-        345, 370,             // wall 8
-        401, 426, 451,        // wall 9
-        526, 551, 576,        // wall 10
-        425, 450, 475,        // wall 11
-        550, 575, 600         // wall 12
-      ];
+      this.noOverlayWallPositions = {
+        "outer-wall-NW": this.outerWallNWPositions = [
+          1,    // always top left corner
+          14,   // just 14
+          145,  // 6th row * dim(=25) - 5 spaces from the right
+          320,  // 13 * dim - 5
+          376,  // 16 * dim + 1 spaces from the left
+          497,  // 20 * dim - 3
+          501,  // 20 * dim + 1
+          585,  // 23 * dim + 10
+          590   // 23 * dim + 15
+        ],
+        "outer-wall-NE": this.outerWallNEPositions = [
+          25,   // dim -> always top right corner
+          12,   //
+          131,  // 5 * dim + 6
+          306,  // 12 * dim + 6
+          400,  // 16 * dim
+          479,  // 19 * dim + 4
+          525,  // 21 * dim
+          586,  // 23 * dim + 11
+          591   // 23 * dim + 16
+        ],
+        "outer-wall-SW": this.outerWallSWPositions = [
+          87,   // 3 * dim + 12
+          126,  // 5 * dim + 1
+          270,  // 11 * dim - 5
+          395,  // 16 * dim - 5
+          476,  // 19 * dim + 1
+          522,  // 21 * dim - 3
+          601,  // (dim - 1) * dim + 1 -> always bottom left corner
+          611,  // 24 * dim + 11
+          616   // 24 * dim + 16
+        ],
+        "outer-wall-SE": this.outerWallSEPositions = [
+          89,   // 3 * dim + 14
+          150,  // 6 * dim
+          256,  // 10 * dim + 6
+          381,  // 15 * dim + 6
+          500,  // 20 * dim
+          504,  // 20 * dim + 4
+          610,  // 24 * dim + 10
+          615,  // 24 * dim + 15
+          625   // dim * dim -> always bottom right corner
+        ],
+        "outer-wall-vertical": this.outerWallVerticalPositions = [
+          26, 51, 76, 101,      // wall 1
+          37, 62,               // wall 2
+          39, 64,               // wall 3
+          50, 75, 100, 125,     // wall 4
+          156, 181, 206, 231,   // wall 5
+          170, 195, 220, 245,   // wall 6
+          331, 356,             // wall 7
+          345, 370,             // wall 8
+          401, 426, 451,        // wall 9
+          526, 551, 576,        // wall 10
+          425, 450, 475,        // wall 11
+          550, 575, 600         // wall 12
+        ],
 
-      //* --- INNER WALL POSITIONS --- *//
+        //* --- INNER WALL POSITIONS --- *//
 
-      this.innerWallTopPositions = [
-        133, 143, 308, 318, 483, 493
-      ];
-      this.innerWallBottomPositions = [
-        188, 258, 268, 383, 393, 438, 506, 520, 563
-      ];
-      this.innerWallLeftPositions = [
-        135, 190, 385, 428, 433, 440, 485, 540, 553
-      ];
-      this.innerWallRightPositions = [
-        141, 186, 391, 436, 443, 448, 491, 536, 573
-      ];
-      this.innerWallVerticalPositions = [
-        158,
-        163,                  // wall 1
-        168,                  // wall 2
-        208, 233,             // wall 3
-        218, 243,             // wall 4
-        333, 358,             // wall 5
-        343, 368,             // wall 6
-        413,                  // wall 7
-        456, 481,             // wall 8
-        470, 495,             // wall 9
-        508,                  // wall 10
-        513, 538,             // wall 11
-        518                   // wall 12
-      ];
-      this.innerWallHorizontalPositions = [
-        136, 137,             // wall 1
-        139, 140,             // wall 2
-        184, 185,             // wall 3
-        191, 192,             // wall 4
-        386, 387,             // wall 5
-        389, 390,             // wall 6
-        429, 430,             // wall 7
-        434, 435,             // wall 8
-        441, 442,             // wall 9
-        446, 447,             // wall 10
-        486, 487,             // wall 11
-        489, 490,             // wall 12
-        534, 535,             // wall 13
-        541, 542,             // wall 14
-        554, 555, 556, 557,   // wall 15
-        569, 570, 571, 572    // wall 16
-      ];
-      this.innerWallTeeUpPositions = [];
-      this.innerWallTeeDownPositions = [138, 388, 488];
-      this.innerWallTeeLeftPositions = [193, 543];
-      this.innerWallTeeRightPositions = [183, 533];
-      this.innerWallNWPositions = [445];
-      this.innerWallNEPositions = [431];
-      this.innerWallSWPositions = [568];
-      this.innerWallSEPositions = [558];
+        "inner-wall-top": this.innerWallTopPositions = [
+          133, 143, 308, 318, 483, 493
+        ],
+        "inner-wall-bottom": this.innerWallBottomPositions = [
+          188, 258, 268, 383, 393, 438, 506, 520, 563
+        ],
+        "inner-wall-left": this.innerWallLeftPositions = [
+          135, 190, 385, 428, 433, 440, 485, 540, 553
+        ],
+        "inner-wall-right": this.innerWallRightPositions = [
+          141, 186, 391, 436, 443, 448, 491, 536, 573
+        ],
+        "inner-wall-vertical": this.innerWallVerticalPositions = [
+          158,
+          163,                  // wall 1
+          168,                  // wall 2
+          208, 233,             // wall 3
+          218, 243,             // wall 4
+          333, 358,             // wall 5
+          343, 368,             // wall 6
+          413,                  // wall 7
+          456, 481,             // wall 8
+          470, 495,             // wall 9
+          508,                  // wall 10
+          513, 538,             // wall 11
+          518                   // wall 12
+        ],
+        "inner-wall-horizontal": this.innerWallHorizontalPositions = [
+          136, 137,             // wall 1
+          139, 140,             // wall 2
+          184, 185,             // wall 3
+          191, 192,             // wall 4
+          386, 387,             // wall 5
+          389, 390,             // wall 6
+          429, 430,             // wall 7
+          434, 435,             // wall 8
+          441, 442,             // wall 9
+          446, 447,             // wall 10
+          486, 487,             // wall 11
+          489, 490,             // wall 12
+          534, 535,             // wall 13
+          541, 542,             // wall 14
+          554, 555, 556, 557,   // wall 15
+          569, 570, 571, 572    // wall 16
+        ],
 
-      //* --- INNER BLOCK POSITIONS --- *//
+        //* --- INNER BLOCK POSITIONS --- *//
 
-      this.innerBlockNWPositions = [
-        53, 58, 66, 70, 235, 239
-      ];
-      this.innerBlockNEPositions = [
-        56, 60, 68, 73, 237, 241
-      ];
-      this.innerBlockSWPositions = [
-        78, 83, 91, 95, 335, 339
-      ];
-      this.innerBlockSEPositions = [
-        81, 85, 93, 98, 337, 341
-      ];
-      this.innerBlockHorizontalPositions = [
-        54, 55, 59, 67, 71, 72,
-        79, 80, 84, 92, 96, 97,
-        236, 240,
-        336, 340
-      ];
-      this.innerBlockVerticalPositions = [
-        260, 285, 310,
-        262, 287, 312,
-        264, 289, 314,
-        266, 291, 316
-      ];
+        "inner-block-NW": this.innerBlockNWPositions = [
+          53, 58, 66, 70, 235, 239
+        ],
+        "inner-block-NE": this.innerBlockNEPositions = [
+          56, 60, 68, 73, 237, 241
+        ],
+        "inner-block-SW": this.innerBlockSWPositions = [
+          78, 83, 91, 95, 335, 339
+        ],
+        "inner-block-SE": this.innerBlockSEPositions = [
+          81, 85, 93, 98, 337, 341
+        ],
+        "inner-block-horizontal": this.innerBlockHorizontalPositions = [
+          54, 55, 59, 67, 71, 72,
+          79, 80, 84, 92, 96, 97,
+          236, 240,
+          336, 340
+        ],
+        "inner-block-vertical": this.innerBlockVerticalPositions = [
+          260, 285, 310,
+          262, 287, 312,
+          264, 289, 314,
+          266, 291, 316
+        ],
+      };
+
+      this.overlayWallPositions = {
+        "inner-wall-tee-up": this.innerWallTeeUpPositions = [],
+        "inner-wall-tee-down": this.innerWallTeeDownPositions = [138, 388, 488],
+        "inner-wall-tee-left": this.innerWallTeeLeftPositions = [193, 543],
+        "inner-wall-tee-right": this.innerWallTeeRightPositions = [183, 533],
+        "inner-wall-NW": this.innerWallNWPositions = [445],
+        "inner-wall-NE": this.innerWallNEPositions = [431],
+        "inner-wall-SW": this.innerWallSWPositions = [568],
+        "inner-wall-SE": this.innerWallSEPositions = [558],
+      };
+      
+      this.rangesOfWallPositions = {
+        "outer-wall-horizontal": this.outerWallHorizontalRanges = [
+          [2, 11],      // 1
+          [15, 24],     // 2
+          [88, 88],     // 3
+          [127, 130],   // 4
+          [146, 149],   // 5
+          [251, 255],   // 6
+          [271, 275],   // 7
+          [301, 305],   // 8
+          [321, 325],   // 9
+          [377, 380],   // 10
+          [396, 399],   // 11
+          [477, 478],   // 12
+          [498, 499],   // 13
+          [502, 503],   // 14
+          [523, 524],   // 15
+          [602, 609],   // 16
+          [612, 614],   // 17
+          [617, 624]    // 18
+        ],
+      };
 
       //* --- PORTAL POSITIONS --- *//
 
