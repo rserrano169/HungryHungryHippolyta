@@ -42,6 +42,7 @@
     this.BFSsequence = [];
   };
 
+
   View.BOARD_TEMPLATE_NUMBER = 1;
 
   View.TIME_LIMIT_MINUTES = 5;
@@ -79,6 +80,7 @@
 
   View.prototype.setupBoard = function () {
     var that = this,
+        template = new HHH.Template(this.board.temp),
         html = '<section class="top-bar group">' +
                '<div class="timer"><b>Timer/Score: </b>' + this.timeLimit +
                ' milliseconds</div></section>';
@@ -96,104 +98,42 @@
     this.$el.html(html);
     this.$li = this.$el.find("li");
 
-    var template = new HHH.Template(this.board.temp);
+    for (var key in template.noOverlayWallPositions) {
+      var wallPositions = template.noOverlayWallPositions[key],
+          wallPositionsClassStr = key;
 
-    //* --- OUTER WALLS RENDER --- *//
+      wallPositions.forEach( function (pos) {
+        var $liPos = that.$li.eq(pos - 1);
 
-    template.outerWallNWPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="outer-wall-NW"></div>');
-    })
-    template.outerWallNEPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="outer-wall-NE"></div>');
-    })
-    template.outerWallSWPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="outer-wall-SW"></div>');
-    })
-    template.outerWallSEPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="outer-wall-SE"></div>');
-    })
-    template.outerWallHorizontalRanges.forEach( function (range) {
-      for (var i = range[0]; i <= range[1]; i++) {
-        that.$li.eq(i - 1).html('<div class="outer-wall-horizontal"></div>');
-      }
-    })
-    template.outerWallVerticalPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="outer-wall-vertical"></div>');
-    })
+        $liPos.html("<div class=" + wallPositionsClassStr + "></div>");
+      })
+    }
 
-    //* --- INNER WALLS RENDER --- *//
+    for (var key in template.overlayWallPositions) {
+      var wallPositions = template.overlayWallPositions[key],
+          wallPositionsClassStr = key;
 
-    template.innerWallTopPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-top"></div>');
-    })
-    template.innerWallBottomPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-bottom"></div>');
-    })
-    template.innerWallLeftPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-left"></div>');
-    })
-    template.innerWallRightPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-right"></div>');
-    })
-    template.innerWallVerticalPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-vertical"></div>');
-    })
-    template.innerWallHorizontalPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-horizontal"></div>');
-    })
-    template.innerWallTeeUpPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-tee-up"></div>');
-      that.$li.eq(pos - 1).append('<div class="inner-wall-tee-up-overlay"></div>');
-    })
-    template.innerWallTeeDownPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-tee-down"></div>');
-      that.$li.eq(pos - 1).append('<div class="inner-wall-tee-down-overlay"></div>');
-    })
-    template.innerWallTeeLeftPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-tee-left"></div>');
-      that.$li.eq(pos - 1).append('<div class="inner-wall-tee-left-overlay"></div>');
-    })
-    template.innerWallTeeRightPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-tee-right"></div>');
-      that.$li.eq(pos - 1).append('<div class="inner-wall-tee-right-overlay"></div>');
-    })
-    template.innerWallNWPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-NW"></div>');
-      that.$li.eq(pos - 1).append('<div class="inner-wall-NW-overlay"></div>');
-    })
-    template.innerWallNEPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-NE"></div>');
-      that.$li.eq(pos - 1).append('<div class="inner-wall-NE-overlay"></div>');
-    })
-    template.innerWallSWPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-SW"></div>');
-      that.$li.eq(pos - 1).append('<div class="inner-wall-SW-overlay"></div>');
-    })
-    template.innerWallSEPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-wall-SE"></div>');
-      that.$li.eq(pos - 1).append('<div class="inner-wall-SE-overlay"></div>');
-    })
+      wallPositions.forEach( function (pos) {
+        var $liPos = that.$li.eq(pos - 1);
 
-    //* --- INNER BLOCKS RENDER --- *//
+        $liPos
+          .html("<div class=" + wallPositionsClassStr + "></div>")
+          .append("<div class=" + wallPositionsClassStr + "-overlay></div>");
+      })
+    }
 
-    template.innerBlockNWPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-block-NW"></div>');
-    })
-    template.innerBlockNEPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-block-NE"></div>');
-    })
-    template.innerBlockSWPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-block-SW"></div>');
-    })
-    template.innerBlockSEPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-block-SE"></div>');
-    })
-    template.innerBlockHorizontalPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-block-horizontal"></div>');
-    })
-    template.innerBlockVerticalPositions.forEach( function (pos) {
-      that.$li.eq(pos - 1).html('<div class="inner-block-vertical"></div>');
-    })
+    for (var key in template.rangesOfWallPositions) {
+      var rangesOfWallPositions = template.rangesOfWallPositions[key],
+          wallPositionsClassStr = key;
+
+      rangesOfWallPositions.forEach( function (range) {
+        for (var i = range[0]; i <= range[1]; i++) {
+          var $liPos = that.$li.eq(i - 1);
+
+          $liPos.html("<div class=" + wallPositionsClassStr + "></div>");
+        }
+      })
+    }
 
     //* --- PORTALS RENDER --- *//
 
@@ -217,7 +157,7 @@
 
     template.powerupPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="powerup"></div>');
-    });
+    })
   };
 
   View.prototype.renderInstructions = function () {
