@@ -21,6 +21,7 @@
   var View = HHH.View = function ($el) {
     this.$el = $el;
     this.$grid;
+    this.template = new HHH.Template(View.BOARD_TEMPLATE_NUMBER);
     this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER);
     this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
     this.isGameStarted = false;
@@ -80,9 +81,15 @@
   View.IMAGE_RENDER_SLOWNESS = 70;
 
   View.prototype.setupBoard = function () {
-    var that = this,
-        template = new HHH.Template(this.board.temp),
-        html = '<section class="top-bar group">' +
+    this.create$Grid();
+    this.renderWalls();
+    this.renderPortals();
+    this.renderDots();
+    this.renderPowerups();
+  };
+
+  View.prototype.create$Grid = function () {
+    var html = '<section class="top-bar group">' +
                '<div class="timer"><b>Timer/Score: </b>' + this.timeLimit +
                ' milliseconds</div></section>';
 
@@ -98,9 +105,19 @@
 
     this.$el.html(html);
     this.$grid = this.$el.find("li");
+  };
 
-    for (var key in template.noOverlayWallPositions) {
-      var wallPositions = template.noOverlayWallPositions[key],
+  View.prototype.renderWalls = function () {
+    this.renderNoOverlayWalls();
+    this.renderOverlayWalls();
+    this.renderRangesOfWalls();
+  };
+
+  View.prototype.renderNoOverlayWalls = function () {
+    var that = this;
+
+    for (var key in this.template.noOverlayWallPositions) {
+      var wallPositions = this.template.noOverlayWallPositions[key],
           wallClassStr = key;
 
       wallPositions.forEach( function (pos) {
@@ -109,9 +126,13 @@
         $gridPos.html("<div class='" + wallClassStr + "'></div>");
       })
     }
+  };
 
-    for (var key in template.overlayWallPositions) {
-      var wallPositions = template.overlayWallPositions[key],
+  View.prototype.renderOverlayWalls = function () {
+    var that = this;
+
+    for (var key in this.template.overlayWallPositions) {
+      var wallPositions = this.template.overlayWallPositions[key],
           wallClassStr = key;
 
       wallPositions.forEach( function (pos) {
@@ -122,9 +143,13 @@
           .append("<div class='" + wallClassStr + "-overlay'></div>");
       })
     }
+  };
 
-    for (var key in template.rangesOfWallPositions) {
-      var rangesOfWallPositions = template.rangesOfWallPositions[key],
+  View.prototype.renderRangesOfWalls = function () {
+    var that = this;
+
+    for (var key in this.template.rangesOfWallPositions) {
+      var rangesOfWallPositions = this.template.rangesOfWallPositions[key],
           wallClassStr = key;
 
       rangesOfWallPositions.forEach( function (range) {
@@ -135,9 +160,11 @@
         }
       })
     }
+  };
 
-    for (var key in template.portalPositions) {
-      var portalPosition = template.portalPositions[key],
+  View.prototype.renderPortals = function () {
+    for (var key in this.template.portalPositions) {
+      var portalPosition = this.template.portalPositions[key],
           portalClassStr = key,
           $gridPos = this.$grid.eq(portalPosition - 1);
 
@@ -145,16 +172,24 @@
         .append("<div class='portal " + portalClassStr + "'></div>")
         .append("<div class='portal " + portalClassStr + "-overlay'></div>");
     }
+  };
 
-    template.dotPositionRanges.forEach( function (range) {
+  View.prototype.renderDots = function () {
+    var that = this;
+
+    this.template.dotPositionRanges.forEach( function (range) {
       for (var i = range[0]; i <= range[1]; i++) {
         var $gridPos = that.$grid.eq(i - 1);
 
         $gridPos.append('<div class="dot"></div>');
       }
     })
+  };
 
-    template.powerupPositions.forEach( function (pos) {
+  View.prototype.renderPowerups = function () {
+    var that = this;
+
+    this.template.powerupPositions.forEach( function (pos) {
       that.$grid.eq(pos - 1).html('<div class="powerup"></div>');
     })
   };
