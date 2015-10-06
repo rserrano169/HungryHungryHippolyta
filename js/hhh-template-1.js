@@ -71,9 +71,6 @@
           425, 450, 475,        // wall 11
           550, 575, 600         // wall 12
         ],
-
-        //* --- INNER WALL POSITIONS --- *//
-
         "inner-wall-top": this.innerWallTopPositions = [
           133, 143, 308, 318, 483, 493
         ],
@@ -119,9 +116,6 @@
           554, 555, 556, 557,   // wall 15
           569, 570, 571, 572    // wall 16
         ],
-
-        //* --- INNER BLOCK POSITIONS --- *//
-
         "inner-block-NW": this.innerBlockNWPositions = [
           53, 58, 66, 70, 235, 239
         ],
@@ -158,7 +152,7 @@
         "inner-wall-SW": this.innerWallSWPositions = [568],
         "inner-wall-SE": this.innerWallSEPositions = [558],
       };
-      
+
       this.rangesOfWallPositions = {
         "outer-wall-horizontal": this.outerWallHorizontalRanges = [
           [2, 11],      // 1
@@ -182,10 +176,10 @@
         ],
       };
 
-      //* --- PORTAL POSITIONS --- *//
-
-      this.portalLeftPosition = 276;
-      this.portalRightPosition = 300;
+      this.portalPositions = {
+        "portal-left": this.portalLeftPosition = 276,
+        "portal-right": this.portalRightPosition = 300,
+      }
 
       //* --- DOT POSITIONS --- *//
 

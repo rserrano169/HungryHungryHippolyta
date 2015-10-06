@@ -101,50 +101,50 @@
 
     for (var key in template.noOverlayWallPositions) {
       var wallPositions = template.noOverlayWallPositions[key],
-          wallPositionsClassStr = key;
+          wallClassStr = key;
 
       wallPositions.forEach( function (pos) {
         var $gridPos = that.$grid.eq(pos - 1);
 
-        $gridPos.html("<div class=" + wallPositionsClassStr + "></div>");
+        $gridPos.html("<div class='" + wallClassStr + "'></div>");
       })
     }
 
     for (var key in template.overlayWallPositions) {
       var wallPositions = template.overlayWallPositions[key],
-          wallPositionsClassStr = key;
+          wallClassStr = key;
 
       wallPositions.forEach( function (pos) {
         var $gridPos = that.$grid.eq(pos - 1);
 
         $gridPos
-          .html("<div class=" + wallPositionsClassStr + "></div>")
-          .append("<div class=" + wallPositionsClassStr + "-overlay></div>");
+          .html("<div class='" + wallClassStr + "'></div>")
+          .append("<div class='" + wallClassStr + "-overlay'></div>");
       })
     }
 
     for (var key in template.rangesOfWallPositions) {
       var rangesOfWallPositions = template.rangesOfWallPositions[key],
-          wallPositionsClassStr = key;
+          wallClassStr = key;
 
       rangesOfWallPositions.forEach( function (range) {
         for (var i = range[0]; i <= range[1]; i++) {
           var $gridPos = that.$grid.eq(i - 1);
 
-          $gridPos.html("<div class=" + wallPositionsClassStr + "></div>");
+          $gridPos.html("<div class='" + wallClassStr + "'></div>");
         }
       })
     }
 
-    //* --- PORTALS RENDER --- *//
+    for (var key in template.portalPositions) {
+      var portalPosition = template.portalPositions[key],
+          portalClassStr = key,
+          $gridPos = this.$grid.eq(portalPosition - 1);
 
-    this.$grid.eq(template.portalLeftPosition - 1)
-      .append('<div class="portal portal-left"></div>')
-      .append('<div class="portal portal-left-overlay"></div>');
-
-    this.$grid.eq(template.portalRightPosition - 1)
-      .append('<div class="portal portal-right"></div>')
-      .append('<div class="portal portal-right-overlay"></div>');
+      $gridPos
+        .append("<div class='portal " + portalClassStr + "'></div>")
+        .append("<div class='portal " + portalClassStr + "-overlay'></div>");
+    }
 
     //* --- DOTS RENDER --- *//
 
