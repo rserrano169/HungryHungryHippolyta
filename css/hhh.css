@@ -679,18 +679,58 @@ li {
   z-index: 1;
 }
 
-#loading-title {
+#loading-content {
   display: block;
   padding-top: 17px;
 }
 
 /* --- GAME OVER MODAL --- */
 
+#instructions-modal {
+  display: block;
+  position: absolute;
+  left: 100px;
+  top: 50px;
+  width: 421px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  background: black;
+  border: 2px solid blue;
+  border-radius: 5px;
+  z-index: 1;
+}
+
+#instructions-modal-content {
+  padding: 20px;
+}
+
+#instructions-modal-header {
+  font-size: 26px;
+}
+
+.instructions-modal-instruction {
+  margin-bottom: 20px;
+}
+
+#instructions-modal-start-game {
+  font-size: 26px;
+  padding: 10px;
+  margin-top: 20px;
+  border: 1px solid blue;
+  border-radius: 5px;
+}
+
+#instructions-modal-start-game:hover {
+  color: purple;
+  cursor: pointer;
+}
+
 #game-lose-modal {
   display: block;
   position: absolute;
   left: 110px;
-  top: 253px;
+  top: 263px;
   width: 401px;
   color: white;
   font-size: 20px;
@@ -736,7 +776,10 @@ li {
 #play-again {
   display: block;
   font-size: 24px;
-  margin: 30px 0px 40px 0px;
+  padding: 5px;
+  margin: 25px 30px 35px 30px;
+  border: 1px solid blue;
+  border-radius: 5px;
 }
 
 #play-again:hover {

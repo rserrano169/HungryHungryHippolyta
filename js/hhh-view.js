@@ -1,33 +1,39 @@
 (function () {
   if (typeof HHH === "undefined") {
     window.HHH = {};
-  };
+  }
 
   var currentLocalStorageVersion = "1";
   if (localStorage.version !== currentLocalStorageVersion) {
     localStorage.clear();
     localStorage.version = currentLocalStorageVersion;
-  };
+  }
 
   if (typeof localStorage.scores === "undefined") {
-      localStorage.scores = JSON.stringify([
-        { name: 'GOOD', number: 2500 },
-        { name: 'BAD', number: 1800 },
-        { name: 'UGLY', number: 1338 }
-      ]);
-  };
+    localStorage.scores = JSON.stringify([
+      { name: 'GOOD', number: 2500 },
+      { name: 'BAD', number: 1800 },
+      { name: 'UGLY', number: 1338 }
+    ]);
+  }
   var scores = JSON.parse(localStorage.scores);
 
   var View = HHH.View = function ($el) {
     this.$el = $el;
-    this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER, View.BOARD_SIZE);
+    this.board = new HHH.Board(View.BOARD_TEMPLATE_NUMBER);
     this.timeLimit = View.TIME_LIMIT_MINUTES * 60 * 1000 / View.TIMER_INTERVAL;
     this.isGameStarted = false;
     this.board.hippolyta.nextDir = "STAY";
     this.board.hippolyta.prevHorDir = "LEFT";
     this.imageRenderNum = 0;
-    this.isLoading = false;
+    this.isImageLoading = false;
+    this.areInstructionsRendered = false;
+    this.isLoadingModalRendered = false;
+    this.areWindowEventsBound = false;
+    this.areAllImagesLoaded = false;
     this.setupBoard();
+    this.loadAllImages();
+    this.renderInstructions();
     this.numOfDots = this.$li.children().filter(".dot").length;
     this.numOfCurrentPowerups = this.$li.children().filter(".powerup").length;
     this.stepNum = 1;
@@ -37,9 +43,6 @@
   };
 
   View.BOARD_TEMPLATE_NUMBER = 1;
-    if (View.BOARD_TEMPLATE_NUMBER === 1) {
-      View.BOARD_SIZE = 25;
-    };
 
   View.TIME_LIMIT_MINUTES = 5;
 
@@ -70,669 +73,15 @@
     "open-down-left"
   ];
 
-  View.NUM_OF_IMGS_TO_PRE_RENDER = View.HIPPOLYTA_IMG_DIRS.length;
+  View.NUM_OF_IMGS_TO_RENDER = View.HIPPOLYTA_IMG_DIRS.length;
 
-  View.prototype.step = function () {
-    if (this.hasEatenPowerup()) {
-      this.boostSpeed();
-    };
-
-    if (this.isSpeedBoosted()) {
-      this.increaseSlowness();
-    };
-
-    if (this.stepNum === 1) {
-        this.setNextDirWithBFS(); // if applicable
-
-        if (this.isNextDirValid()) {
-          this.setPrevHorDir();
-          this.changeDirection();
-        };
-
-        this.stepNum = 2;
-    } else if (this.stepNum === 2) {
-        if(this.isValidMove()) {
-          this.renderMouthOpen();
-        };
-
-        this.stepNum = 3;
-    } else if (this.stepNum === 3) {
-        if (this.isValidMove()) {
-          this.render();
-        };
-
-        this.stepNum = 1;
-    };
-
-    if (this.isLost()) {
-      clearInterval(this.timer);
-      clearInterval(this.run);
-      this.renderYouLose();
-    };
-
-    if (this.isWon()) {
-      clearInterval(this.timer);
-      clearInterval(this.run);
-      this.recordScore();
-      this.renderYouWin();
-    };
-  };
-
-  View.prototype.hasEatenPowerup = function () {
-    if (this.numOfCurrentPowerups > this.numOfPowerups()) {
-      this.numOfCurrentPowerups = this.numOfPowerups();
-      return true;
-    };
-
-    return false;
-  };
-
-  View.prototype.numOfPowerups = function () {
-    return this.$li.children().filter(".powerup").length;
-  };
-
-  View.prototype.boostSpeed = function () {
-    View.MOVEMENT_SLOWNESS /= 4;
-    clearInterval(this.run);
-
-    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
-  };
-
-  View.prototype.isSpeedBoosted = function () {
-    return View.MOVEMENT_SLOWNESS < 70.0;
-  };
-
-  View.prototype.increaseSlowness = function () {
-    View.MOVEMENT_SLOWNESS += .2;
-    clearInterval(this.run);
-
-    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
-  };
-
-  View.prototype.renderMouthOpen = function () {
-    if (this.isMovingToOrFromPortal()) {
-        this.renderMovingToPortal();
-    } else if (
-      this.board.hippolyta.dir === "STAY" &&
-      this.board.hippolyta.prevHorDir === "LEFT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-left.png" class="hippolyta-mouth-closed-left" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "STAY" &&
-      this.board.hippolyta.prevHorDir === "RIGHT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-right.png" class="hippolyta-mouth-closed-right" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "UP" &&
-      this.board.hippolyta.prevHorDir === "LEFT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-up-left.png" class="hippolyta-mouth-open-up-left" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "UP" &&
-      this.board.hippolyta.prevHorDir === "RIGHT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-up-right.png" class="hippolyta-mouth-open-up-right" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "DOWN" &&
-      this.board.hippolyta.prevHorDir === "LEFT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-down-left.png" class="hippolyta-mouth-open-down-left" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "DOWN" &&
-      this.board.hippolyta.prevHorDir === "RIGHT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-down-right.png" class="hippolyta-mouth-open-down-right" alt="">');
-    } else if (this.board.hippolyta.dir === "LEFT") {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-left.png" class="hippolyta-mouth-open-left" alt="">');
-    } else if (this.board.hippolyta.dir === "RIGHT") {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-open-right.png" class="hippolyta-mouth-open-right" alt="">');
-    };
-  };
-
-  View.prototype.isNextDirValid = function () {
-    return this.isValidMove(this.board.hippolyta.nextDir);
-  };
-
-  View.prototype.setPrevHorDir = function () {
-    if (
-      this.board.hippolyta.nextDir !== this.board.hippolyta.dir &&
-      (this.board.hippolyta.dir === "RIGHT" || this.board.hippolyta.dir === "LEFT")
-    ) {
-        this.board.hippolyta.prevHorDir = this.board.hippolyta.dir;
-    };
-  };
-
-  View.prototype.changeDirection = function () {
-    return this.board.hippolyta.dir = this.board.hippolyta.nextDir;
-  };
-
-  View.prototype.isValidMove = function (dir, $tile) {
-    if (typeof dir === 'undefined') {
-      dir = this.board.hippolyta.dir;
-    };
-
-    if (typeof $tile === 'undefined') {
-      $tile = this.$nextTile(dir);
-    };
-
-    return (
-      $tile.children().hasClass("dot") ||
-      $tile.children().hasClass("powerup") ||
-      $tile.children().hasClass("portal") ||
-      $tile.children().hasClass("") ||
-      $tile.find("#hippolyta").length > 0
-    );
-  };
-
-  View.prototype.$nextTile = function (dir) {
-    if (typeof dir === 'undefined') {
-      dir = this.board.hippolyta.dir;
-    };
-
-    return this.$li.eq(this.board.hippolyta.next$liPos(dir));
-  };
-
-  View.prototype.render = function () {
-    this.renderMovingFrom();
-    this.board.hippolyta.move();
-    this.renderMovingTo();
-  };
-
-  View.prototype.renderMovingFrom = function () {
-    if (this.isMovingToOrFromPortal()) {
-        this.renderMovingFromPortal();
-    } else {
-        this.$currentTile().html('<div class=""></div>');
-    };
-  };
-
-  View.prototype.renderMovingTo = function () {
-    if (this.isMovingToOrFromPortal()) {
-        this.renderMovingToPortal();
-    } else if (
-      this.board.hippolyta.dir === "STAY" &&
-      this.board.hippolyta.prevHorDir === "LEFT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-left.png" class="hippolyta-mouth-closed-left" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "STAY" &&
-      this.board.hippolyta.prevHorDir === "RIGHT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-right.png" class="hippolyta-mouth-closed-right" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "UP" &&
-      this.board.hippolyta.prevHorDir === "LEFT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-up-left.png" class="hippolyta-mouth-closed-up-left" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "UP" &&
-      this.board.hippolyta.prevHorDir === "RIGHT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-up-right.png" class="hippolyta-mouth-closed-up-right" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "DOWN" &&
-      this.board.hippolyta.prevHorDir === "LEFT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-down-left.png" class="hippolyta-mouth-closed-down-left" alt="">');
-    } else if (
-      this.board.hippolyta.dir === "DOWN" &&
-      this.board.hippolyta.prevHorDir === "RIGHT"
-    ) {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-down-right.png" class="hippolyta-mouth-closed-down-right" alt="">');
-    } else if (this.board.hippolyta.dir === "LEFT") {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-left.png" class="hippolyta-mouth-closed-left" alt="">');
-    } else if (this.board.hippolyta.dir === "RIGHT") {
-        this.$currentTile().html('<div id="hippolyta"></div>')
-          .append('<img src="images/hippolyta-mouth-closed-right.png" class="hippolyta-mouth-closed-right" alt="">');
-    };
-  };
-
-  View.prototype.isMovingToOrFromPortal = function () {
-    if (this.$currentTile().children().hasClass("portal")) {
-      return true;
-    };
-
-    return false;
-  };
-
-  View.prototype.renderMovingFromPortal = function () {
-    if (this.$currentTile().children().hasClass("portal-left")) {
-        this.$currentTile()
-          .html('<div class="portal portal-left"></div>')
-          .append('<div class="portal portal-left-overlay"></div>');
-    } else if (this.$currentTile().children().hasClass("portal-right")) {
-        this.$currentTile()
-          .html('<div class="portal portal-right"></div>')
-          .append('<div class="portal portal-right-overlay"></div>');
-    };
-  };
-
-  View.prototype.renderMovingToPortal = function () {
-    if (this.$currentTile().children().hasClass("portal-left")) {
-        this.$currentTile()
-          .html('<div id="hippolyta" class="portal portal-left"></div>')
-          .append('<div class="portal portal-left-overlay"></div>')
-          .append('<div class="portal portal-left-pass-through"></div>');
-    } else if (this.$currentTile().children().hasClass("portal-right")) {
-        this.$currentTile()
-          .html('<div id="hippolyta" class="portal portal-right"></div>')
-          .append('<div class="portal portal-right-overlay"></div>')
-          .append('<div class="portal portal-right-pass-through"></div>');
-    };
-  };
-
-  View.prototype.$currentTile = function () {
-    return this.$li.eq(this.board.hippolyta.$liPos());
-  };
-
-  View.prototype.handleKeyDownEvent = function (event) {
-    if (View.KEYS[event.keyCode]) {
-      event.preventDefault();
-      if (!this.isPressing) {
-        this.startGame();
-        this.stepNum = 1;
-        this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
-        this.isPressing = true;
-      };
-    };
-
-    if (event.keyCode === 13 && $("#play-again")) {
-      event.preventDefault();
-      $("#play-again").mousedown();
-      $("#play-again").touchstart();
-    };
-  };
-
-  View.prototype.handleKeyUpEvent = function (event) {
-    this.isPressing = false;
-  };
-
-  View.prototype.handleClickEvent = function (event) {
-    // event.preventDefault();
-    this.startGame()
-    this.stepNum = 1;
-    this.createBFSsequence(event);
-    if (this.BFSsequence.length <= 0) {
-      this.setNextDirNESWonClick(event);
-    };
-  };
-
-  View.prototype.setNextDirWithBFS = function () {
-    if (this.BFSsequence) {
-      if (this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === -25) {
-          this.board.hippolyta.nextDir = "UP";
-      } else if (this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === 1) {
-          this.board.hippolyta.nextDir = "RIGHT";
-      } else if (this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === 25) {
-          this.board.hippolyta.nextDir = "DOWN";
-      } else if (this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === -1) {
-          this.board.hippolyta.nextDir = "LEFT";
-      };
-    };
-
-    this.BFSindex++;
-  };
-
-  View.prototype.createBFSsequence = function (event) {
-    if ($(event.target).is("li")) {
-        var $clickedTile = $(event.target);
-    } else {
-        var $clickedTile = $(event.target).parent();
-    };
-
-    var directions = [-25, 1, 25, -1],
-        clicked$liPos = this.$li.index($clickedTile),
-        checked$liPositions = [],
-        tilesToCheck = [$clickedTile],
-        $checking = tilesToCheck.shift(),
-        childToParent = {},
-        that = this;
-
-    while ($checking && $checking.find("#hippolyta").length === 0) {
-      directions.forEach( function (dir) {
-        var checking$liPos = that.$li.index($checking),
-        next$liPos = checking$liPos + dir;
-        $adjTile = that.$li.eq(next$liPos);
-        if (
-          that.isValidMove('undefined', $adjTile) &&
-          checked$liPositions.indexOf(next$liPos) === -1
-        ) {
-            childToParent[next$liPos] = checking$liPos;
-            tilesToCheck.push($adjTile);
-        };
-      })
-
-      checked$liPositions.push(this.$li.index($checking));
-      $checking = tilesToCheck.shift();
-    };
-
-    var $foundHippolytaTile = $checking,
-        child$liPos = this.$li.index($foundHippolytaTile),
-        posSequence = [];
-    while (posSequence.indexOf(clicked$liPos) === -1 && child$liPos > 0) {
-      child$liPos = childToParent[child$liPos];
-      posSequence.push(child$liPos);
-    }
-    if (!this.isValidMove('undefined', $clickedTile)) {
-      posSequence.pop();
-    };
-
-    this.BFSindex = 0;
-    this.BFSsequence = posSequence;
-  };
-
-  View.prototype.setNextDirNESWonClick = function (event) {
-    var clickWindowCoord = new HHH.Coord(
-      event.pageX,
-      event.pageY
-    );
-    var hippolytaCenterWindowCoord = new HHH.Coord(
-      Math.floor($("#hippolyta").offset().left + $("#hippolyta").width() / 2),
-      Math.floor($("#hippolyta").offset().top + $("#hippolyta").height() / 2)
-    );
-
-    if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "UP";
-    } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "RIGHT";
-    } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "DOWN";
-    } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "LEFT";
-    } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
-        this.board.hippolyta.nextDir = "STAY";
-    };
-  };
-
-  View.prototype.startTimer = function () {
-    this.timer = setInterval(this.countDown.bind(this), View.TIMER_INTERVAL);
-  };
-
-  View.prototype.countDown = function () {
-    this.timeLimit -= 1;
-    this.$el.find(".timer").html(
-      '<b>Timer/Score: </b>' + this.timeLimit +
-      ' milliseconds'
-    );
-  };
-
-  View.prototype.startGame = function () {
-    if (!this.isGameStarted) {
-      this.startTimer();
-      this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
-      this.isGameStarted = true;
-    };
-  };
-
-  View.prototype.isLost = function () {
-    return this.timeLimit <= 0
-  };
-
-  View.prototype.renderYouLose = function () {
-    this.$el.prepend(
-      "<div id='game-lose-modal'>" +
-      "<div id='you-win-or-lose'>You Lose!</div>" +
-      "<div id='play-again'>Play Again?</div>" +
-      "<div>"
-    );
-
-    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
-    $
-  };
-
-  View.prototype.reloadPage = function () {
-    window.location.reload();
-  };
-
-  View.prototype.isWon = function () {
-    return this.$li.children().filter(".dot").length === 0;
-  };
-
-  View.prototype.recordScore = function () {
-    scores.push({ name: 'YOU', number: this.timeLimit });
-    scores = scores.sort( function (a, b) {
-               return b.number - a.number;
-             }).slice(0, 10);
-    localStorage.scores = JSON.stringify(scores);
-  };
-
-  View.prototype.renderYouWin = function () {
-    var highScores = "",
-        rankNum = 1;
-    scores.forEach( function (score) {
-      if (rankNum === 1){
-        highScores += rankNum + ". " + score.name + " : " + score.number;
-        rankNum++;
-      } else {
-        highScores += "<br>" + rankNum + ". " + score.name + " : " + score.number;
-        rankNum++;
-      };
-    })
-
-    this.$el.prepend(
-      "<div id='game-win-modal'>" +
-      "<div id='you-win-or-lose'>You Win!!!</div>" +
-      "<div id='your-score'>Your Score: " +
-      this.timeLimit +
-      "</div>" +
-      "<div id='high-scores-list'>" +
-      "<div id='high-scores-title'>" +
-      "High Scores:" +
-      "</div>" +
-      highScores +
-      "</div>" +
-      "<div id='play-again'>Play Again?</div>" +
-      "<div>"
-    );
-
-    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
-  };
-
-  View.prototype.renderAllImages = function () {
-    if (this.imageRenderNum >= 12) {
-        clearInterval(this.loadingImagesIntervalId)
-        this.render();
-        $("#loading").remove();
-        $(window).on("keydown", this.handleKeyDownEvent.bind(this));
-        $(window).on("keyup", this.handleKeyUpEvent.bind(this));
-        $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
-    } else if (this.imageRenderNum === 0) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-closed-left.png" ' +
-              'class="hippolyta-mouth-closed-left" ' +
-              'alt="hmcl">'
-            );
-        };
-        if ($(".hippolyta-mouth-closed-left")[0].complete) {
-          this.renderNextImage();
-        };
-    } else if (this.imageRenderNum === 1) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-closed-up-left.png" ' +
-              'class="hippolyta-mouth-closed-up-left" ' +
-              'alt="hmcul">'
-            );
-        };
-        if ($(".hippolyta-mouth-closed-up-left")[0].complete) {
-          this.renderNextImage();
-        };
-    } else if (this.imageRenderNum === 2) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-closed-up-right.png" ' +
-              'class="hippolyta-mouth-closed-up-right" ' +
-              'alt="hmcur">'
-            );
-        };
-        if ($(".hippolyta-mouth-closed-up-right")[0].complete) {
-          this.renderNextImage();
-        };
-    } else if (this.imageRenderNum === 3) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-closed-right.png" ' +
-              'class="hippolyta-mouth-closed-right" ' +
-              'alt="hmcr">'
-            );
-        };
-        if ($(".hippolyta-mouth-closed-right")[0].complete) {
-          this.renderNextImage();
-        };
-    } else if (this.imageRenderNum === 4) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-closed-down-right.png" ' +
-              'class="hippolyta-mouth-closed-down-right" ' +
-              'alt="hmcdr">'
-            );
-        };
-        if ($(".hippolyta-mouth-closed-down-right")[0].complete) {
-          this.renderNextImage();
-        };
-      } else if (this.imageRenderNum === 5) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-closed-down-left.png" ' +
-              'class="hippolyta-mouth-closed-down-left" ' +
-              'alt="hmcdl">'
-            );
-        };
-        if ($(".hippolyta-mouth-closed-down-left")[0].complete) {
-          this.renderNextImage();
-        };
-      } else if (this.imageRenderNum === 6) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-open-left.png" ' +
-              'class="hippolyta-mouth-open-left" ' +
-              'alt="hmol">'
-            );
-        };
-        if ($(".hippolyta-mouth-open-left")[0].complete) {
-          this.renderNextImage();
-        };
-      } else if (this.imageRenderNum === 7) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-open-up-left.png" ' +
-              'class="hippolyta-mouth-open-up-left" ' +
-              'alt="hmoul">'
-            );
-        };
-        if ($(".hippolyta-mouth-open-up-left")[0].complete) {
-          this.renderNextImage();
-        };
-      } else if (this.imageRenderNum === 8) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-open-up-right.png" ' +
-              'class="hippolyta-mouth-open-up-right" ' +
-              'alt="hmour">'
-            );
-        };
-        if ($(".hippolyta-mouth-open-up-right")[0].complete) {
-          this.renderNextImage();
-        };
-      } else if (this.imageRenderNum === 9) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-open-right.png" ' +
-              'class="hippolyta-mouth-open-right" ' +
-              'alt="hmor">'
-            );
-        };
-        if ($(".hippolyta-mouth-open-right")[0].complete) {
-          this.renderNextImage();
-        };
-      } else if (this.imageRenderNum === 10) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-open-down-right.png" ' +
-              'class="hippolyta-mouth-open-down-right" ' +
-              'alt="hmodr">'
-            );
-        };
-        if ($(".hippolyta-mouth-open-down-right")[0].complete) {
-          this.renderNextImage();
-        };
-      } else if (this.imageRenderNum === 11) {
-        if (!this.isLoading) {
-          this.isLoading = true;
-          this.$currentTile().html('<div id="hippolyta"></div>')
-            .append(
-              '<img ' +
-              'src="images/hippolyta-mouth-open-down-left.png" ' +
-              'class="hippolyta-mouth-open-down-left" ' +
-              'alt="hmodl">'
-            );
-        };
-        if ($(".hippolyta-mouth-open-down-left")[0].complete) {
-          this.renderNextImage();
-        };
-      };
-  };
-
-  View.prototype.renderNextImage = function () {
-    this.imageRenderNum++;
-    this.isLoading = false;
-  };
+  View.IMAGE_RENDER_SLOWNESS = 70;
 
   View.prototype.setupBoard = function () {
     var that = this,
-        html = '<section class="top-bar group">';
-
-    html += '<div class="timer"><b>Timer/Score: </b>' + this.timeLimit;
-    html += ' milliseconds</div></section>';
+        html = '<section class="top-bar group">' +
+               '<div class="timer"><b>Timer/Score: </b>' + this.timeLimit +
+               ' milliseconds</div></section>';
 
     for (var i = 0; i < this.board.dim; i++) {
       html += '<ul class="group">';
@@ -743,6 +92,7 @@
 
       html += '</ul>';
     }
+
     this.$el.html(html);
     this.$li = this.$el.find("li");
 
@@ -868,27 +218,714 @@
     template.powerupPositions.forEach( function (pos) {
       that.$li.eq(pos - 1).html('<div class="powerup"></div>');
     });
+  };
 
-    this.loadAllImages();
+  View.prototype.renderInstructions = function () {
+    this.$el.prepend(
+      "<div id='instructions-modal'>" +
+        "<div id='instructions-modal-content'>" +
+          "<div id='instructions-modal-header' " +
+              "class='instructions-modal-instruction'>" +
+            "Instructions:" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "Use the ARROW KEYS to move, " +
+            "or CLICK / TOUCH where you want to go!" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "The game and timer start when you start moving. " +
+            "The game ends when you run out of time, or eat all the dots. " +
+            "Eat the large dots for a speed boost!" +
+          "</div>" +
+          "<div class='instructions-modal-instruction'>" +
+            "When you're ready to begin, then just hit \"Enter\", " +
+            "\"Return\", or click \"Start Game!!!\"" +
+          "</div>" +
+          "<div id='instructions-modal-start-game'>" +
+            "Start Game!!!" +
+          "</div>" +
+        "</div>" +
+      "<div>"
+    );
+
+    this.areInstructionsRendered = true;
+    this.bindInstructionsEvents();
+  };
+
+  View.prototype.bindInstructionsEvents = function () {
+    $("#instructions-modal-start-game").on(
+      "click touch",
+      this.handleInstructionsClickAndTouch.bind(this)
+    );
+
+    $(window).on(
+      "keydown.instructions",
+      this.handleInstructionsKeyDownEvent.bind(this)
+    );
+  };
+
+  View.prototype.handleInstructionsClickAndTouch = function (event) {
+    this.removeInstructions();
+    this.bindWindowEvents();
+  };
+
+  View.prototype.removeInstructions = function () {
+    $("#instructions-modal").remove();
+    $(window).off(".instructions");
+
+    this.areInstructionsRendered = false;
+  };
+
+  View.prototype.handleInstructionsKeyDownEvent = function (event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+
+      this.removeInstructions();
+      this.bindWindowEvents();
+    }
   };
 
   View.prototype.loadAllImages = function () {
-    this.renderLoading();
     this.setRenderImagesInterval();
   };
 
-  View.prototype.renderLoading = function () {
-    this.$el.prepend(
-      "<div id='loading'>" +
-      "<div id='loading-title'>Loading...</div>" +
-      "</div>"
+  View.prototype.setRenderImagesInterval = function () {
+    this.renderImagesIntervalId = setInterval(
+      this.renderAllImages.bind(this),
+      View.IMAGE_RENDER_SLOWNESS
     );
   };
 
-  View.prototype.setRenderImagesInterval = function () {
-    this.loadingImagesIntervalId = setInterval(
-      this.renderAllImages.bind(this),
-      70
+  View.prototype.renderAllImages = function () {
+    var dir = View.HIPPOLYTA_IMG_DIRS[this.imageRenderNum];
+
+    if (this.imageRenderNum < View.NUM_OF_IMGS_TO_RENDER) {
+      if (!this.isImageLoading) {
+        this.isImageLoading = true;
+        this.renderLoading();
+        this.renderCurrentImage(dir);
+      }
+
+      if ($(".hippolyta-mouth-" + dir)[0].complete) {
+        this.renderNextImage();
+      }
+    } else {
+      clearInterval(this.renderImagesIntervalId)
+      this.renderHippolyta();
+      this.removeLoading();
+      this.areAllImagesLoaded = true;
+      this.bindWindowEvents();
+    }
+  };
+
+  View.prototype.renderCurrentImage = function (dir) {
+    this.$currentTile()
+      .html("<div id='hippolyta'></div>")
+      .append(
+        "<img src='images/hippolyta-mouth-" + dir + ".png' " +
+              "class='hippolyta-mouth-" + dir + "' " +
+              "alt='hmcl'>"
+      );
+  };
+
+  View.prototype.renderNextImage = function () {
+    this.imageRenderNum++;
+    this.isImageLoading = false;
+  };
+
+  View.prototype.bindWindowEvents = function () {
+    if (
+      !this.areInstructionsRendered &&
+      !this.areWindowEventsBound &&
+      this.areAllImagesLoaded
+    ) {
+      $(window).on("keydown", this.handleKeyDownEvent.bind(this));
+      $(window).on("keyup", this.handleKeyUpEvent.bind(this));
+      $(window).on("mousedown touchstart", this.handleClickEvent.bind(this));
+
+      this.areWindowEventsBound = true;
+    }
+  };
+
+  View.prototype.renderLoading = function () {
+    if (!this.areInstructionsRendered && !this.isLoadingModalRendered) {
+      this.$el.prepend(
+        "<div id='loading'>" +
+          "<div id='loading-content'>Loading...</div>" +
+        "</div>"
+      );
+
+      this.isLoadingModalRendered = true;
+    }
+  };
+
+  View.prototype.removeLoading = function () {
+    $('#loading').remove();
+
+    this.isLoadingModalRendered = false;
+  };
+
+  View.prototype.step = function () {
+    if (this.hasEatenPowerup()) {
+      this.boostSpeed();
+    }
+
+    if (this.isSpeedBoosted()) {
+      this.increaseSlowness();
+    }
+
+    if (this.stepNum === 1) {
+      this.setNextDirWithBFS(); // if applicable
+
+      if (this.isNextDirValid()) {
+        this.setPrevHorDir();
+        this.changeDirection();
+      }
+
+      this.stepNum = 2;
+    } else if (this.stepNum === 2) {
+      if(this.isValidMove()) {
+        this.renderMouthOpen();
+      }
+
+      this.stepNum = 3;
+    } else if (this.stepNum === 3) {
+      if (this.isValidMove()) {
+        this.renderHippolyta();
+      }
+
+      this.stepNum = 1;
+    }
+
+    if (this.isLost()) {
+      clearInterval(this.timer);
+      clearInterval(this.run);
+      this.renderYouLose();
+    }
+
+    if (this.isWon()) {
+      clearInterval(this.timer);
+      clearInterval(this.run);
+      this.recordScore();
+      this.renderYouWin();
+    }
+  };
+
+  View.prototype.hasEatenPowerup = function () {
+    if (this.numOfCurrentPowerups > this.numOfPowerups()) {
+      this.numOfCurrentPowerups = this.numOfPowerups();
+      return true;
+    }
+
+    return false;
+  };
+
+  View.prototype.numOfPowerups = function () {
+    return this.$li.children().filter(".powerup").length;
+  };
+
+  View.prototype.boostSpeed = function () {
+    View.MOVEMENT_SLOWNESS /= 4;
+    clearInterval(this.run);
+
+    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+  };
+
+  View.prototype.isSpeedBoosted = function () {
+    return View.MOVEMENT_SLOWNESS < 70.0;
+  };
+
+  View.prototype.increaseSlowness = function () {
+    View.MOVEMENT_SLOWNESS += .2;
+    clearInterval(this.run);
+
+    this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+  };
+
+  View.prototype.renderMouthOpen = function () {
+    if (this.isMovingToOrFromPortal()) {
+      this.renderMovingToPortal();
+    } else if (
+      this.board.hippolyta.dir === "STAY" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-left.png" ' +
+                'class="hippolyta-mouth-closed-left" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "STAY" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-right.png" ' +
+                'class="hippolyta-mouth-closed-right" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "UP" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-up-left.png" ' +
+                'class="hippolyta-mouth-open-up-left" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "UP" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-up-right.png" ' +
+                'class="hippolyta-mouth-open-up-right" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "DOWN" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-down-left.png" ' +
+                'class="hippolyta-mouth-open-down-left" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "DOWN" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-down-right.png" ' +
+                'class="hippolyta-mouth-open-down-right" ' +
+                'alt="">'
+        );
+    } else if (this.board.hippolyta.dir === "LEFT") {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-left.png" ' +
+                'class="hippolyta-mouth-open-left" ' +
+                'alt="">'
+        );
+    } else if (this.board.hippolyta.dir === "RIGHT") {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-open-right.png" ' +
+                'class="hippolyta-mouth-open-right" ' +
+                'alt="">'
+        );
+    }
+  };
+
+  View.prototype.isNextDirValid = function () {
+    return this.isValidMove(this.board.hippolyta.nextDir);
+  };
+
+  View.prototype.setPrevHorDir = function () {
+    if (this.board.hippolyta.nextDir !== this.board.hippolyta.dir && (
+      this.board.hippolyta.dir === "RIGHT" ||
+      this.board.hippolyta.dir === "LEFT"
+    )) {
+      this.board.hippolyta.prevHorDir = this.board.hippolyta.dir;
+    }
+  };
+
+  View.prototype.changeDirection = function () {
+    return this.board.hippolyta.dir = this.board.hippolyta.nextDir;
+  };
+
+  View.prototype.isValidMove = function (dir, $tile) {
+    if (typeof dir === 'undefined') {
+      dir = this.board.hippolyta.dir;
+    }
+
+    if (typeof $tile === 'undefined') {
+      $tile = this.$nextTile(dir);
+    }
+
+    return (
+      $tile.children().hasClass("dot") ||
+      $tile.children().hasClass("powerup") ||
+      $tile.children().hasClass("portal") ||
+      $tile.children().hasClass("") ||
+      $tile.find("#hippolyta").length > 0
     );
+  };
+
+  View.prototype.$nextTile = function (dir) {
+    if (typeof dir === 'undefined') {
+      dir = this.board.hippolyta.dir;
+    }
+
+    return this.$li.eq(this.board.hippolyta.next$liPos(dir));
+  };
+
+  View.prototype.renderHippolyta = function () {
+    this.renderMovingFrom();
+    this.board.hippolyta.move();
+    this.renderMovingTo();
+  };
+
+  View.prototype.renderMovingFrom = function () {
+    if (this.isMovingToOrFromPortal()) {
+      this.renderMovingFromPortal();
+    } else {
+      this.$currentTile().html('<div class=""></div>');
+    }
+  };
+
+  View.prototype.renderMovingTo = function () {
+    if (this.isMovingToOrFromPortal()) {
+      this.renderMovingToPortal();
+    } else if (
+      this.board.hippolyta.dir === "STAY" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-left.png" ' +
+                'class="hippolyta-mouth-closed-left" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "STAY" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-right.png" ' +
+                'class="hippolyta-mouth-closed-right" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "UP" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-up-left.png" ' +
+                'class="hippolyta-mouth-closed-up-left" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "UP" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-up-right.png" ' +
+                'class="hippolyta-mouth-closed-up-right" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "DOWN" &&
+      this.board.hippolyta.prevHorDir === "LEFT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-down-left.png" ' +
+                'class="hippolyta-mouth-closed-down-left" ' +
+                'alt="">'
+        );
+    } else if (
+      this.board.hippolyta.dir === "DOWN" &&
+      this.board.hippolyta.prevHorDir === "RIGHT"
+    ) {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-down-right.png" ' +
+                'class="hippolyta-mouth-closed-down-right" ' +
+                'alt="">'
+        );
+    } else if (this.board.hippolyta.dir === "LEFT") {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-left.png" ' +
+                'class="hippolyta-mouth-closed-left" ' +
+                'alt="">'
+        );
+    } else if (this.board.hippolyta.dir === "RIGHT") {
+      this.$currentTile()
+        .html('<div id="hippolyta"></div>')
+        .append(
+          '<img src="images/hippolyta-mouth-closed-right.png" ' +
+                'class="hippolyta-mouth-closed-right" ' +
+                'alt="">'
+        );
+    }
+  };
+
+  View.prototype.isMovingToOrFromPortal = function () {
+    if (this.$currentTile().children().hasClass("portal")) {
+      return true;
+    }
+
+    return false;
+  };
+
+  View.prototype.renderMovingFromPortal = function () {
+    if (this.$currentTile().children().hasClass("portal-left")) {
+      this.$currentTile()
+        .html('<div class="portal portal-left"></div>')
+        .append('<div class="portal portal-left-overlay"></div>');
+    } else if (this.$currentTile().children().hasClass("portal-right")) {
+      this.$currentTile()
+        .html('<div class="portal portal-right"></div>')
+        .append('<div class="portal portal-right-overlay"></div>');
+    }
+  };
+
+  View.prototype.renderMovingToPortal = function () {
+    if (this.$currentTile().children().hasClass("portal-left")) {
+      this.$currentTile()
+        .html('<div id="hippolyta" class="portal portal-left"></div>')
+        .append('<div class="portal portal-left-overlay"></div>')
+        .append('<div class="portal portal-left-pass-through"></div>');
+    } else if (this.$currentTile().children().hasClass("portal-right")) {
+      this.$currentTile()
+        .html('<div id="hippolyta" class="portal portal-right"></div>')
+        .append('<div class="portal portal-right-overlay"></div>')
+        .append('<div class="portal portal-right-pass-through"></div>');
+    }
+  };
+
+  View.prototype.$currentTile = function () {
+    return this.$li.eq(this.board.hippolyta.$liPos());
+  };
+
+  View.prototype.handleKeyDownEvent = function (event) {
+    if (View.KEYS[event.keyCode]) {
+      event.preventDefault();
+
+      if (!this.isPressing) {
+        this.startGame();
+        this.stepNum = 1;
+        this.board.hippolyta.nextDir = View.KEYS[event.keyCode];
+        this.isPressing = true;
+      }
+    }
+
+    if (event.keyCode === 13) {
+      event.preventDefault();
+
+      if ($("#play-again").length) {
+        $("#play-again").trigger("mousedown");
+      }
+    }
+  };
+
+  View.prototype.handleKeyUpEvent = function (event) {
+    this.isPressing = false;
+  };
+
+  View.prototype.handleClickEvent = function (event) {
+    this.startGame()
+    this.stepNum = 1;
+    this.createBFSsequence(event);
+    if (this.BFSsequence.length <= 0) {
+      this.setNextDirNESWonClick(event);
+    }
+  };
+
+  View.prototype.setNextDirWithBFS = function () {
+    if (this.BFSsequence) {
+      if (
+        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === -25
+      ) {
+        this.board.hippolyta.nextDir = "UP";
+      } else if (
+        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === 1
+      ) {
+        this.board.hippolyta.nextDir = "RIGHT";
+      } else if (
+        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === 25
+      ) {
+        this.board.hippolyta.nextDir = "DOWN";
+      } else if (
+        this.BFSsequence[this.BFSindex] - this.board.hippolyta.$liPos() === -1
+      ) {
+        this.board.hippolyta.nextDir = "LEFT";
+      }
+    }
+
+    this.BFSindex++;
+  };
+
+  View.prototype.createBFSsequence = function (event) {
+    if ($(event.target).is("li")) {
+      var $clickedTile = $(event.target);
+    } else {
+      var $clickedTile = $(event.target).parent();
+    }
+
+    var directions = [-25, 1, 25, -1],
+        clicked$liPos = this.$li.index($clickedTile),
+        checked$liPositions = [],
+        tilesToCheck = [$clickedTile],
+        $checking = tilesToCheck.shift(),
+        childToParent = {},
+        that = this;
+
+    while ($checking && $checking.find("#hippolyta").length === 0) {
+      directions.forEach( function (dir) {
+        var checking$liPos = that.$li.index($checking),
+        next$liPos = checking$liPos + dir;
+        $adjTile = that.$li.eq(next$liPos);
+
+        if (
+          that.isValidMove('undefined', $adjTile) &&
+          checked$liPositions.indexOf(next$liPos) === -1
+        ) {
+            childToParent[next$liPos] = checking$liPos;
+            tilesToCheck.push($adjTile);
+        }
+      })
+
+      checked$liPositions.push(this.$li.index($checking));
+      $checking = tilesToCheck.shift();
+    };
+
+    var $foundHippolytaTile = $checking,
+        child$liPos = this.$li.index($foundHippolytaTile),
+        posSequence = [];
+
+    while (posSequence.indexOf(clicked$liPos) === -1 && child$liPos > 0) {
+      child$liPos = childToParent[child$liPos];
+      posSequence.push(child$liPos);
+    }
+
+    if (!this.isValidMove('undefined', $clickedTile)) {
+      posSequence.pop();
+    }
+
+    this.BFSindex = 0;
+    this.BFSsequence = posSequence;
+  };
+
+  View.prototype.setNextDirNESWonClick = function (event) {
+    var clickWindowCoord = new HHH.Coord(event.pageX, event.pageY);
+    var hippolytaCenterWindowCoord = new HHH.Coord(
+      Math.floor($("#hippolyta").offset().left + $("#hippolyta").width() / 2),
+      Math.floor($("#hippolyta").offset().top + $("#hippolyta").height() / 2)
+    );
+
+    if (clickWindowCoord.isNorthOf(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "UP";
+    } else if (clickWindowCoord.isEastOf(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "RIGHT";
+    } else if (clickWindowCoord.isSouthOf(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "DOWN";
+    } else if (clickWindowCoord.isWestOf(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "LEFT";
+    } else if (clickWindowCoord.equals(hippolytaCenterWindowCoord)) {
+      this.board.hippolyta.nextDir = "STAY";
+    }
+  };
+
+  View.prototype.startTimer = function () {
+    this.timer = setInterval(this.countDown.bind(this), View.TIMER_INTERVAL);
+  };
+
+  View.prototype.countDown = function () {
+    this.timeLimit -= 1;
+    this.$el.find(".timer").html(
+      '<b>Timer/Score: </b>' + this.timeLimit +
+      ' milliseconds'
+    );
+  };
+
+  View.prototype.startGame = function () {
+    if (!this.isGameStarted) {
+      this.startTimer();
+      this.run = setInterval(this.step.bind(this), View.MOVEMENT_SLOWNESS);
+      this.isGameStarted = true;
+    }
+  };
+
+  View.prototype.isLost = function () {
+    return this.timeLimit <= 0
+  };
+
+  View.prototype.renderYouLose = function () {
+    this.$el.prepend(
+      "<div id='game-lose-modal'>" +
+      "<div id='you-win-or-lose'>You Lose!</div>" +
+      "<div id='play-again'>Play Again?</div>" +
+      "<div>"
+    );
+
+    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
+    $
+  };
+
+  View.prototype.reloadPage = function () {
+    window.location.reload();
+  };
+
+  View.prototype.isWon = function () {
+    return this.$li.children().filter(".dot").length === 0;
+  };
+
+  View.prototype.recordScore = function () {
+    scores.push({ name: 'YOU', number: this.timeLimit });
+    scores = scores
+      .sort( function (a, b) {
+        return b.number - a.number;
+      })
+      .slice(0, 10);
+    localStorage.scores = JSON.stringify(scores);
+  };
+
+  View.prototype.renderYouWin = function () {
+    var highScores = "",
+        rankNum = 1;
+
+    scores.forEach( function (score) {
+      if (rankNum === 1){
+        highScores += rankNum + ". " + score.name + " : " + score.number;
+        rankNum++;
+      } else {
+        highScores += "<br>" + rankNum + ". " + score.name + " : " + score.number;
+        rankNum++;
+      }
+    })
+
+    this.$el.prepend(
+      "<div id='game-win-modal'>" +
+        "<div id='you-win-or-lose'>You Win!!!</div>" +
+        "<div id='your-score'>Your Score: " +
+          this.timeLimit +
+        "</div>" +
+        "<div id='high-scores-list'>" +
+          "<div id='high-scores-title'>" +
+            "High Scores:" +
+          "</div>" +
+          highScores +
+        "</div>" +
+        "<div id='play-again'>Play Again?</div>" +
+      "<div>"
+    );
+
+    $("#play-again").on("mousedown touchstart", this.reloadPage.bind(this));
   };
 })();
