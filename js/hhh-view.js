@@ -146,15 +146,13 @@
         .append("<div class='portal " + portalClassStr + "-overlay'></div>");
     }
 
-    //* --- DOTS RENDER --- *//
-
     template.dotPositionRanges.forEach( function (range) {
       for (var i = range[0]; i <= range[1]; i++) {
-        that.$grid.eq(i - 1).append('<div class="dot"></div>');
+        var $gridPos = that.$grid.eq(i - 1);
+
+        $gridPos.append('<div class="dot"></div>');
       }
     })
-
-    //* --- POWERUPS RENDER --- *//
 
     template.powerupPositions.forEach( function (pos) {
       that.$grid.eq(pos - 1).html('<div class="powerup"></div>');
