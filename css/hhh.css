@@ -80,6 +80,10 @@ li {
   padding: 0px 0px 10px 0px;
 }
 
+.time-limit {
+  color: gold;
+}
+
 /* --- OUTER WALLS / INNER BLOCKS --- */
 
 .outer-wall-NW,
