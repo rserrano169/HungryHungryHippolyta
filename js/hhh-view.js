@@ -100,8 +100,9 @@
 
   View.prototype.create$Grid = function () {
     var html = '<section class="top-bar group">' +
-               '<div class="timer"><b>Timer/Score: </b>' + this.timeLimit +
-               ' milliseconds</div></section>';
+               '<div class="timer"><b>Timer/Score: </b>' +
+               '<span class="time-limit">' + this.timeLimit + '</span>' +
+               ' Centiseconds</div></section>';
 
     for (var i = 0; i < this.board.dim; i++) {
       html += '<ul class="group">';
@@ -464,8 +465,9 @@
   View.prototype.countDown = function () {
     this.timeLimit -= 1;
     this.$el.find(".timer").html(
-      '<b>Timer/Score: </b>' + this.timeLimit +
-      ' milliseconds'
+      '<b>Timer/Score: </b>' + 
+      '<span class="time-limit">' + this.timeLimit + '</span>' +
+      ' Centiseconds'
     );
   };
 
