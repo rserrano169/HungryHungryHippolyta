@@ -101,8 +101,8 @@
   View.prototype.create$Grid = function () {
     var html = '<section class="top-bar group">' +
                '<div class="timer"><b>Timer/Score: </b>' +
-               '<span class="time-limit">' + this.timeLimit + '</span>' +
-               ' Centiseconds</div></section>';
+               '<span class="time-limit">' + this.getTimeLimitString() + '</span>' +
+               ' Seconds</div></section>';
 
     for (var i = 0; i < this.board.dim; i++) {
       html += '<ul class="group">';
@@ -466,8 +466,8 @@
     this.timeLimit -= 1;
     this.$el.find(".timer").html(
       '<b>Timer/Score: </b>' + 
-      '<span class="time-limit">' + this.timeLimit + '</span>' +
-      ' Centiseconds'
+      '<span class="time-limit">' + this.getTimeLimitString() + '</span>' +
+      ' Seconds'
     );
   };
 
@@ -923,5 +923,12 @@
       this.removeInstructions();
       this.bindWindowEvents();
     }
+  };
+
+  View.prototype.getTimeLimitString = function () {
+    var timeLimitArr = (this.timeLimit + '').split('');
+    timeLimitArr.push(timeLimitArr[timeLimitArr.length - 1]);
+    timeLimitArr[timeLimitArr.length - 2] = '.';
+    return timeLimitArr.join('');
   };
 })();
